@@ -16,19 +16,81 @@
         :collapse="isCollapse"
         :collapse-transition="false"
     >
-
       <el-menu-item index="/dashboard">
         <el-icon>
-          <svg-icon icon-class="config"></svg-icon>
+          <svg-icon icon-class="dashboard"></svg-icon>
         </el-icon>
         <span>仪表盘</span>
       </el-menu-item>
+      <el-menu-item-group title="网关">
+        <el-menu-item index="/route">
+          <el-icon>
+            <svg-icon icon-class="route"></svg-icon>
+          </el-icon>
+          <span>路由配置</span>
+        </el-menu-item>
+        <el-menu-item index="/service">
+          <el-icon>
+            <svg-icon icon-class="service"></svg-icon>
+          </el-icon>
+          <span>服务管理</span>
+        </el-menu-item>
+        <el-menu-item index="/plugin">
+          <el-icon>
+            <svg-icon icon-class="plugin"></svg-icon>
+          </el-icon>
+          <span>插件管理</span>
+        </el-menu-item>
+        <el-menu-item index="/log">
+          <el-icon>
+            <svg-icon icon-class="log"></svg-icon>
+          </el-icon>
+          <span>日志</span>
+        </el-menu-item>
+      </el-menu-item-group>
+
+      <el-menu-item-group title="安全">
+        <el-menu-item index="/key">
+          <el-icon>
+            <svg-icon icon-class="key"></svg-icon>
+          </el-icon>
+          <span>密钥管理</span>
+        </el-menu-item>
+        <el-menu-item index="/security">
+          <el-icon>
+            <svg-icon icon-class="security"></svg-icon>
+          </el-icon>
+          <span>安全监控</span>
+        </el-menu-item>
+      </el-menu-item-group>
+
+      <el-menu-item-group title="系统">
+        <el-menu-item index="/user">
+          <el-icon>
+            <svg-icon icon-class="user"></svg-icon>
+          </el-icon>
+          <span>用户管理</span>
+        </el-menu-item>
+        <el-menu-item index="/operation">
+          <el-icon>
+            <svg-icon icon-class="log2"></svg-icon>
+          </el-icon>
+          <span>操作日志</span>
+        </el-menu-item>
+        <el-menu-item index="/setting">
+          <el-icon>
+            <svg-icon icon-class="setting"></svg-icon>
+          </el-icon>
+          <span>系统设置</span>
+        </el-menu-item>
+      </el-menu-item-group>
     </el-menu>
   </div>
 </template>
 
 <script>
 import SvgIcon from "../../components/SvgIcon/index.vue";
+
 const VERSION = import.meta.env.VITE_VERSION
 
 export default {
@@ -42,7 +104,7 @@ export default {
     }
   },
   computed: {
-    version(){
+    version() {
       return VERSION
     }
   },
@@ -62,12 +124,12 @@ export default {
 <style scoped lang="scss">
 .menu {
   height: calc(100vh);
-  background: #fafafa;
+  //background: #fafafa;
   border-right: #eeeeee 1px solid;
 
   :deep(.el-menu) {
     border-right: unset;
-    background: #fafafa;
+    //background: #fafafa;
 
   }
 
@@ -83,15 +145,16 @@ export default {
   :deep(.el-menu-item) {
     &.is-active {
       color: var(--el-color-primary);
-      background: var(--el-color-primary-light-11) !important;
+      background: var(--el-color-primary-light-12) !important;
     }
   }
 
   .el-menu-item {
+    height: 50px;
 
     &:hover {
       color: var(--el-color-primary) !important;
-      background: #f1f1f1 !important;
+      background: var(--el-color-primary-light-12) !important;
     }
 
     .el-icon {
@@ -121,7 +184,8 @@ export default {
   font-weight: bold;
   padding: 10px 20px;
   font-size: 18px;
-  height: 35px;
+  height: 38px;
+  color: #409eff;
 }
 
 </style>

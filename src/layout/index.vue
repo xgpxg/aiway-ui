@@ -22,9 +22,10 @@
 import Navbar from "./components/Navbar.vue";
 import AppMain from "./components/AppMain.vue";
 import Menu from "./components/Menu.vue";
+import AppBar from "./components/AppBar.vue";
 
 export default {
-  components: {Menu, AppMain, Navbar},
+  components: {AppBar, Menu, AppMain, Navbar},
   data() {
     return {
       menuWidth: 200,

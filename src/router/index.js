@@ -24,6 +24,38 @@ const routes = [
                 meta: {
                     title: '仪表盘'
                 }
+            },
+            {
+                path: 'route',
+                name: 'Route',
+                component: () => import('@/views/route/index.vue'),
+                meta: {
+                    title: '路由配置'
+                }
+            },
+            {
+                path: 'service',
+                name: 'Service',
+                component: () => import('@/views/service/index.vue'),
+                meta: {
+                    title: '服务管理'
+                }
+            },
+            {
+                path: 'plugin',
+                name: 'Plugin',
+                component: () => import('@/views/plugin/index.vue'),
+                meta: {
+                    title: '插件管理'
+                }
+            },
+            {
+                path: 'log',
+                name: 'Log',
+                component: () => import('@/views/log/index.vue'),
+                meta: {
+                    title: '网关日志'
+                }
             }
         ]
     }

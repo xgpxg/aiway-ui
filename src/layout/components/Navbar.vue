@@ -1,9 +1,11 @@
 <template>
   <div class="navbar flex-space-between">
-    <div class="flex-v">
-      <Hamburger class="hamburger-container"
+    <div class="flex-v fill-width">
+<!--      <Hamburger class="hamburger-container"
                  @toggleClick="toggleSideBar"></Hamburger>
       <Breadcrumb class="breadcrumb-container"></Breadcrumb>
+      <search-input class="ml50"></search-input>-->
+      <AppBar></AppBar>
     </div>
 
     <div class="right-menu flex-v">
@@ -42,9 +44,11 @@ import SvgIcon from "@components/SvgIcon/index.vue";
 import Hamburger from "./Hamburger.vue";
 import Breadcrumb from "./Breadcrumb.vue";
 import UpdatePassword from "../../views/login/update-password.vue";
+import AppBar from "./AppBar.vue";
 
 export default {
   components: {
+    AppBar,
     UpdatePassword,
     Hamburger,
     SvgIcon,
