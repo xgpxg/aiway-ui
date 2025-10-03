@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {onBeforeUnmount, onMounted, ref} from "vue";
 import {R} from "@/utils/R";
+import {U} from "@/utils/util";
 
 const state = ref({
   node_count: 0,
@@ -42,12 +43,12 @@ onBeforeUnmount(() => {
       <el-col :span="6">
         <div class="card">
           <div class="title">
-            今日请求数：<span class="number">{{ state.request_today_count}}</span>
+            今日请求数：<span class="number">{{ state.request_today_count.toLocaleString() }}</span>
           </div>
           <div class="content">
             <div class="flex-space-between">
-              <el-text>累计：{{ state.request_count }}</el-text>
-              <el-text>异常(5xx)：{{ state.response_5xx_count }}</el-text>
+              <el-text>累计：{{ U.simplifyNum(state.request_count, true) }}</el-text>
+              <el-text>异常(5xx)：{{ state.response_5xx_count.toLocaleString() }}</el-text>
             </div>
           </div>
         </div>
@@ -55,11 +56,11 @@ onBeforeUnmount(() => {
       <el-col :span="6">
         <div class="card">
           <div class="title">
-            当前连接数：<span class="number">{{ state.http_connect_count}}</span>
+            当前连接数：<span class="number">{{ state.http_connect_count.toLocaleString() }}</span>
           </div>
           <div class="content">
             <div class="flex-space-between">
-              <el-text>平均QPS：{{ state.avg_qps }}</el-text>
+              <el-text>平均QPS：{{ state.avg_qps.toLocaleString() }}</el-text>
               <el-text>短连接：11</el-text>
               <el-text>SSE：21</el-text>
             </div>
@@ -69,12 +70,12 @@ onBeforeUnmount(() => {
       <el-col :span="6">
         <div class="card">
           <div class="title">
-            失败响应数：<span class="number">{{ state.response_4xx_count + state.response_5xx_count}}</span>
+            平均响应时间：<span class="number"> {{ state.avg_response_time.toLocaleString() }} ms</span>
           </div>
           <div class="content">
             <div class="flex-space-between">
-              <el-text type="warning">4xx：{{ state.response_4xx_count}}</el-text>
-              <el-text type="danger">5xx：{{ state.response_5xx_count}}</el-text>
+              <el-text type="warning">4xx：{{ state.response_4xx_count.toLocaleString() }}</el-text>
+              <el-text type="danger">5xx：{{ state.response_5xx_count.toLocaleString() }}</el-text>
               <el-text>拦截：213</el-text>
             </div>
           </div>
@@ -87,9 +88,9 @@ onBeforeUnmount(() => {
           </div>
           <div class="content">
             <div class="flex-space-between">
-              <el-text>共 {{ state.node_count }} 个节点</el-text>
-              <el-text>{{ state.online_node_count }} 运行中</el-text>
-              <el-text>{{ state.offline_node_count }} 离线</el-text>
+              <el-text>共 {{ state.node_count.toLocaleString() }} 个节点</el-text>
+              <el-text>{{ state.online_node_count.toLocaleString() }} 运行中</el-text>
+              <el-text>{{ state.offline_node_count.toLocaleString() }} 离线</el-text>
             </div>
           </div>
         </div>
