@@ -60,7 +60,7 @@
           <el-icon>
             <svg-icon icon-class="security"></svg-icon>
           </el-icon>
-          <span>安全监控</span>
+          <span>防火墙</span>
         </el-menu-item>
       </el-menu-item-group>
 

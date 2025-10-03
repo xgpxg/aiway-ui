@@ -10,7 +10,7 @@ const initChart = () => {
   const myChart = echarts.init(chartDom);
   const option = {
     title: {
-      text: '调用量统计',
+      text: '请求趋势',
       left: 'left',
       textStyle: {
         fontSize: 16,
@@ -134,8 +134,8 @@ const initChart = () => {
     <div class="operate">
       <div class="content">
         <el-select style="width: 120px">
+          <el-option label="近1小时" value="1"></el-option>
           <el-option label="今天" value="1"></el-option>
-          <el-option label="本周" value="2"></el-option>
           <el-option label="本月" value="3"></el-option>
           <el-option label="今年" value="4"></el-option>
         </el-select>

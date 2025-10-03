@@ -82,7 +82,7 @@ export default {
        })*/
     },
     logout() {
-      this.R.postJson('/api/system/logout', {}, {repeatable: true}).then(res => {
+      this.R.postJson('/api/user/logout', {}, {repeatable: true}).then(res => {
         if (res.code === 0) {
           this.$router.replace({name: 'Login'})
         }

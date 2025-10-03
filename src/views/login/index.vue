@@ -19,7 +19,7 @@ const rules = {
   ],
   password: [
     {required: true, message: '请输入密码', trigger: 'blur'},
-    {min: 6, message: '密码长度至少6位', trigger: 'blur'}
+    {min: 4, message: '密码长度至少4位', trigger: 'blur'}
   ]
 }
 
@@ -33,14 +33,15 @@ const login = () => {
     }
     loading.value = true
 
-    R.postJson('/api/system/login', {
-      username: loginForm.value.username,
-      password: loginForm.value.password
+    R.postJson('/api/user/login', {
+      identity: loginForm.value.username,
+      secret: loginForm.value.password,
+      login_type: 1
     }).then(res => {
       if (res.code === 0) {
         store.commit('user/setToken', res.data.token)
         store.commit('user/setUsername', res.data.username)
-        router.replace({name: 'Config'})
+        router.replace({name: 'Dashboard'})
       }
       loading.value = false
     })
