@@ -37,13 +37,25 @@ const deleteRoute = (route: any) => {
     loadRoutes()
   })
 }
+
+const currRoute = ref(null)
+const toEdit = (route: any) => {
+  currRoute.value = {...route}
+  addRouteRef.value.show()
+}
+
+const handleDrawerClose = () => {
+  loadRoutes()
+  currRoute.value = null
+  addRouteRef.value = null
+}
 </script>
 
 <template>
   <div class="pd20">
     <div class="flex-v">
-      <el-select placeholder="域名" style="width: 200px" class="mr10"></el-select>
-      <service-select v-model="form.service" @click="loadRoutes" placeholder="关联服务" style="width: 200px"
+      <el-select placeholder="域名" style="width: 200px" class="mr10" clearable></el-select>
+      <service-select v-model="form.service" @change="loadRoutes" placeholder="关联服务" clearable style="width: 200px"
                       class="mr10"></service-select>
       <el-input v-model="form.filter_text" @input="loadRoutes" prefix-icon="search"
                 placeholder="搜索路由名称/匹配规则/关联服务"></el-input>
@@ -53,8 +65,8 @@ const deleteRoute = (route: any) => {
     <div class="mt20">
       <el-table :data="routes">
         <el-table-column label="路由名称" width="200" prop="name"></el-table-column>
-        <el-table-column label="域名" width="150" prop="host"></el-table-column>
         <el-table-column label="关联服务" width="120" prop="service"></el-table-column>
+        <el-table-column label="域名匹配" width="150" prop="host"></el-table-column>
         <el-table-column label="路径匹配" prop="path" min-width="200" show-overflow-tooltip></el-table-column>
         <el-table-column label="Header匹配" width="120">
           <template #default="{row}">
@@ -72,7 +84,13 @@ const deleteRoute = (route: any) => {
             <el-text v-else type="info">未配置</el-text>
           </template>
         </el-table-column>
-        <el-table-column label="更新时间" width="170" prop="update_time">
+        <el-table-column label="状态" width="80" prop="status">
+          <template #default="{row}">
+            <el-text v-if="row.status==='Ok'" type="info">已启用</el-text>
+            <el-text v-if="row.status==='Disable'" type="danger">已停用</el-text>
+          </template>
+        </el-table-column>
+        <el-table-column label="更新时间" width="160" prop="update_time">
           <template #default="{row}">
             {{ row.update_time || row.create_time }}
           </template>
@@ -100,7 +118,7 @@ const deleteRoute = (route: any) => {
       </el-pagination>
     </div>
   </div>
-  <add-route ref="addRouteRef" @close="loadRoutes"></add-route>
+  <add-route ref="addRouteRef" v-model:value="currRoute" @close="handleDrawerClose"></add-route>
 </template>
 
 <style scoped lang="scss">

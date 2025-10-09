@@ -1,36 +1,42 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {ref, watch} from "vue";
 import ServiceSelect from "../service/service-select.vue";
 import {R} from "../../utils/R";
 
-const isShow = ref(false)
+const value = defineModel('value')
 
+const isShow = ref(false)
 const show = () => {
   isShow.value = true
 }
+defineExpose({
+  show
+})
 
-const form = ref({
+const formRef = ref()
+const defaultForm = {
+  id: null,
   name: null,
   description: null,
   service: null,
   host: null,
   path: null,
+  prefix: null,
+  strip_prefix: 0,
   header: {},
   query: {},
+}
+const form = ref({
+  ...defaultForm
 })
-const formRef = ref()
 const rules = {
   name: [
     {required: true, message: '请输入路由名称', trigger: 'blur'},
     {min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur'}
   ],
-  host: [
-    {required: true, message: '请输入域名', trigger: 'blur'},
-    {min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur'}
-  ],
   path: [
     {required: true, message: '请输入路径匹配规则', trigger: 'blur'},
-    {min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur'}
+    {min: 1, max: 50, message: '长度在 1 到 100 个字符', trigger: 'blur'}
   ],
   service: [
     {required: true, message: '请选择关联服务', trigger: 'blur'}
@@ -44,16 +50,27 @@ const save = () => {
     if (!ok) {
       return
     }
+
     const header = {}
     headers.value.forEach(item => {
-      header[item.name] = item.value.value
+      header[item.name] = item.value
     })
+
+    debugger
 
     const query = {}
     queries.value.forEach(item => {
       query[item.name] = item.value.value
     })
-    R.postJson('/api/route/add', {...form.value, header, query}).then(res => {
+
+    let api;
+    if (value.value) {
+      api = '/api/route/update'
+    } else {
+      api = '/api/route/add'
+    }
+
+    R.postJson(api, {...form.value, header, query}).then(res => {
       if (res.code === 0) {
         isShow.value = false
       }
@@ -61,13 +78,33 @@ const save = () => {
   })
 }
 
-defineExpose({
-  show
+watch(value, (newVal) => {
+  if (!newVal) {
+    form.value = defaultForm
+    return
+  }
+  form.value = {
+    id: newVal.id,
+    name: newVal.name,
+    service: newVal.service,
+    host: newVal.host,
+    path: newVal.path,
+    prefix: newVal.prefix,
+    strip_prefix: newVal.strip_prefix || 0,
+    header: newVal.header,
+    query: newVal.query,
+  }
+  headers.value = Object.entries(form.value.header).map(item => {
+    return {
+      name: item[0],
+      value: item[1]
+    }
+  })
 })
 </script>
 
 <template>
-  <el-drawer v-model="isShow" title="添加路由" size="500">
+  <el-drawer v-model="isShow" :title="value ? '修改路由' : '添加路由'" size="500" destroy-on-close>
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
       <div class="title-block">基本信息</div>
       <el-form-item label="路由名称" prop="name">
@@ -81,11 +118,23 @@ defineExpose({
         <service-select v-model="form.service" placeholder="关联服务"></service-select>
       </el-form-item>
       <div class="title-block">匹配规则</div>
-      <el-form-item label="域名匹配" prop="host">
-        <el-input v-model="form.host" placeholder="域名匹配" maxlength="100" show-word-limit></el-input>
-      </el-form-item>
       <el-form-item label="路径匹配" prop="path">
         <el-input v-model="form.path" placeholder="路径匹配" maxlength="100" show-word-limit></el-input>
+      </el-form-item>
+      <el-form-item label="路径前缀" prop="strip_prefix">
+        <div class="fill-width flex">
+          <el-input v-model="form.prefix" placeholder="路径前缀" maxlength="100" show-word-limit
+                    class="fill-width"></el-input>
+          <div class="fill-width ml10">
+            <el-radio-group v-model="form.strip_prefix" class="fr">
+              <el-radio :label="0">保留前缀</el-radio>
+              <el-radio :label="1">移除前缀</el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+      </el-form-item>
+      <el-form-item label="域名匹配" prop="host">
+        <el-input v-model="form.host" placeholder="域名匹配" maxlength="100" show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="Header匹配" prop="header">
         <template #label>
@@ -127,7 +176,7 @@ defineExpose({
       </el-form-item>
       <div class="title-block">插件</div>
       <el-form-item label="前置过滤器">
-        <el-select></el-select>
+        <el-select clearable></el-select>
         <div class="fill-width bg-card mt10 br5">
           <div class="flex-center">
             <el-text type="info">暂未配置</el-text>
@@ -135,7 +184,7 @@ defineExpose({
         </div>
       </el-form-item>
       <el-form-item label="后置过滤器">
-        <el-select></el-select>
+        <el-select clearable></el-select>
         <div class="fill-width bg-card mt10 br5 flex-center">
           <el-text type="info">暂未配置</el-text>
         </div>
