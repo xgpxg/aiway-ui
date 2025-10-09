@@ -2,6 +2,7 @@
 import {ref, watch} from "vue";
 import ServiceSelect from "../service/service-select.vue";
 import {R} from "../../utils/R";
+import HelpTip from "../../components/Tip/HelpTip.vue";
 
 const value = defineModel('value')
 
@@ -105,7 +106,7 @@ watch(value, (newVal) => {
 
 <template>
   <el-drawer v-model="isShow" :title="value ? '修改路由' : '添加路由'" size="500" destroy-on-close>
-    <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
+    <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
       <div class="title-block">基本信息</div>
       <el-form-item label="路由名称" prop="name">
         <el-input v-model="form.name" placeholder="路由名称" maxlength="50" show-word-limit></el-input>
@@ -119,21 +120,44 @@ watch(value, (newVal) => {
       </el-form-item>
       <div class="title-block">匹配规则</div>
       <el-form-item label="路径匹配" prop="path">
+        <template #label>路径匹配
+          <help-tip placement="top-start">
+            <p>通过该路径匹配路由，如果配置了“路径前缀”，则完整的请求路径为：【路径前缀】 + 【路径匹配】</p>
+            <p>支持的通配符：</p>
+            <p>? : 匹配任意单个字符</p>
+            <p>* : 匹配零个或多个字符</p>
+            <p>** : 匹配多层路径</p>
+            <p>{a,b} : 匹配 a 或 b，其中 a 和 b 是以上匹配模式的一种</p>
+            <p>[ab] : 匹配 a 或 b，使用 [!ab] 匹配除 a 和 b 之外的任何字符</p>
+          </help-tip>
+        </template>
         <el-input v-model="form.path" placeholder="路径匹配" maxlength="100" show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="路径前缀" prop="strip_prefix">
-        <div class="fill-width flex">
+        <template #label>
+          路径前缀
+          <help-tip placement="top-start">
+            <p>当配置了路径前缀时，请求的完整路径为：【路径前缀】 + 【路径匹配】</p>
+            <p>该前缀在转发到下游服务时，默认被移除，如果需要保留，请勾选“保留”选项</p>
+          </help-tip>
+        </template>
+        <div class="fill-width flex-space-between">
           <el-input v-model="form.prefix" placeholder="路径前缀" maxlength="100" show-word-limit
                     class="fill-width"></el-input>
-          <div class="fill-width ml10">
+          <div class="ml10 half-width">
             <el-radio-group v-model="form.strip_prefix" class="fr">
-              <el-radio :label="0">保留前缀</el-radio>
-              <el-radio :label="1">移除前缀</el-radio>
+              <el-radio :label="1">移除</el-radio>
+              <el-radio :label="0">保留</el-radio>
             </el-radio-group>
           </div>
         </div>
       </el-form-item>
       <el-form-item label="域名匹配" prop="host">
+        <template #label>域名匹配
+          <help-tip placement="top-start">
+            <p>当配置了域名时，只有Host请求头等于该域名时，才会匹配该路由</p>
+          </help-tip>
+        </template>
         <el-input v-model="form.host" placeholder="域名匹配" maxlength="100" show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="Header匹配" prop="header">

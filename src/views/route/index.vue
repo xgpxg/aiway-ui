@@ -66,7 +66,14 @@ const handleDrawerClose = () => {
       <el-table :data="routes">
         <el-table-column label="路由名称" width="200" prop="name"></el-table-column>
         <el-table-column label="关联服务" width="120" prop="service"></el-table-column>
-        <el-table-column label="域名匹配" width="150" prop="host"></el-table-column>
+        <el-table-column label="域名匹配" width="150" prop="host">
+          <template #default="{row}">
+            <template v-if="row.host">
+              {{ row.host }}
+            </template>
+            <el-text v-else type="info">未配置</el-text>
+          </template>
+        </el-table-column>
         <el-table-column label="路径匹配" prop="path" min-width="200" show-overflow-tooltip></el-table-column>
         <el-table-column label="Header匹配" width="120">
           <template #default="{row}">

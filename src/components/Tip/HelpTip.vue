@@ -1,5 +1,4 @@
 <template>
-  <el-icon>
     <el-tooltip v-bind="$attrs">
       <template v-if="type==='warning'" #default>
         <svg-icon icon-class="warning" :size="14"></svg-icon>
@@ -15,7 +14,6 @@
         </div>
       </template>
     </el-tooltip>
-  </el-icon>
 </template>
 
 <script>
