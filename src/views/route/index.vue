@@ -2,6 +2,7 @@
 import {onMounted, ref} from "vue";
 import {R} from "../../utils/R";
 import AddRoute from "./add-route.vue";
+import ServiceSelect from "../service/service-select.vue";
 
 const routes = ref([])
 const page = ref({
@@ -10,7 +11,8 @@ const page = ref({
   total: 0
 })
 const form = ref({
-  filter_text: null
+  filter_text: null,
+  service: null,
 })
 onMounted(() => {
   loadRoutes()
@@ -18,7 +20,8 @@ onMounted(() => {
 const loadRoutes = () => {
   R.postJson('/api/route/list', {
     page: page.value,
-    filter_text: form.value.filter_text
+    filter_text: form.value.filter_text,
+    service: form.value.service
   }).then(res => {
     routes.value = res.data.list
     page.value.total = res.data.total
@@ -26,20 +29,32 @@ const loadRoutes = () => {
 }
 
 const addRouteRef = ref()
+
+const deleteRoute = (route: any) => {
+  R.postJson('/api/route/delete', {
+    ids: [route.id]
+  }).then(() => {
+    loadRoutes()
+  })
+}
 </script>
 
 <template>
   <div class="pd20">
     <div class="flex-v">
+      <el-select placeholder="域名" style="width: 200px" class="mr10"></el-select>
+      <service-select v-model="form.service" @click="loadRoutes" placeholder="关联服务" style="width: 200px"
+                      class="mr10"></service-select>
       <el-input v-model="form.filter_text" @input="loadRoutes" prefix-icon="search"
                 placeholder="搜索路由名称/匹配规则/关联服务"></el-input>
-      <el-button class="ml20" icon="search" @click="loadRoutes">查询</el-button>
-      <el-button class="ml20" icon="plus" type="primary" @click="addRouteRef.show()">添加路由</el-button>
+      <el-button class="ml10" icon="search" @click="loadRoutes">查询</el-button>
+      <el-button class="ml10" icon="plus" type="primary" @click="addRouteRef.show()">添加路由</el-button>
     </div>
     <div class="mt20">
       <el-table :data="routes">
         <el-table-column label="路由名称" width="200" prop="name"></el-table-column>
         <el-table-column label="域名" width="150" prop="host"></el-table-column>
+        <el-table-column label="关联服务" width="120" prop="service"></el-table-column>
         <el-table-column label="路径匹配" prop="path" min-width="200" show-overflow-tooltip></el-table-column>
         <el-table-column label="Header匹配" width="120">
           <template #default="{row}">
@@ -57,7 +72,6 @@ const addRouteRef = ref()
             <el-text v-else type="info">未配置</el-text>
           </template>
         </el-table-column>
-        <el-table-column label="关联服务" width="120" prop="service"></el-table-column>
         <el-table-column label="更新时间" width="170" prop="update_time">
           <template #default="{row}">
             {{ row.update_time || row.create_time }}
@@ -65,8 +79,12 @@ const addRouteRef = ref()
         </el-table-column>
         <el-table-column label="操作" width="120">
           <template #default="{row}">
-            <el-button type="primary" link @click="deleteRoute(row)">编辑</el-button>
-            <el-button type="danger" link @click="toEdit(row)">删除</el-button>
+            <el-button type="primary" link @click="toEdit(row)">编辑</el-button>
+            <el-popconfirm title="确定删除吗？" @confirm="deleteRoute(row)">
+              <template #reference>
+                <el-button type="danger" link>删除</el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -82,7 +100,7 @@ const addRouteRef = ref()
       </el-pagination>
     </div>
   </div>
-  <add-route ref="addRouteRef"></add-route>
+  <add-route ref="addRouteRef" @close="loadRoutes"></add-route>
 </template>
 
 <style scoped lang="scss">
