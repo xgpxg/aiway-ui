@@ -3,6 +3,7 @@ import {ref, watch} from "vue";
 import ServiceSelect from "../service/service-select.vue";
 import {R} from "../../utils/R";
 import HelpTip from "../../components/Tip/HelpTip.vue";
+import PluginDropdown from "../plugin/plugin-dropdown.vue";
 
 const value = defineModel('value')
 
@@ -22,10 +23,10 @@ const defaultForm = {
   service: null,
   host: null,
   path: null,
-  prefix: null,
-  strip_prefix: 0,
   header: {},
   query: {},
+  pre_filters: [],
+  post_filters: [],
 }
 const form = ref({
   ...defaultForm
@@ -79,7 +80,7 @@ const save = () => {
   })
 }
 
-watch(value, (newVal) => {
+watch(value, (newVal: any) => {
   if (!newVal) {
     form.value = defaultForm
     return
@@ -87,13 +88,14 @@ watch(value, (newVal) => {
   form.value = {
     id: newVal.id,
     name: newVal.name,
+    description: newVal.description,
     service: newVal.service,
     host: newVal.host,
     path: newVal.path,
-    prefix: newVal.prefix,
-    strip_prefix: newVal.strip_prefix || 0,
     header: newVal.header,
     query: newVal.query,
+    pre_filters: newVal.pre_filters,
+    post_filters: newVal.post_filters
   }
   headers.value = Object.entries(form.value.header).map(item => {
     return {
@@ -102,6 +104,19 @@ watch(value, (newVal) => {
     }
   })
 })
+
+const appendPreFilter = (plugin: any) => {
+  form.value.pre_filters.push({
+    name: plugin.name,
+    config: plugin.default_config
+  })
+}
+const appendPostFilter = (plugin: any) => {
+  form.value.post_filters.push({
+    name: plugin.name,
+    config: plugin.default_config
+  })
+}
 </script>
 
 <template>
@@ -132,25 +147,6 @@ watch(value, (newVal) => {
           </help-tip>
         </template>
         <el-input v-model="form.path" placeholder="路径匹配" maxlength="100" show-word-limit></el-input>
-      </el-form-item>
-      <el-form-item label="路径前缀" prop="strip_prefix">
-        <template #label>
-          路径前缀
-          <help-tip placement="top-start">
-            <p>当配置了路径前缀时，请求的完整路径为：【路径前缀】 + 【路径匹配】</p>
-            <p>该前缀在转发到下游服务时，默认被移除，如果需要保留，请勾选“保留”选项</p>
-          </help-tip>
-        </template>
-        <div class="fill-width flex-space-between">
-          <el-input v-model="form.prefix" placeholder="路径前缀" maxlength="100" show-word-limit
-                    class="fill-width"></el-input>
-          <div class="ml10 half-width">
-            <el-radio-group v-model="form.strip_prefix" class="fr">
-              <el-radio :label="1">移除</el-radio>
-              <el-radio :label="0">保留</el-radio>
-            </el-radio-group>
-          </div>
-        </div>
       </el-form-item>
       <el-form-item label="域名匹配" prop="host">
         <template #label>域名匹配
@@ -200,18 +196,53 @@ watch(value, (newVal) => {
       </el-form-item>
       <div class="title-block">插件</div>
       <el-form-item label="前置过滤器">
-        <el-select clearable></el-select>
-        <div class="fill-width bg-card mt10 br5">
-          <div class="flex-center">
-            <el-text type="info">暂未配置</el-text>
+        <template #label>
+          <div class="flex-space-between">
+            <span class="fill-width">前置过滤器</span>
+            <plugin-dropdown @select="appendPreFilter"></plugin-dropdown>
+          </div>
+        </template>
+
+        <div v-if="form.pre_filters.length" class="mt10">
+          <el-scrollbar>
+            <div class="plugin-list">
+              <div class="plugin-item" v-for="item in form.pre_filters">
+                {{ item.name }}
+              </div>
+            </div>
+          </el-scrollbar>
+          <div class="">
+            插件配置区域
           </div>
         </div>
-      </el-form-item>
-      <el-form-item label="后置过滤器">
-        <el-select clearable></el-select>
-        <div class="fill-width bg-card mt10 br5 flex-center">
+        <div v-else class="fill-width bg-card mt10 br5 flex-center">
           <el-text type="info">暂未配置</el-text>
         </div>
+
+      </el-form-item>
+      <el-form-item label="后置过滤器">
+        <template #label>
+          <div class="flex-space-between">
+            <span class="fill-width">后置过滤器</span>
+            <plugin-dropdown @select="appendPostFilter"></plugin-dropdown>
+          </div>
+        </template>
+        <div v-if="form.post_filters.length" class="mt10">
+          <el-scrollbar>
+            <div class="plugin-list">
+              <div class="plugin-item" v-for="item in form.post_filters">
+                {{ item.name }}
+              </div>
+            </div>
+          </el-scrollbar>
+          <div class="">
+            插件配置区域
+          </div>
+        </div>
+        <div v-else class="fill-width bg-card mt10 br5 flex-center">
+          <el-text type="info">暂未配置</el-text>
+        </div>
+
       </el-form-item>
     </el-form>
     <template #footer>
@@ -226,4 +257,26 @@ watch(value, (newVal) => {
   width: 100%;
   padding-right: 0;
 }
+
+.plugin-list {
+  display: flex;
+  width: fit-content;
+
+  .plugin-item {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 50px;
+    margin: 0 10px 10px 0;
+    text-align: center;
+    border-radius: 4px;
+    background: var(--el-color-primary-light-9);
+    color: var(--el-color-primary);
+    cursor: pointer;
+  }
+}
+
+
 </style>

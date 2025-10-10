@@ -49,6 +49,15 @@ const handleDrawerClose = () => {
   currRoute.value = null
   addRouteRef.value = null
 }
+
+const updateStatus = (route: any, status: string) => {
+  R.postJson('/api/route/update_status', {
+    id: route.id,
+    status: status
+  }).then(() => {
+    loadRoutes()
+  })
+}
 </script>
 
 <template>
@@ -64,9 +73,9 @@ const handleDrawerClose = () => {
     </div>
     <div class="mt20">
       <el-table :data="routes">
-        <el-table-column label="路由名称" width="200" prop="name"></el-table-column>
-        <el-table-column label="关联服务" width="120" prop="service"></el-table-column>
-        <el-table-column label="域名匹配" width="150" prop="host">
+        <el-table-column label="路由名称" min-width="150" prop="name" show-overflow-tooltip></el-table-column>
+        <el-table-column label="关联服务" width="150" prop="service"></el-table-column>
+        <el-table-column label="域名匹配" width="150" prop="host" show-overflow-tooltip>
           <template #default="{row}">
             <template v-if="row.host">
               {{ row.host }}
@@ -75,7 +84,7 @@ const handleDrawerClose = () => {
           </template>
         </el-table-column>
         <el-table-column label="路径匹配" prop="path" min-width="200" show-overflow-tooltip></el-table-column>
-        <el-table-column label="Header匹配" width="120">
+<!--        <el-table-column label="Header匹配" width="120">
           <template #default="{row}">
             <el-button link v-if="Object.keys(row.header).length>0" type="primary">
               已配置({{ Object.keys(row.header).length }})
@@ -90,10 +99,10 @@ const handleDrawerClose = () => {
             </el-button>
             <el-text v-else type="info">未配置</el-text>
           </template>
-        </el-table-column>
+        </el-table-column>-->
         <el-table-column label="状态" width="80" prop="status">
           <template #default="{row}">
-            <el-text v-if="row.status==='Ok'" type="info">已启用</el-text>
+            <el-text v-if="row.status==='Ok'" type="success">已启用</el-text>
             <el-text v-if="row.status==='Disable'" type="danger">已停用</el-text>
           </template>
         </el-table-column>
@@ -102,8 +111,12 @@ const handleDrawerClose = () => {
             {{ row.update_time || row.create_time }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120">
+        <el-table-column label="操作" width="150">
           <template #default="{row}">
+            <el-button v-if="row.status === 'Disable'" type="primary" link @click="updateStatus(row,'Ok')">启用
+            </el-button>
+            <el-button v-if="row.status === 'Ok'" type="primary" link @click="updateStatus(row,'Disable')">停用
+            </el-button>
             <el-button type="primary" link @click="toEdit(row)">编辑</el-button>
             <el-popconfirm title="确定删除吗？" @confirm="deleteRoute(row)">
               <template #reference>
