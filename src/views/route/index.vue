@@ -47,7 +47,6 @@ const toEdit = (route: any) => {
 const handleDrawerClose = () => {
   loadRoutes()
   currRoute.value = null
-  addRouteRef.value = null
 }
 
 const updateStatus = (route: any, status: string) => {
@@ -84,22 +83,22 @@ const updateStatus = (route: any, status: string) => {
           </template>
         </el-table-column>
         <el-table-column label="路径匹配" prop="path" min-width="200" show-overflow-tooltip></el-table-column>
-<!--        <el-table-column label="Header匹配" width="120">
-          <template #default="{row}">
-            <el-button link v-if="Object.keys(row.header).length>0" type="primary">
-              已配置({{ Object.keys(row.header).length }})
-            </el-button>
-            <el-text v-else type="info">未配置</el-text>
-          </template>
-        </el-table-column>
-        <el-table-column label="URL参数匹配" width="120">
-          <template #default="{row}">
-            <el-button link v-if="Object.keys(row.query).length>0">
-              已配置({{ Object.keys(row.query).length }})
-            </el-button>
-            <el-text v-else type="info">未配置</el-text>
-          </template>
-        </el-table-column>-->
+        <!--        <el-table-column label="Header匹配" width="120">
+                  <template #default="{row}">
+                    <el-button link v-if="Object.keys(row.header).length>0" type="primary">
+                      已配置({{ Object.keys(row.header).length }})
+                    </el-button>
+                    <el-text v-else type="info">未配置</el-text>
+                  </template>
+                </el-table-column>
+                <el-table-column label="URL参数匹配" width="120">
+                  <template #default="{row}">
+                    <el-button link v-if="Object.keys(row.query).length>0">
+                      已配置({{ Object.keys(row.query).length }})
+                    </el-button>
+                    <el-text v-else type="info">未配置</el-text>
+                  </template>
+                </el-table-column>-->
         <el-table-column label="状态" width="80" prop="status">
           <template #default="{row}">
             <el-text v-if="row.status==='Ok'" type="success">已启用</el-text>

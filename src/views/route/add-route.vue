@@ -4,6 +4,9 @@ import ServiceSelect from "../service/service-select.vue";
 import {R} from "../../utils/R";
 import HelpTip from "../../components/Tip/HelpTip.vue";
 import PluginDropdown from "../plugin/plugin-dropdown.vue";
+import draggable from 'vuedraggable'
+import {CodeEditor} from 'monaco-editor-vue3';
+import {ElMessage} from "element-plus";
 
 const value = defineModel('value')
 
@@ -53,19 +56,46 @@ const save = () => {
       return
     }
 
+    // header数组转对象
     const header = {}
     headers.value.forEach(item => {
       header[item.name] = item.value
     })
 
-    debugger
-
+    // query数组转对象
     const query = {}
     queries.value.forEach(item => {
       query[item.name] = item.value.value
     })
 
-    let api;
+    // 前置处理器插件配置转换
+    form.value.pre_filters?.forEach(item => {
+      try {
+        item.config = JSON.parse(item.config_text)
+      } catch (e) {
+        ElMessage.error('插件配置不正确，请检查')
+        throw e
+      }
+    })
+    // 后置处理器插件配置转换
+    form.value.post_filters?.forEach(item => {
+      try {
+        item.config = JSON.parse(item.config_text)
+      } catch (e) {
+        ElMessage.error('插件配置不正确，请检查')
+        throw e
+      }
+    })
+
+    // 清理不必要字段
+    form.value.pre_filters?.forEach(item => {
+      delete item.config_text
+    })
+    form.value.post_filters?.forEach(item => {
+      delete item.config_text
+    })
+
+    let api: string;
     if (value.value) {
       api = '/api/route/update'
     } else {
@@ -94,10 +124,24 @@ watch(value, (newVal: any) => {
     path: newVal.path,
     header: newVal.header,
     query: newVal.query,
-    pre_filters: newVal.pre_filters,
-    post_filters: newVal.post_filters
+    pre_filters: newVal.pre_filters?.map((item: any) => ({
+      ...item,
+      // 配置转字符串，以便在编辑器中显示和修改
+      config_text: JSON.stringify(item.config, null, 2)
+    })),
+    post_filters: newVal.post_filters?.map((item: any) => ({
+      ...item,
+      // 配置转字符串，以便在编辑器中显示和修改
+      config_text: JSON.stringify(item.config, null, 2)
+    })),
   }
   headers.value = Object.entries(form.value.header).map(item => {
+    return {
+      name: item[0],
+      value: item[1]
+    }
+  })
+  queries.value = Object.entries(form.value.query).map(item => {
     return {
       name: item[0],
       value: item[1]
@@ -108,19 +152,52 @@ watch(value, (newVal: any) => {
 const appendPreFilter = (plugin: any) => {
   form.value.pre_filters.push({
     name: plugin.name,
-    config: plugin.default_config
+    config: plugin.default_config,
+    // 配置转字符串，以便在编辑器中显示和修改
+    config_text: JSON.stringify(plugin.default_config, null, 2)
   })
 }
 const appendPostFilter = (plugin: any) => {
   form.value.post_filters.push({
     name: plugin.name,
-    config: plugin.default_config
+    config: plugin.default_config,
+    // 配置转字符串，以便在编辑器中显示和修改
+    config_text: JSON.stringify(plugin.default_config, null, 2)
   })
+}
+
+const activePreFilter = ref(null)
+const activePostFilter = ref(null)
+
+// 解决报错：You must define a function MonacoEnvironment.getWorkerUrl or MonacoEnvironment.getWorker
+if (!window['MonacoEnvironment']) {
+  window['MonacoEnvironment'] = {
+    getWorkerUrl: function (moduleId: string, label: string) {
+      if (label === 'json') {
+        return './node_modules/monaco-editor/esm/vs/language/json/json.worker.js'
+      }
+      return './node_modules/monaco-editor/esm/vs/editor/editor.worker.js'
+    }
+  }
+}
+const editorOptions = {
+  fontSize: 14,
+  minimap: {enabled: true},
+  automaticLayout: true,
+  padding: {
+    top: 10,
+  },
+  lineNumbersMinChars: 3,
+};
+
+const reset = () => {
+  activePreFilter.value = null
+  activePostFilter.value = null
 }
 </script>
 
 <template>
-  <el-drawer v-model="isShow" :title="value ? '修改路由' : '添加路由'" size="500" destroy-on-close>
+  <el-drawer v-model="isShow" :title="value ? '修改路由' : '添加路由'" size="500" destroy-on-close @closed="reset">
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
       <div class="title-block">基本信息</div>
       <el-form-item label="路由名称" prop="name">
@@ -198,21 +275,30 @@ const appendPostFilter = (plugin: any) => {
       <el-form-item label="前置过滤器">
         <template #label>
           <div class="flex-space-between">
-            <span class="fill-width">前置过滤器</span>
+            <div class="fill-width">
+              前置过滤器
+              <el-text type="info" class="ml10" size="small">拖动可调整顺序</el-text>
+            </div>
             <plugin-dropdown @select="appendPreFilter"></plugin-dropdown>
           </div>
         </template>
-
-        <div v-if="form.pre_filters.length" class="mt10">
-          <el-scrollbar>
-            <div class="plugin-list">
-              <div class="plugin-item" v-for="item in form.pre_filters">
-                {{ item.name }}
-              </div>
-            </div>
-          </el-scrollbar>
-          <div class="">
-            插件配置区域
+        <div v-if="form.pre_filters.length" class="mt10 fill-width">
+          <div style="overflow-x:auto;">
+            <draggable v-model="form.pre_filters" v-bind="{animation: 200}" item-key="name" class="plugin-list">
+              <template #item="{element, index}">
+                <div class="plugin-item" @click="activePreFilter = element"
+                     :class="{active:activePreFilter?.name === element.name}">
+                  {{ element.name }}
+                </div>
+              </template>
+            </draggable>
+          </div>
+          <div v-if="activePreFilter">
+            <CodeEditor
+                v-model:value="activePreFilter.config_text"
+                language="json"
+                :options="editorOptions"
+            />
           </div>
         </div>
         <div v-else class="fill-width bg-card mt10 br5 flex-center">
@@ -223,26 +309,35 @@ const appendPostFilter = (plugin: any) => {
       <el-form-item label="后置过滤器">
         <template #label>
           <div class="flex-space-between">
-            <span class="fill-width">后置过滤器</span>
+            <div class="fill-width">
+              后置过滤器
+              <el-text type="info" class="ml10" size="small">拖动可调整顺序</el-text>
+            </div>
             <plugin-dropdown @select="appendPostFilter"></plugin-dropdown>
           </div>
         </template>
-        <div v-if="form.post_filters.length" class="mt10">
-          <el-scrollbar>
-            <div class="plugin-list">
-              <div class="plugin-item" v-for="item in form.post_filters">
-                {{ item.name }}
-              </div>
-            </div>
-          </el-scrollbar>
-          <div class="">
-            插件配置区域
+        <div v-if="form.post_filters.length" class="mt10 fill-width">
+          <div style="overflow-x:auto;">
+            <draggable v-model="form.post_filters" v-bind="{animation: 200}" item-key="name" class="plugin-list">
+              <template #item="{element, index}">
+                <div class="plugin-item" @click="activePostFilter = element"
+                     :class="{active:activePostFilter?.name === element.name}">
+                  {{ element.name }}
+                </div>
+              </template>
+            </draggable>
+          </div>
+          <div v-if="activePostFilter">
+            <CodeEditor
+                v-model:value="activePostFilter.config_text"
+                language="json"
+                :options="editorOptions"
+            />
           </div>
         </div>
         <div v-else class="fill-width bg-card mt10 br5 flex-center">
           <el-text type="info">暂未配置</el-text>
         </div>
-
       </el-form-item>
     </el-form>
     <template #footer>
@@ -268,15 +363,34 @@ const appendPostFilter = (plugin: any) => {
     align-items: center;
     justify-content: center;
     width: 100px;
-    height: 50px;
+    height: 34px;
     margin: 0 10px 10px 0;
     text-align: center;
     border-radius: 4px;
     background: var(--el-color-primary-light-9);
     color: var(--el-color-primary);
     cursor: pointer;
+
+    &.active {
+      background: var(--el-color-primary);
+      color: #ffffff;
+    }
   }
 }
 
+
+:deep(.monaco-editor-container) {
+  height: 200px;
+  border: 1px solid var(--el-border-color);
+  border-radius: 5px;
+
+  .monaco-editor {
+    border-radius: 5px;
+  }
+
+  .overflow-guard {
+    border-radius: 5px;
+  }
+}
 
 </style>
