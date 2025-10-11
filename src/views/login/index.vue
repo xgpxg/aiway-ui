@@ -54,8 +54,11 @@ const login = () => {
   <div class="login-container">
     <div class="login-box">
       <div class="login-header">
-        <h1 class="title">Aiway 登录</h1>
-        <p class="subtitle">AI网关</p>
+        <h1 class="title flex-center">
+          <el-image src="/images/logo.png" style="height: 30px" class="mr10"></el-image>
+          登录
+        </h1>
+<!--        <p class="subtitle">高性能AI网关</p>-->
       </div>
 
       <el-form

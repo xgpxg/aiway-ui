@@ -2,7 +2,7 @@
   <div class="menu">
     <div class="logo">
       <div class="flex-center" v-if="!collapse">
-        AIWAY {{ version }}
+        <el-image src="/public/images/logo.png" style="height: 22px" class="mr10"></el-image> {{ version }}
       </div>
       <div v-else>
         <el-image
@@ -182,7 +182,7 @@ export default {
 
 .logo {
   font-weight: bold;
-  padding: 10px 20px;
+  padding: 20px 20px 0 20px;
   font-size: 18px;
   height: 38px;
   color: #409eff;
