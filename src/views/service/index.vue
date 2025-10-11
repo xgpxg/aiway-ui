@@ -10,7 +10,8 @@ const page = ref({
   total: 0
 })
 const form = ref({
-  filter_text: null
+  filter_text: null,
+  status: null
 })
 onMounted(() => {
   loadServices()
@@ -18,7 +19,8 @@ onMounted(() => {
 const loadServices = () => {
   R.postJson('/api/service/list', {
     page: page.value,
-    filter_text: form.value.filter_text
+    filter_text: form.value.filter_text,
+    status: form.value.status
   }).then(res => {
     services.value = res.data.list
     page.value.total = res.data.total
@@ -54,7 +56,12 @@ const updateStatus = (route: any, status: string) => {
 <template>
   <div class="pd20">
     <div class="flex-v">
-      <el-input v-model="form.filter_text" prefix-icon="search" placeholder="搜索服务名称"
+      <el-select v-model="form.status" @change="loadServices" placeholder="状态" style="width: 200px" class="mr10"
+                 clearable>
+        <el-option label="启用" value="Ok"></el-option>
+        <el-option label="停用" value="Disable"></el-option>
+      </el-select>
+      <el-input v-model="form.filter_text" prefix-icon="search" placeholder="搜索服务名称/描述"
                 @input="loadServices"></el-input>
       <el-button class="ml20" icon="search" @click="loadServices">查询</el-button>
       <el-button class="ml20" icon="plus" type="primary" @click="addServiceRef.show()">添加服务</el-button>
