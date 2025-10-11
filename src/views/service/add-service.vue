@@ -19,9 +19,7 @@ const defaultForm = {
   nodes: [null],
   lb: 'random',
 }
-const form = ref({
-  ...defaultForm
-})
+const form = ref(structuredClone(defaultForm))
 const formRef = ref()
 const rules = {
   name: [
@@ -66,7 +64,8 @@ watch(value, (newVal: any) => {
 })
 
 const reset = () => {
-  form.value = defaultForm
+  form.value = structuredClone(defaultForm)
+  value.value = null
 }
 </script>
 

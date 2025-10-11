@@ -208,7 +208,7 @@ const reset = () => {
       </el-form-item>
       <div class="title-block">目标服务</div>
       <el-form-item label="关联服务" prop="service">
-        <service-select v-model="form.service" placeholder="关联服务"></service-select>
+        <service-select v-model="form.service" status="Ok" placeholder="关联服务"></service-select>
       </el-form-item>
       <div class="title-block">匹配规则</div>
       <el-form-item label="路径匹配" prop="path">

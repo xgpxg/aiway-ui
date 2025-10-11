@@ -40,6 +40,15 @@ const toEdit = (service: any) => {
   currService.value = {...service}
   addServiceRef.value.show()
 }
+
+const updateStatus = (route: any, status: string) => {
+  R.postJson('/api/service/update_status', {
+    id: route.id,
+    status: status
+  }).then(() => {
+    loadServices()
+  })
+}
 </script>
 
 <template>
@@ -52,20 +61,40 @@ const toEdit = (service: any) => {
     </div>
     <div class="mt20">
       <el-table :data="services">
-        <el-table-column label="服务名" width="200" prop="name"></el-table-column>
-        <el-table-column label="描述" width="200" prop="description"></el-table-column>
-        <el-table-column label="节点" >
+        <el-table-column label="服务名" width="200" prop="name" show-overflow-tooltip></el-table-column>
+        <el-table-column label="描述" width="200" prop="description" show-overflow-tooltip></el-table-column>
+        <el-table-column label="节点" min-width="200">
           <template #default="{row}">
-            <el-tag v-for="node in row.nodes">
-              {{ node }}
-            </el-tag>
+            <div class="node-tags-container">
+              <el-tag
+                  v-for="(node, index) in row.nodes"
+                  :key="index"
+                  effect="plain"
+                  class="node-tag" color="var(--el-color-primary-light-12)"
+              >
+                {{ node }}
+              </el-tag>
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="负载策略" width="120" prop="lb"></el-table-column>
-        <el-table-column label="状态" width="120" prop="status"></el-table-column>
-        <el-table-column label="创建时间" width="170" prop="create_time"></el-table-column>
-        <el-table-column label="操作" width="120">
+        <el-table-column label="状态" width="80" prop="status">
           <template #default="{row}">
+            <el-text v-if="row.status==='Ok'" type="success">已启用</el-text>
+            <el-text v-if="row.status==='Disable'" type="danger">已停用</el-text>
+          </template>
+        </el-table-column>
+        <el-table-column label="更新时间" width="160" prop="create_time">
+          <template #default="{row}">
+            {{ row.update_time || row.create_time }}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="150">
+          <template #default="{row}">
+            <el-button v-if="row.status === 'Disable'" type="primary" link @click="updateStatus(row,'Ok')">启用
+            </el-button>
+            <el-button v-if="row.status === 'Ok'" type="primary" link @click="updateStatus(row,'Disable')">停用
+            </el-button>
             <el-button type="primary" link @click="toEdit(row)">编辑</el-button>
             <el-popconfirm title="确定删除吗？" @confirm="deleteService(row)">
               <template #reference>
@@ -91,5 +120,14 @@ const toEdit = (service: any) => {
 </template>
 
 <style scoped lang="scss">
+.node-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
 
+.node-tag {
+  margin: 2px 0;
+}
 </style>

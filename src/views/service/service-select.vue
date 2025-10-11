@@ -2,6 +2,12 @@
 import {onMounted, ref} from "vue";
 import {R} from "../../utils/R";
 
+const props = defineProps({
+  status: {
+    type: String,
+    required: false,
+  }
+})
 const services = ref([])
 const page = ref({
   page_num: 1,
@@ -17,7 +23,8 @@ onMounted(() => {
 const loadServices = () => {
   R.postJson('/api/service/list', {
     page: page.value,
-    filter_text: form.value.filter_text
+    filter_text: form.value.filter_text,
+    status: props.status
   }).then(res => {
     services.value = res.data.list
     page.value.total = res.data.total
