@@ -289,6 +289,13 @@ const reset = () => {
                 <div class="plugin-item" @click="activePreFilter = element"
                      :class="{active:activePreFilter?.name === element.name}">
                   {{ element.name }}
+
+                  <el-button @click.stop="form.pre_filters.splice(index, 1)"
+                             class="remove-btn"
+                             link
+                             icon="close"
+                             size="small">
+                  </el-button>
                 </div>
               </template>
             </draggable>
@@ -323,6 +330,13 @@ const reset = () => {
                 <div class="plugin-item" @click="activePostFilter = element"
                      :class="{active:activePostFilter?.name === element.name}">
                   {{ element.name }}
+
+                  <el-button @click.stop="form.post_filters.splice(index, 1)"
+                             class="remove-btn"
+                             link
+                             icon="close"
+                             size="small">
+                  </el-button>
                 </div>
               </template>
             </draggable>
@@ -364,16 +378,45 @@ const reset = () => {
     justify-content: center;
     width: 100px;
     height: 34px;
-    margin: 0 10px 10px 0;
+    margin: 5px 10px 10px 0;
     text-align: center;
     border-radius: 4px;
     background: var(--el-color-primary-light-9);
     color: var(--el-color-primary);
     cursor: pointer;
+    position: relative;
+
 
     &.active {
       background: var(--el-color-primary);
       color: #ffffff;
+    }
+
+    &:hover {
+      .remove-btn {
+        display: flex;
+      }
+    }
+
+
+    .remove-btn {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 12px;
+      height: 12px;
+      background: #aaa;
+      border-radius: 50%;
+      color: white;
+      display: none;
+
+      :deep(.el-icon) {
+        font-size: 12px;
+      }
+
+      &:hover {
+        scale: 1.2;
+      }
     }
   }
 }
