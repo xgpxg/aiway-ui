@@ -2,6 +2,8 @@
 
 import {onMounted, ref} from "vue";
 import {R} from "../../utils/R";
+import AddPlugin from "./add-plugin.vue";
+import AddService from "../service/add-service.vue";
 
 const plugins = ref([])
 const page = ref({
@@ -24,14 +26,18 @@ const loadPlugins = () => {
     page.value.total = res.data.total
   })
 }
+
+const addPluginRef = ref()
+const currPlugin = ref()
 </script>
 
 <template>
   <div class="pd20">
     <div class="flex-v">
-      <el-input prefix-icon="search" placeholder="搜索插件名称"></el-input>
+      <el-input v-model="form.filter_text" prefix-icon="search" placeholder="搜索插件名称"
+                @input="loadPlugins"></el-input>
       <el-button class="ml20" icon="search" @click="loadPlugins">查询</el-button>
-      <el-button class="ml20" icon="plus" type="primary">添加插件</el-button>
+      <el-button class="ml20" icon="plus" type="primary" @click="addPluginRef.show()">添加插件</el-button>
     </div>
     <div class="mt20">
       <el-table :data="plugins">
@@ -54,6 +60,7 @@ const loadPlugins = () => {
       </el-table>
     </div>
   </div>
+  <add-plugin ref="addPluginRef" v-model:value="currPlugin" @close="loadPlugins"></add-plugin>
 </template>
 
 <style scoped lang="scss">
