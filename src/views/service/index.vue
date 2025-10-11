@@ -61,20 +61,14 @@ const updateStatus = (route: any, status: string) => {
     </div>
     <div class="mt20">
       <el-table :data="services">
-        <el-table-column label="服务名" width="200" prop="name" show-overflow-tooltip></el-table-column>
-        <el-table-column label="描述" width="200" prop="description" show-overflow-tooltip></el-table-column>
-        <el-table-column label="节点" min-width="200">
+        <el-table-column label="服务名称" width="200" prop="name" show-overflow-tooltip></el-table-column>
+        <el-table-column label="服务描述" width="200" prop="description" show-overflow-tooltip></el-table-column>
+        <el-table-column label="服务节点" min-width="200" show-overflow-tooltip>
           <template #default="{row}">
-            <div class="node-tags-container">
-              <el-tag
-                  v-for="(node, index) in row.nodes"
-                  :key="index"
-                  effect="plain"
-                  class="node-tag" color="var(--el-color-primary-light-12)"
-              >
-                {{ node }}
-              </el-tag>
-            </div>
+            <el-text v-for="(node, index) in row.nodes">
+              {{ node }}
+              <el-divider direction="vertical" v-if="index < row.nodes.length - 1"></el-divider>
+            </el-text>
           </template>
         </el-table-column>
         <el-table-column label="负载策略" width="120" prop="lb"></el-table-column>
@@ -120,14 +114,5 @@ const updateStatus = (route: any, status: string) => {
 </template>
 
 <style scoped lang="scss">
-.node-tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  align-items: center;
-}
 
-.node-tag {
-  margin: 2px 0;
-}
 </style>
