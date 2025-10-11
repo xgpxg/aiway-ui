@@ -277,6 +277,9 @@ const reset = () => {
           <div class="flex-space-between">
             <div class="fill-width">
               前置过滤器
+              <help-tip placement="top-start">
+                <p>前置过滤器插件在调用目标服务之前执行，在此可以修改请求路径、请求头、参数等。</p>
+              </help-tip>
               <el-text type="info" class="ml10" size="small">拖动可调整顺序</el-text>
             </div>
             <plugin-dropdown @select="appendPreFilter"></plugin-dropdown>
@@ -318,6 +321,9 @@ const reset = () => {
           <div class="flex-space-between">
             <div class="fill-width">
               后置过滤器
+              <help-tip placement="top-start">
+                <p>后置过滤器插件在网关返回响应前执行，在此可以修改响应头、响应参数据等。</p>
+              </help-tip>
               <el-text type="info" class="ml10" size="small">拖动可调整顺序</el-text>
             </div>
             <plugin-dropdown @select="appendPostFilter"></plugin-dropdown>
