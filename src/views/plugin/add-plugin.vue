@@ -116,8 +116,8 @@ const editorOptions = {
   <el-drawer v-model="isShow" :title="value ? '修改插件' : '添加插件'" size="500" destroy-on-close @closed="reset">
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
       <el-form-item label="插件名称" prop="name">
-        <el-input v-model="form.name" placeholder="填写插件名称，建议使用英文名称" maxlength="100"
-                  show-word-limit></el-input>
+        <el-input v-model="form.name" placeholder="填写插件名称，新增后不可修改" maxlength="100"
+                  show-word-limit :disabled="!!value"></el-input>
       </el-form-item>
       <el-form-item label="插件功能" prop="description">
         <el-input v-model="form.description" placeholder="简要描述插件功能" maxlength="500" show-word-limit></el-input>

@@ -266,6 +266,10 @@
       background: #fff3f3;
     }
   }
+
+  .el-input.is-disabled .el-input__inner {
+    -webkit-text-fill-color: var(--el-input-text-color);
+  }
 }
 
 
