@@ -28,6 +28,9 @@ const rules = {
   name: [
     {required: true, message: '请输入名称', trigger: 'blur'},
   ],
+  description: [
+    {required: true, message: '请简要描述插件功能', trigger: 'blur'},
+  ],
   version: [
     {required: true, message: '请输入版本号', trigger: 'blur'},
   ],

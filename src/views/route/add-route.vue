@@ -31,9 +31,7 @@ const defaultForm = {
   pre_filters: [],
   post_filters: [],
 }
-const form = ref({
-  ...defaultForm
-})
+const form = ref(structuredClone(defaultForm))
 const rules = {
   name: [
     {required: true, message: '请输入路由名称', trigger: 'blur'},
@@ -193,6 +191,7 @@ const editorOptions = {
 const reset = () => {
   activePreFilter.value = null
   activePostFilter.value = null
+  form.value = structuredClone(defaultForm)
 }
 </script>
 
