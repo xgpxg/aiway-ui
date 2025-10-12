@@ -29,6 +29,10 @@ export default defineConfig(async () => ({
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, "/")
             },
-        }
+            '/file/': {
+                target: 'http://localhost:6000',
+                changeOrigin: true,
+            },
+        },
     },
 }));

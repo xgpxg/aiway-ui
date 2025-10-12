@@ -1,6 +1,6 @@
 import axios from 'axios'
 import qs from 'qs';
-import {ElLoading, ElMessage, ElMessageBox, ElNotification} from 'element-plus'
+import {ElLoading, ElMessage, ElMessageBox} from 'element-plus'
 import {U} from "./util";
 import store from "@/store";
 
@@ -37,11 +37,19 @@ export const R = {
         return this.ajax(params, extendParam);
     },
     post: function (url, param, extendParam) {
-        var params = {
+        const params = {
             url,
             method: 'POST'
         };
-        if (param) params.data = qs.stringify(param);
+        if (param) {
+            const formData = new FormData();
+            Object.keys(param).forEach(key => {
+                if (param[key]) {
+                    formData.append(key, param[key]);
+                }
+            });
+            params.data = formData;
+        }
         return this.ajax(params, extendParam);
     },
     postJson: function (url, paramJson, extendParam) {
@@ -86,6 +94,66 @@ export const R = {
 
         };
         return this.ajax(params, {});
+    },
+    /**
+     * 下载文件
+     * @param api
+     * 请求地址,必填
+     * @param method
+     * 请求方式:只支持GET或POST,,可选,默认GET
+     * @param params
+     * 请求参数:GET请求追加在URL后,POST放在body中,可选
+     * @param headers
+     * 请求头,可选
+     */
+    download(api, method = 'get', params, headers) {
+        let r
+        if (method.toLowerCase() === 'post') {
+            r = axios.post(api, params, {
+                responseType: 'blob',
+                headers: {
+                    'Content-Type': 'application/json; application/octet-stream',
+                    ...headers
+                }
+            })
+        } else if (!method || method.toLowerCase() === 'get') {
+            r = axios.get(api, {
+                params: params,
+                responseType: 'blob',
+                headers: {
+                    'Content-Type': 'application/json; application/octet-stream',
+                    ...headers
+                }
+            })
+        } else {
+            console.error('只支持以GET或POST请求方式下载')
+            return
+        }
+
+        r.then((res) => {
+            const {data, headers} = res
+            if (headers['error-msg']) {
+                this.$message({
+                    type: 'error',
+                    message: decodeURIComponent(headers['error-msg']).replace(/[+]/g, ' ')
+                })
+                return false
+            }
+            const fileName = api.substring(api.lastIndexOf('/') + 1).substring(20)
+            const blob = new Blob([data], {type: 'application/vnd.ms-excel'})
+            const dom = document.createElement('a')
+            const url = window.URL.createObjectURL(blob)
+            dom.href = url
+            dom.download = decodeURI(fileName)
+            dom.style.display = 'none'
+            document.body.appendChild(dom)
+            dom.click()
+            dom.parentNode.removeChild(dom)
+            window.URL.revokeObjectURL(url)
+        }).catch((err) => {
+            console.error(err)
+            ElMessage.error(err)
+        })
     },
     ajax: function (param, extendParam) {
         let params = this.extend({}, DefaultParam, param, extendParam || {});
