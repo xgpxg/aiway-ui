@@ -73,8 +73,8 @@ const reset = () => {
   <el-drawer v-model="isShow" :title="value ? '修改服务' : '添加服务'" size="500" destroy-on-close @closed="reset">
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
       <el-form-item label="服务名称" prop="name">
-        <el-input v-model="form.name" placeholder="填写服务名称，建议使用英文名称" maxlength="100"
-                  show-word-limit></el-input>
+        <el-input v-model="form.name" placeholder="填写服务名称，新增后不可修改" maxlength="100"
+                  show-word-limit :disabled="!!value"></el-input>
       </el-form-item>
       <el-form-item label="服务描述" prop="description">
         <el-input v-model="form.description" placeholder="填写服务描述" maxlength="500" show-word-limit></el-input>
