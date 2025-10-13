@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
 import {R} from "../../utils/R";
-import HelpTip from "../../components/Tip/HelpTip.vue";
 
 const value = defineModel('value')
 
@@ -47,7 +46,13 @@ const save = () => {
     } else {
       api = '/api/service/add'
     }
-    R.postJson(api, form.value).then(res => {
+    R.postJson(api, {
+      id: value.value.id,
+      name: form.value.name,
+      description: form.value.description,
+      nodes: form.value.nodes,
+      lb: form.value.lb,
+    }).then(res => {
       if (res.code === 0) {
         isShow.value = false
       }

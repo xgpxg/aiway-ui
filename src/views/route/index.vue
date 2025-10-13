@@ -62,11 +62,10 @@ const updateStatus = (route: any, status: string) => {
 <template>
   <div class="pd20">
     <div class="flex-v">
-      <el-select placeholder="域名" style="width: 200px" class="mr10" clearable></el-select>
       <service-select v-model="form.service" @change="loadRoutes" placeholder="关联服务" clearable style="width: 200px"
                       class="mr10"></service-select>
       <el-input v-model="form.filter_text" @input="loadRoutes" prefix-icon="search"
-                placeholder="搜索路由名称/匹配规则/关联服务"></el-input>
+                placeholder="搜索路由名称/匹配规则/关联服务/域名"></el-input>
       <el-button class="ml10" icon="search" @click="loadRoutes">查询</el-button>
       <el-button class="ml10" icon="plus" type="primary" @click="addRouteRef.show()">添加路由</el-button>
     </div>
