@@ -56,6 +56,14 @@ const routes = [
                 meta: {
                     title: '网关日志'
                 }
+            },
+            {
+                path: 'apikey',
+                name: 'ApiKey',
+                component: () => import('@/views/apikey/index.vue'),
+                meta: {
+                    title: '密钥管理'
+                }
             }
         ]
     }

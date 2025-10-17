@@ -50,7 +50,7 @@
       </el-menu-item-group>
 
       <el-menu-item-group title="安全">
-        <el-menu-item index="/key">
+        <el-menu-item index="/apikey">
           <el-icon>
             <svg-icon icon-class="key"></svg-icon>
           </el-icon>

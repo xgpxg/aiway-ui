@@ -47,7 +47,7 @@ const save = () => {
       api = '/api/service/add'
     }
     R.postJson(api, {
-      id: value.value.id,
+      id: value.value?.id,
       name: form.value.name,
       description: form.value.description,
       nodes: form.value.nodes,
