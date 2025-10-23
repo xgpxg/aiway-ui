@@ -46,9 +46,9 @@ const loadLogs = () => {
       <el-date-picker v-model="form.start_time" @change="loadLogs" class="mr20" type="datetime" style="width: 450px"
                       placeholder="开始时间" value-format="YYYY-MM-DDTHH:mm:ss.SSS"></el-date-picker>
       <el-date-picker v-model="form.end_time" @change="loadLogs" class="mr20" type="datetime" style="width: 450px"
-                      placeholder="结束时间"></el-date-picker>
+                      placeholder="结束时间" value-format="YYYY-MM-DDTHH:mm:ss.SSS"></el-date-picker>
       <el-input v-model="form.filter_text" @input="loadLogs" prefix-icon="search"
-                placeholder="搜索日志关键字"></el-input>
+                placeholder="搜索日志关键字" clearable></el-input>
       <el-button class="ml20" icon="search" @click="loadLogs" type="primary">查询</el-button>
       <el-button class="ml20">
         <svg-icon icon-class="clean"></svg-icon>
@@ -67,7 +67,11 @@ const loadLogs = () => {
           </template>
         </el-table-column>
         <el-table-column label="来源服务" prop="service" width="120"></el-table-column>
-        <el-table-column label="内容" prop="message"></el-table-column>
+        <el-table-column label="内容" prop="message">
+          <template #default="{row}">
+           <el-text truncated line-clamp="3">{{row.message}}</el-text>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="200"></el-table-column>
       </el-table>
       <el-pagination
