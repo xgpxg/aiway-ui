@@ -32,6 +32,13 @@ const loadLogs = () => {
     page.value.total = res.data.total
   })
 }
+
+const isShowViewLogDialog = ref(false)
+const currLog = ref(null)
+const toView = (log: any) => {
+  currLog.value = log
+  isShowViewLogDialog.value = true
+}
 </script>
 
 <template>
@@ -69,10 +76,14 @@ const loadLogs = () => {
         <el-table-column label="来源服务" prop="service" width="120"></el-table-column>
         <el-table-column label="内容" prop="message">
           <template #default="{row}">
-           <el-text truncated line-clamp="3">{{row.message}}</el-text>
+            <el-text truncated line-clamp="3">{{ row.message }}</el-text>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200"></el-table-column>
+        <el-table-column label="操作" width="80">
+          <template #default="{row}">
+            <el-button type="primary" link @click="toView(row)">查看</el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <el-pagination
           background
@@ -86,6 +97,24 @@ const loadLogs = () => {
       </el-pagination>
     </div>
   </div>
+  <el-dialog v-model="isShowViewLogDialog" title="日志详情" destroy-on-close>
+    <div class="pd20">
+      <div class="bg-card">
+        级别：
+        <el-text v-if="currLog.level === 'DEBUG'" type="info" class="mr10">{{ currLog.level }}</el-text>
+        <el-text v-if="currLog.level === 'INFO'" type="primary" class="mr10">{{ currLog.level }}</el-text>
+        <el-text v-if="currLog.level === 'WARN'" type="warning" class="mr10">{{ currLog.level }}</el-text>
+        <el-text v-if="currLog.level === 'ERROR'" type="danger" class="mr10">{{ currLog.level }}</el-text>
+        <el-divider direction="vertical"></el-divider>
+        来源服务：
+        <el-text class="mr10">{{ currLog.service }}</el-text>
+        <el-text type="info" class=" fr">{{ currLog.time }}</el-text>
+      </div>
+      <div class="mt10 bg-card">
+        <el-text>{{ currLog.message }}</el-text>
+      </div>
+    </div>
+  </el-dialog>
 </template>
 
 <style scoped lang="scss">
