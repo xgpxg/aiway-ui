@@ -56,7 +56,7 @@
           </el-icon>
           <span>密钥管理</span>
         </el-menu-item>
-        <el-menu-item index="/security">
+        <el-menu-item index="/firewall">
           <el-icon>
             <svg-icon icon-class="security"></svg-icon>
           </el-icon>

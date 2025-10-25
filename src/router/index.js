@@ -64,6 +64,14 @@ const routes = [
                 meta: {
                     title: '密钥管理'
                 }
+            },
+            {
+                path: 'firewall',
+                name: 'Firewall',
+                component: () => import('@/views/firewall/index.vue'),
+                meta: {
+                    title: '防火墙'
+                }
             }
         ]
     }
