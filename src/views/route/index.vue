@@ -3,6 +3,7 @@ import {onMounted, ref} from "vue";
 import {R} from "../../utils/R";
 import AddRoute from "./add-route.vue";
 import ServiceSelect from "../service/service-select.vue";
+import SvgIcon from "../../components/SvgIcon/index.vue";
 
 const routes = ref([])
 const page = ref({
@@ -68,6 +69,12 @@ const updateStatus = (route: any, status: string) => {
                 placeholder="搜索路由名称/匹配规则/关联服务/域名"></el-input>
       <el-button class="ml10" icon="search" @click="loadRoutes">查询</el-button>
       <el-button class="ml10" icon="plus" type="primary" @click="addRouteRef.show()">添加路由</el-button>
+      <el-button class="ml10" @click="">
+        <el-icon class="mr5">
+          <svg-icon icon-class="plugin"></svg-icon>
+        </el-icon>
+        路由全局插件
+      </el-button>
     </div>
     <div class="mt20">
       <el-table :data="routes">

@@ -72,6 +72,14 @@ const routes = [
                 meta: {
                     title: '防火墙'
                 }
+            },
+            {
+                path: 'setting',
+                name: 'Setting',
+                component: () => import('@/views/system/setting.vue'),
+                meta: {
+                    title: '系统设置'
+                }
             }
         ]
     }
