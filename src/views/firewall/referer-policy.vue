@@ -35,7 +35,7 @@ const update = () => {
                     :disabled="value['referer_policy'] === 'Disable'"></el-input-tag>
     </el-form-item>
     <el-form-item label="">
-      <el-button type="primary" @click="update">更新</el-button>
+      <el-button type="primary" @click="update">保存</el-button>
     </el-form-item>
   </el-form>
 

@@ -3,6 +3,7 @@ import {onMounted, ref, watch} from "vue";
 import IpPolicy from "./ip-policy.vue";
 import RefererPolicy from "./referer-policy.vue";
 import {R} from "../../utils/R";
+import Traffic from "./traffic.vue";
 
 const activeIndex = ref('100');
 
@@ -43,15 +44,13 @@ watch(activeIndex, () => {
             <el-menu-item index="200">
               网关流量
             </el-menu-item>
-            <el-menu-item index="201">
-              异常流量
-            </el-menu-item>
           </el-menu-item-group>
         </el-menu>
       </el-col>
       <el-col :span="21">
         <ip-policy v-model="firewall" v-if="activeIndex === '100'"></ip-policy>
         <referer-policy v-model="firewall" v-if="activeIndex === '101'"></referer-policy>
+        <traffic v-model="firewall" v-if="activeIndex === '200'"></traffic>
       </el-col>
     </el-row>
   </div>

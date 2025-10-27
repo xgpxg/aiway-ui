@@ -29,13 +29,13 @@ const update = () => {
                     :disabled="value['ip_policy_mode'] === 'Disable'"></el-input-tag>
     </el-form-item>
     <el-form-item label="受信IP">
-      <el-input-tag v-model="value['ip_policy']" type="textarea"
+      <el-input-tag v-model="value['trust_ips']" type="textarea"
                     placeholder="填写受信IP，例如：192.168.1.1"
                     rows="5" @keydown.enter.prevent></el-input-tag>
       <el-text type="info" size="small">受信IP不受防火墙限制，请谨慎使用，建议只允许已知的内网IP作为受信IP。</el-text>
     </el-form-item>
     <el-form-item label="">
-      <el-button type="primary" @click="update">更新</el-button>
+      <el-button type="primary" @click="update">保存</el-button>
     </el-form-item>
   </el-form>
 </template>
