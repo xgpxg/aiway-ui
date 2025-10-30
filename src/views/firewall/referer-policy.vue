@@ -18,15 +18,15 @@ const update = () => {
   <el-form label-position="left" label-width="80" @submit.prevent>
     <el-form-item label="访问策略">
       <el-radio-group v-model="value['referer_policy_mode']">
-        <el-radio value="Disable">关闭</el-radio>
-        <el-radio value="Allow">允许</el-radio>
-        <el-radio value="Deny">拒绝</el-radio>
+        <el-radio-button value="Disable">关闭</el-radio-button>
+        <el-radio-button value="Allow">允许</el-radio-button>
+        <el-radio-button value="Deny">拒绝</el-radio-button>
       </el-radio-group>
     </el-form-item>
     <el-form-item label="空Referer">
       <el-radio-group v-model="value['allow_empty_referer']">
-        <el-radio :value="false">不允许</el-radio>
-        <el-radio :value="true">允许</el-radio>
+        <el-radio-button :value="false">不允许</el-radio-button>
+        <el-radio-button :value="true">允许</el-radio-button>
       </el-radio-group>
     </el-form-item>
     <el-form-item label="策略值">
