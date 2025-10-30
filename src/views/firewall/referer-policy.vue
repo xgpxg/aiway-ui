@@ -6,7 +6,7 @@ import {R} from "../../utils/R";
 const value = defineModel()
 const update = () => {
   R.postJson('/api/firewall/update', value.value).then(res => {
-    if(res.code===0){
+    if (res.code === 0) {
       ElMessage.success('防火墙配置已更新')
     }
   })

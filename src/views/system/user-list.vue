@@ -3,6 +3,7 @@ import {onMounted, ref} from "vue";
 import {R} from "../../utils/R";
 import AddUser from "./add-user.vue";
 import ResetPassword from "./reset-password.vue";
+import UpdateUser from "./update-user.vue";
 
 const users = ref([])
 const page = ref({
@@ -38,11 +39,16 @@ const deleteUser = (row: any) => {
 
 const addUserRef = ref()
 const resetPasswordRef = ref()
+const updateUserRef = ref()
 
 const currUser = ref()
 const toResetPassword = (row: any) => {
   currUser.value = {...row}
   resetPasswordRef.value.show()
+}
+const toEdit = (row: any) => {
+  currUser.value = {...row}
+  updateUserRef.value.show()
 }
 </script>
 
@@ -98,7 +104,8 @@ const toResetPassword = (row: any) => {
   </div>
 
   <add-user ref="addUserRef" @close="loadUsers"></add-user>
-  <reset-password ref="resetPasswordRef" v-model="currUser"></reset-password>
+  <reset-password ref="resetPasswordRef" v-model="currUser" @close="loadUsers"></reset-password>
+  <update-user ref="updateUserRef" v-model="currUser" @close="loadUsers"></update-user>
 </template>
 
 <style scoped lang="scss">

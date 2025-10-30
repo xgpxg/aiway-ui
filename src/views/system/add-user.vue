@@ -71,16 +71,16 @@ const reset = () => {
 <template>
   <el-dialog v-model="isShow" :title="value ? '添加用户' : '修改用户'" width="500" destroy-on-close @closed="reset">
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
-      <el-form-item label="用户名" prop="name">
+      <el-form-item label="用户名" prop="username">
         <el-input v-model="form.username" placeholder="请填写用户名" maxlength="100"
-                  show-word-limit :disabled="!!value"></el-input>
-      </el-form-item>
-      <el-form-item label="昵称" prop="nickname">
-        <el-input v-model="form.nickname" placeholder="请填写昵称" maxlength="100"
-                  show-word-limit :disabled="!!value"></el-input>
+                  show-word-limit :disabled="!!value" type="password"></el-input>
       </el-form-item>
       <el-form-item label="登录密码" prop="password">
         <el-input v-model="form.password" placeholder="请填写登录密码" minlength="6" maxlength="100"
+                  show-word-limit :disabled="!!value"></el-input>
+      </el-form-item>
+      <el-form-item label="昵称" prop="nickname">
+        <el-input v-model="form.nickname" placeholder="请填写昵称，可选，默认与用户名相同" maxlength="100"
                   show-word-limit :disabled="!!value"></el-input>
       </el-form-item>
     </el-form>
