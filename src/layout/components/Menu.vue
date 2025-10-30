@@ -65,18 +65,18 @@
       </el-menu-item-group>
 
       <el-menu-item-group title="系统">
-        <el-menu-item index="/user">
+        <el-menu-item index="/users">
           <el-icon>
             <svg-icon icon-class="user"></svg-icon>
           </el-icon>
           <span>用户管理</span>
         </el-menu-item>
-        <el-menu-item index="/operation">
+<!--        <el-menu-item index="/operation">
           <el-icon>
             <svg-icon icon-class="log2"></svg-icon>
           </el-icon>
           <span>操作日志</span>
-        </el-menu-item>
+        </el-menu-item>-->
         <el-menu-item index="/setting">
           <el-icon>
             <svg-icon icon-class="setting"></svg-icon>

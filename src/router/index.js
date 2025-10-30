@@ -74,6 +74,14 @@ const routes = [
                 }
             },
             {
+                path: 'users',
+                name: 'Users',
+                component: () => import('@/views/system/user-list.vue'),
+                meta: {
+                    title: '用户管理'
+                }
+            },
+            {
                 path: 'setting',
                 name: 'Setting',
                 component: () => import('@/views/system/setting.vue'),
