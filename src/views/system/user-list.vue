@@ -2,6 +2,7 @@
 import {onMounted, ref} from "vue";
 import {R} from "../../utils/R";
 import AddUser from "./add-user.vue";
+import ResetPassword from "./reset-password.vue";
 
 const users = ref([])
 const page = ref({
@@ -36,6 +37,13 @@ const deleteUser = (row: any) => {
 }
 
 const addUserRef = ref()
+const resetPasswordRef = ref()
+
+const currUser = ref()
+const toResetPassword = (row: any) => {
+  currUser.value = {...row}
+  resetPasswordRef.value.show()
+}
 </script>
 
 <template>
@@ -56,7 +64,7 @@ const addUserRef = ref()
         </el-table-column>
         <el-table-column label="更新时间" width="200" prop="create_time">
           <template #default="{row}">
-            {{ row.update_time || row.create_time || '-' }}
+            {{ row.update_time || '-' }}
           </template>
         </el-table-column>
         <el-table-column label="最近登录时间" width="200" prop="last_login_time">
@@ -64,9 +72,10 @@ const addUserRef = ref()
             {{ row.last_login_time || '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120">
+        <el-table-column label="操作" width="200">
           <template #default="{row}">
             <el-button type="primary" link @click="toEdit(row)">编辑</el-button>
+            <el-button type="primary" link @click="toResetPassword(row)">重置密码</el-button>
             <el-popconfirm title="确定删除吗？" @confirm="deleteUser(row)">
               <template #reference>
                 <el-button type="danger" link>删除</el-button>
@@ -89,6 +98,7 @@ const addUserRef = ref()
   </div>
 
   <add-user ref="addUserRef" @close="loadUsers"></add-user>
+  <reset-password ref="resetPasswordRef" v-model="currUser"></reset-password>
 </template>
 
 <style scoped lang="scss">

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
 import {R} from "../../utils/R";
+import {U} from "../../utils/util";
+import {ElMessage} from "element-plus";
 
-const value = defineModel('value')
+const value = defineModel()
 
 const isShow = ref(false)
 const show = () => {
@@ -14,16 +16,11 @@ defineExpose({
 
 const defaultForm = {
   id: null,
-  username: null,
-  nickname: null,
   password: null,
 }
 const form = ref(structuredClone(defaultForm))
 const formRef = ref()
 const rules = {
-  username: [
-    {required: true, message: '请输入名称', trigger: 'blur'},
-  ],
   password: [
     {required: true, message: '请填写登录密码', trigger: 'blur'},
     {min: 6, message: '密码长度不能少于6位', trigger: 'blur'},
@@ -35,20 +32,13 @@ const save = () => {
     if (!ok) {
       return
     }
-    let api: string;
-    if (value.value) {
-      api = '/api/user/manage/update'
-    } else {
-      api = '/api/user/manage/add'
-    }
-    R.postJson(api, {
+    R.postJson('/api/user/manage/update/password', {
       id: value.value?.id,
-      username: form.value.username,
-      nickname: form.value.nickname,
       password: form.value.password,
     }).then(res => {
       if (res.code === 0) {
         isShow.value = false
+        ElMessage.success('密码重置成功，下次登录时生效')
       }
     })
   })
@@ -66,22 +56,24 @@ const reset = () => {
   form.value = structuredClone(defaultForm)
   value.value = null
 }
+
+const randomPassword = () => {
+  form.value.password = U.randomString(8)
+}
 </script>
 
 <template>
-  <el-dialog v-model="isShow" :title="value ? '添加用户' : '修改用户'" width="500" destroy-on-close @closed="reset">
+  <el-dialog v-model="isShow" title="重置登录密码" width="500" destroy-on-close @closed="reset">
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
       <el-form-item label="用户名" prop="name">
-        <el-input v-model="form.username" placeholder="请填写用户名" maxlength="100"
-                  show-word-limit :disabled="!!value"></el-input>
+        <el-text>{{ value?.username }}</el-text>
       </el-form-item>
-      <el-form-item label="昵称" prop="nickname">
-        <el-input v-model="form.nickname" placeholder="请填写昵称" maxlength="100"
-                  show-word-limit :disabled="!!value"></el-input>
-      </el-form-item>
-      <el-form-item label="登录密码" prop="password">
-        <el-input v-model="form.password" placeholder="请填写登录密码" minlength="6" maxlength="100"
-                  show-word-limit :disabled="!!value"></el-input>
+      <el-form-item label="新密码" prop="password">
+        <div class="flex-v fill-width">
+          <el-input v-model="form.password" placeholder="请填写或随机生成新密码" maxlength="100"
+                    show-word-limit :disabled="!value"></el-input>
+          <el-button class="ml10" @click="randomPassword">随机生成</el-button>
+        </div>
       </el-form-item>
     </el-form>
     <template #footer>
