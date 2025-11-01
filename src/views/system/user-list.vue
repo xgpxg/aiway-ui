@@ -57,6 +57,7 @@ const toEdit = (row: any) => {
     <div class="flex-v">
       <el-input v-model="form.filter_text" prefix-icon="search" placeholder="搜索用户名/昵称"
                 @input="loadUsers"></el-input>
+      <el-button class="ml20" icon="search" @click="loadUsers">查询</el-button>
       <el-button class="ml20" icon="plus" type="primary" @click="addUserRef.show()">添加用户</el-button>
     </div>
     <div class="mt20">
