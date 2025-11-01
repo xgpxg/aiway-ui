@@ -15,9 +15,6 @@ const activeIndex = ref('100')
             @select="(index) =>{activeIndex = index}"
         >
           <el-menu-item-group title="个性化">
-            <el-menu-item index="100">
-              主题颜色
-            </el-menu-item>
             <el-menu-item index="101">
               通知和提醒
             </el-menu-item>

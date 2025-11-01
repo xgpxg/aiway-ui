@@ -61,7 +61,7 @@ const reset = () => {
         <el-text>{{ value?.username }}</el-text>
       </el-form-item>
       <el-form-item label="昵称" prop="nickname">
-        <el-input v-model="form.nickname" placeholder="请填写昵称" maxlength="100"
+        <el-input v-model="form.nickname" placeholder="请填写昵称" maxlength="50"
                   show-word-limit :disabled="!value"></el-input>
       </el-form-item>
     </el-form>
