@@ -17,6 +17,9 @@ const activeIndex = ref('100')
         >
           <el-menu-item-group title="个性化">
             <el-menu-item index="100">
+              通用设置
+            </el-menu-item>
+            <el-menu-item index="101">
               通知和提醒
             </el-menu-item>
           </el-menu-item-group>
@@ -28,7 +31,7 @@ const activeIndex = ref('100')
         </el-menu>
       </el-col>
       <el-col :span="21">
-        <notify v-if="activeIndex==='100'"></notify>
+        <notify v-if="activeIndex==='101'"></notify>
       </el-col>
     </el-row>
   </div>
