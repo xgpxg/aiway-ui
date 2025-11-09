@@ -23,17 +23,17 @@
         <span>仪表盘</span>
       </el-menu-item>
       <el-menu-item-group title="网关">
-        <el-menu-item index="/route">
-          <el-icon>
-            <svg-icon icon-class="route"></svg-icon>
-          </el-icon>
-          <span>路由配置</span>
-        </el-menu-item>
         <el-menu-item index="/service">
           <el-icon>
             <svg-icon icon-class="service"></svg-icon>
           </el-icon>
           <span>服务管理</span>
+        </el-menu-item>
+        <el-menu-item index="/route">
+          <el-icon>
+            <svg-icon icon-class="route"></svg-icon>
+          </el-icon>
+          <span>路由配置</span>
         </el-menu-item>
         <el-menu-item index="/plugin">
           <el-icon>

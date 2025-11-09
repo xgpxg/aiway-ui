@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import Notify from "./notify.vue";
+import Common from "./common.vue";
 
 const activeIndex = ref('100')
 </script>
@@ -31,6 +32,7 @@ const activeIndex = ref('100')
         </el-menu>
       </el-col>
       <el-col :span="21">
+        <common v-if="activeIndex==='100'"></common>
         <notify v-if="activeIndex==='101'"></notify>
       </el-col>
     </el-row>

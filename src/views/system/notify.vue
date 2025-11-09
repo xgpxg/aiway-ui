@@ -49,6 +49,16 @@ const save = () => {
 <template>
   <div class="">
     <div class="title-block">
+      提醒内容
+    </div>
+    <div>
+      <el-text>
+        当系统发生异常时（如系统错误、网络异常、网关节点宕机、流量异常等），会通过以下方式进行通知，请根据实际情况进行配置。
+      </el-text>
+    </div>
+  </div>
+  <div class="mt20">
+    <div class="title-block">
       推送渠道
     </div>
   </div>
