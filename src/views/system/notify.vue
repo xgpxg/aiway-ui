@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import SvgIcon from "../../components/SvgIcon/index.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {R} from "../../utils/R";
 import {ElMessage} from "element-plus";
 
@@ -23,11 +23,27 @@ const form = ref({
     webhook: ''
   },
 })
-const save = () => {
-  R.post('/api/system/notify/config/update', form.value).then(res => {
-    ElMessage.success(res.msg)
+
+onMounted(() => {
+  loadConfig()
+})
+
+const loadConfig = () => {
+  R.get('/api/system/notify/config').then(res => {
+    if (res.code === 0) {
+      form.value = res.data
+    }
   })
 }
+
+const save = () => {
+  R.postJson('/api/system/notify/config/update', form.value).then(res => {
+    if (res.code === 0) {
+      ElMessage.success('已更新')
+    }
+  })
+}
+
 </script>
 
 <template>
