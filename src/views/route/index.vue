@@ -4,6 +4,7 @@ import {R} from "../../utils/R";
 import AddRoute from "./add-route.vue";
 import ServiceSelect from "../service/service-select.vue";
 import SvgIcon from "../../components/SvgIcon/index.vue";
+import GlobalPlugin from "./global-plugin.vue";
 
 const routes = ref([])
 const page = ref({
@@ -58,6 +59,9 @@ const updateStatus = (route: any, status: string) => {
     loadRoutes()
   })
 }
+
+
+const globalPluginRef = ref()
 </script>
 
 <template>
@@ -69,7 +73,7 @@ const updateStatus = (route: any, status: string) => {
                 placeholder="搜索路由名称/匹配规则/关联服务/域名"></el-input>
       <el-button class="ml10" icon="search" @click="loadRoutes">查询</el-button>
       <el-button class="ml10" icon="plus" type="primary" @click="addRouteRef.show()">添加路由</el-button>
-      <el-button class="ml10" @click="">
+      <el-button class="ml10" @click="globalPluginRef.show()">
         <el-icon class="mr5">
           <svg-icon icon-class="plugin"></svg-icon>
         </el-icon>
@@ -144,6 +148,7 @@ const updateStatus = (route: any, status: string) => {
     </div>
   </div>
   <add-route ref="addRouteRef" v-model:value="currRoute" @close="handleDrawerClose"></add-route>
+  <global-plugin ref="globalPluginRef"></global-plugin>
 </template>
 
 <style scoped lang="scss">

@@ -242,7 +242,7 @@ const reset = () => {
           </div>
         </template>
         <div v-if="headers.length===0" class="fill-width bg-card mt10 br5 flex-center">
-          <el-text type="info">暂未配置，请点击右侧按钮添加</el-text>
+          <el-text type="info">暂未配置</el-text>
         </div>
         <div v-for="header in headers" class="flex-space-between fill-width mb10">
           <el-input v-model="header.name" placeholder="名称"></el-input>
@@ -261,7 +261,7 @@ const reset = () => {
           </div>
         </template>
         <div v-if="queries.length===0" class="fill-width bg-card mt10 br5 flex-center">
-          <el-text type="info">暂未配置，请点击右侧按钮添加</el-text>
+          <el-text type="info">暂未配置</el-text>
         </div>
         <div v-for="query in queries" class="flex-space-between fill-width mb10">
           <el-input v-model="query.name" placeholder="名称"></el-input>

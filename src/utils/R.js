@@ -170,7 +170,7 @@ export const R = {
                 });
             }
             if (params.repeatable === false) {
-                this.addRequest(url);
+                // this.addRequest(url);
             }
         }
         let header = {
