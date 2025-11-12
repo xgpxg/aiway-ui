@@ -22,8 +22,8 @@ export default {
 .info-tip {
   background: #f5f7fa;
   border-radius: 5px;
-  padding: 0 10px;
-  height: 32px;
+  padding: 8px 10px;
+  line-height: 24px;
   font-size: 14px;
   color: #7e7e7e;
 }
