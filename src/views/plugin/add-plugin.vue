@@ -102,7 +102,7 @@ if (!window['MonacoEnvironment']) {
 }
 const editorOptions = {
   fontSize: 14,
-  minimap: {enabled: true},
+  minimap: {enabled: false},
   automaticLayout: true,
   padding: {
     top: 10,
@@ -151,6 +151,12 @@ const editorOptions = {
         <el-input v-model="form.version" placeholder="填写插件版本" maxlength="20" show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="默认配置" prop="default_config">
+        <template #label>
+          <div class="flex-space-between">
+            <span>默认配置</span>
+            <el-text type="info" size="small">仅支持JSON格式</el-text>
+          </div>
+        </template>
         <CodeEditor
             v-model:value="form.default_config"
             language="json"

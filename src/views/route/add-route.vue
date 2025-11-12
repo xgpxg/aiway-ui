@@ -180,7 +180,7 @@ if (!window['MonacoEnvironment']) {
 }
 const editorOptions = {
   fontSize: 14,
-  minimap: {enabled: true},
+  minimap: {enabled: false},
   automaticLayout: true,
   padding: {
     top: 10,
