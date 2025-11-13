@@ -21,6 +21,8 @@ const defaultForm = {
   file: null,
   // JSON字符串形式
   default_config: null,
+  document: '',
+  url: null
 }
 const form = ref(structuredClone(defaultForm))
 const formRef = ref()
@@ -56,7 +58,8 @@ const save = () => {
       description: form.value.description,
       version: form.value.version,
       file: form.value.file,
-      default_config: form.value.default_config
+      default_config: form.value.default_config,
+      document: form.value.document,
     }).then(res => {
       if (res.code === 0) {
         isShow.value = false
@@ -162,6 +165,10 @@ const editorOptions = {
             language="json"
             :options="editorOptions"
         />
+      </el-form-item>
+      <el-form-item label="插件说明" prop="document">
+        <el-input v-model="form.document" type="textarea" placeholder="填写插件说明"
+                  :autosize="{minRows: 3, maxRows: 10}"></el-input>
       </el-form-item>
     </el-form>
     <template #footer>
