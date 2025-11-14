@@ -41,6 +41,12 @@
           </el-icon>
           <span>插件管理</span>
         </el-menu-item>
+        <el-menu-item index="/monitor">
+          <el-icon>
+            <svg-icon icon-class="monitor"></svg-icon>
+          </el-icon>
+          <span>网关监控</span>
+        </el-menu-item>
         <el-menu-item index="/log">
           <el-icon>
             <svg-icon icon-class="log"></svg-icon>

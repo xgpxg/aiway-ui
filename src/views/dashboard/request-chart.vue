@@ -118,7 +118,7 @@ const initChart = () => {
       }
     ],
     grid: {
-      top: '16%',
+      top: '22%',
       left: '1%',
       right: '1%',
       bottom: '5%',
@@ -152,7 +152,7 @@ const initChart = () => {
   background: #ffffff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   #request-chart {
-    height: 400px;
+    height: 300px;
     width: 100%;
   }
 

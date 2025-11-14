@@ -23,16 +23,16 @@ const update = () => {
         <el-radio-button value="Deny">拒绝</el-radio-button>
       </el-radio-group>
     </el-form-item>
+    <el-form-item label="策略值">
+      <el-input-tag v-model="value['referer_policy']" type="textarea"
+                    placeholder="Referer策略值，例如：https://example.com" rows="10"
+                    :disabled="value['referer_policy'] === 'Disable'"></el-input-tag>
+    </el-form-item>
     <el-form-item label="空Referer">
       <el-radio-group v-model="value['allow_empty_referer']">
         <el-radio-button :value="false">不允许</el-radio-button>
         <el-radio-button :value="true">允许</el-radio-button>
       </el-radio-group>
-    </el-form-item>
-    <el-form-item label="策略值">
-      <el-input-tag v-model="value['referer_policy']" type="textarea"
-                    placeholder="Referer策略值，例如：https://example.com" rows="10"
-                    :disabled="value['referer_policy'] === 'Disable'"></el-input-tag>
     </el-form-item>
     <el-form-item label="">
       <el-button type="primary" @click="update">保存</el-button>

@@ -50,6 +50,14 @@ const routes = [
                 }
             },
             {
+                path: 'monitor',
+                name: 'Monitor',
+                component: () => import('@/views/monitor/index.vue'),
+                meta: {
+                    title: '网关监控'
+                }
+            },
+            {
                 path: 'log',
                 name: 'Log',
                 component: () => import('@/views/log/index.vue'),

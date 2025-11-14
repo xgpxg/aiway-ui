@@ -2,6 +2,7 @@
 import {onBeforeUnmount, onMounted, ref} from "vue";
 import {R} from "@/utils/R";
 import {U} from "@/utils/util";
+import SvgIcon from "../../components/SvgIcon/index.vue";
 
 const state = ref({
   node_count: 0,
@@ -42,55 +43,75 @@ onBeforeUnmount(() => {
     <el-row :gutter="20">
       <el-col :span="6">
         <div class="card">
-          <div class="title">
-            今日请求数：<span class="number">{{ state.request_today_count.toLocaleString() }}</span>
+          <div class="flex-space-between">
+            <div class="title">
+              <svg-icon icon-class="request-count" size="16" class="mr5"></svg-icon>
+              今日请求数
+            </div>
+            <span class="number">{{ state.request_today_count.toLocaleString() }}</span>
           </div>
           <div class="content">
             <div class="flex-space-between">
-              <el-text>累计：{{ U.simplifyNum(state.request_count, true) }}</el-text>
-              <el-text>异常(5xx)：{{ state.response_5xx_count.toLocaleString() }}</el-text>
+              <el-text size="small">累计：{{ U.simplifyNum(state.request_count, true) }}</el-text>
+              <el-text size="small" type="danger" class="cursor-pointer">
+                异常：{{ state.response_5xx_count.toLocaleString() }}
+              </el-text>
             </div>
           </div>
         </div>
       </el-col>
       <el-col :span="6">
         <div class="card">
-          <div class="title">
-            当前连接数：<span class="number">{{ state.http_connect_count.toLocaleString() }}</span>
+          <div class="flex-space-between">
+            <div class="title">
+              <svg-icon icon-class="connect-count" size="16" class="mr5"></svg-icon>
+              当前连接数
+            </div>
+            <span class="number">{{ state.http_connect_count.toLocaleString() }}</span>
           </div>
           <div class="content">
             <div class="flex-space-between">
-              <el-text>平均QPS：{{ state.avg_qps.toLocaleString() }}</el-text>
-              <el-text>短连接：11</el-text>
-              <el-text>SSE：21</el-text>
+              <el-text size="small">短连接：11</el-text>
+              <el-text size="small">SSE：21</el-text>
+              <el-text size="small">平均QPS：{{ state.avg_qps.toLocaleString() }}</el-text>
             </div>
           </div>
         </div>
       </el-col>
       <el-col :span="6">
         <div class="card">
-          <div class="title">
-            平均响应时间：<span class="number"> {{ state.avg_response_time.toLocaleString() }} ms</span>
+          <div class="flex-space-between">
+            <div class="title">
+              <svg-icon icon-class="avg-response-time" size="16" class="mr5"></svg-icon>
+              平均响应时间
+            </div>
+            <div>
+              <span class="number"> {{ state.avg_response_time.toLocaleString() }}</span>
+              <el-text type="info" class="ml10">ms</el-text>
+            </div>
           </div>
           <div class="content">
             <div class="flex-space-between">
-              <el-text type="warning">4xx：{{ state.response_4xx_count.toLocaleString() }}</el-text>
-              <el-text type="danger">5xx：{{ state.response_5xx_count.toLocaleString() }}</el-text>
-              <el-text>拦截：213</el-text>
+              <el-text size="small">网关响应：5 ms</el-text>
+              <el-text size="small">服务响应：20 ms</el-text>
             </div>
           </div>
         </div>
       </el-col>
       <el-col :span="6">
         <div class="card">
-          <div class="title">
-            网关状态：正常
+          <div class="flex-space-between">
+            <div class="title">
+              <svg-icon icon-class="gateway-status" size="16" class="mr5"></svg-icon>
+              网关状态
+            </div>
+            <span>正常</span>
           </div>
           <div class="content">
             <div class="flex-space-between">
-              <el-text>共 {{ state.node_count.toLocaleString() }} 个节点</el-text>
-              <el-text>{{ state.online_node_count.toLocaleString() }} 运行中</el-text>
-              <el-text>{{ state.offline_node_count.toLocaleString() }} 离线</el-text>
+              <el-text size="small">共 {{ state.node_count.toLocaleString() }} 个节点</el-text>
+              <el-text size="small">{{ state.online_node_count.toLocaleString() }} 运行中</el-text>
+              <el-text size="small">{{ state.offline_node_count.toLocaleString() }} 离线</el-text>
             </div>
           </div>
         </div>
@@ -105,18 +126,26 @@ onBeforeUnmount(() => {
   border: 1px solid #f0f0f0;
   background: #ffffff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
 
   .title {
-    font-size: 16px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #494949;
+  }
 
-    .number {
-      font-size: 16px;
-      color: var(--el-color-primary);
-    }
+  .number {
+    font-size: 20px;
+    color: #202020;
+    padding: 0;
   }
 
   .content {
     margin-top: 10px;
+
+    .el-text {
+
+    }
   }
 
 }
