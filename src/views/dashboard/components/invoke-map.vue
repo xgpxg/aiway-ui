@@ -167,7 +167,7 @@ const updateData = (newData: { name: string; value: number }[]) => {
   
   .chart-wrapper {
     flex: 1;
-    min-height: 400px;
+    max-height: 350px;
   }
 }
 </style>

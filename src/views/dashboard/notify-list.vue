@@ -6,7 +6,7 @@ interface NotifyItem {
   title: string
   content: string
   time: string
-  type: 'info' | 'warning' | 'error'
+  type: 'info' | 'warn' | 'error'
 }
 
 const notifications = ref<NotifyItem[]>([
@@ -22,7 +22,7 @@ const notifications = ref<NotifyItem[]>([
     title: '性能下降提醒',
     content: '订单服务响应时间从平均100ms上升到800ms，性能下降明显。可能由于数据库连接池不足或查询语句需要优化。',
     time: '2025-11-14 14:25:10',
-    type: 'warning'
+    type: 'warn'
   },
   {
     id: 3,
@@ -36,7 +36,7 @@ const notifications = ref<NotifyItem[]>([
     title: '安全风险提示',
     content: '检测到多次来自特定IP的异常访问请求，疑似恶意扫描行为。系统已自动将该IP加入观察名单，建议安全团队关注。',
     time: '2025-11-14 14:10:33',
-    type: 'warning'
+    type: 'warn'
   },
   {
     id: 5,
@@ -47,51 +47,32 @@ const notifications = ref<NotifyItem[]>([
   }
 ])
 
-// 格式化内容显示，超长显示省略号
-const formatContent = (content: string, maxLength: number = 60): string => {
-  if (content.length <= maxLength) {
-    return content
-  }
-  return content.substring(0, maxLength) + '...'
-}
 </script>
 
 <template>
   <div class="notify-container">
     <div class="card">
       <div class="title">网关事件</div>
-
-      <div class="notify-list">
-        <div
-            v-for="item in notifications"
-            :key="item.id"
-            class="notify-item"
-            :class="item.type"
-        >
-          <div class="notify-header">
-            <div class="notify-title" :class="item.type">{{ item.title }}</div>
-            <div class="notify-time">{{ item.time }}</div>
+      <el-row :gutter="20">
+        <el-col :span="8">
+          <div v-for="item in notifications.filter(item => item.type === 'info')">
+            <el-text size="large">{{item.title}}</el-text>
           </div>
-
-          <div class="notify-content">
-            <el-text truncated>{{ formatContent(item.content) }}</el-text>
-          </div>
-        </div>
-      </div>
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .notify-container {
-
+  width: 100%;
 }
 
 .card {
   border-radius: 6px;
   background: #ffffff;
   padding: 20px;
-  //box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 
   .title {
     font-size: 16px;
@@ -101,52 +82,4 @@ const formatContent = (content: string, maxLength: number = 60): string => {
   }
 }
 
-.notify-list {
-  .notify-item {
-    padding: 12px 0;
-    border-bottom: 1px dashed #f0f0f0;
-
-    &:last-child {
-      border-bottom: none;
-    }
-
-
-    .notify-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 5px;
-
-      .notify-title {
-        font-size: 14px;
-        font-weight: 500;
-
-        &.error {
-          color: #f56c6c;
-        }
-
-        &.warning {
-          color: #e6a23c;
-        }
-
-        &.info {
-          color: #409eff;
-        }
-      }
-
-      .notify-time {
-        font-size: 12px;
-        color: #909399;
-        margin-left: 10px;
-        white-space: nowrap;
-      }
-    }
-
-    .notify-content {
-      font-size: 13px;
-      color: #606266;
-      line-height: 1.5;
-    }
-  }
-}
 </style>

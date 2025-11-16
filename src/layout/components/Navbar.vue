@@ -1,14 +1,19 @@
 <template>
   <div class="navbar flex-space-between">
     <div class="flex-v fill-width">
-<!--      <Hamburger class="hamburger-container"
-                 @toggleClick="toggleSideBar"></Hamburger>
-      <Breadcrumb class="breadcrumb-container"></Breadcrumb>
-      <search-input class="ml50"></search-input>-->
+      <!--      <Hamburger class="hamburger-container"
+                       @toggleClick="toggleSideBar"></Hamburger>
+            <Breadcrumb class="breadcrumb-container"></Breadcrumb>
+            <search-input class="ml50"></search-input>-->
       <AppBar></AppBar>
     </div>
 
     <div class="right-menu flex-v">
+      <el-badge value="1" class="ml5">
+        <el-icon>
+          <Bell/>
+        </el-icon>
+      </el-badge>
       <el-link
           target="_blank"
           class="nav-icon-button"
@@ -183,7 +188,7 @@ export default {
     margin-right: 20px;
 
     .nav-icon-button {
-      margin: 0 6px;
+      margin: 0 6px 0 20px;
       background: transparent;
       border: none;
       color: #595959;

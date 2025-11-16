@@ -178,11 +178,11 @@ const formatNumber = (num: number): string => {
 }
 
 .card {
-  border: 1px solid #f0f0f0;
+  //border: 1px solid #f0f0f0;
   background: #ffffff;
   border-radius: 6px;
   padding: 10px 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  //box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 
   .title {
     font-size: 16px;

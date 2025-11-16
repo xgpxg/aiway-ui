@@ -2,7 +2,8 @@
   <div class="menu">
     <div class="logo">
       <div class="flex-center" v-if="!collapse">
-        <el-image src="/public/images/logo.png" style="height: 22px" class="mr10"></el-image> {{ version }}
+        <el-image src="/public/images/logo.png" style="height: 22px" class="mr10"></el-image>
+        {{ version }}
       </div>
       <div v-else>
         <el-image
@@ -41,12 +42,6 @@
           </el-icon>
           <span>插件管理</span>
         </el-menu-item>
-        <el-menu-item index="/monitor">
-          <el-icon>
-            <svg-icon icon-class="monitor"></svg-icon>
-          </el-icon>
-          <span>网关监控</span>
-        </el-menu-item>
         <el-menu-item index="/log">
           <el-icon>
             <svg-icon icon-class="log"></svg-icon>
@@ -77,12 +72,12 @@
           </el-icon>
           <span>用户管理</span>
         </el-menu-item>
-<!--        <el-menu-item index="/operation">
-          <el-icon>
-            <svg-icon icon-class="log2"></svg-icon>
-          </el-icon>
-          <span>操作日志</span>
-        </el-menu-item>-->
+        <!--        <el-menu-item index="/operation">
+                  <el-icon>
+                    <svg-icon icon-class="log2"></svg-icon>
+                  </el-icon>
+                  <span>操作日志</span>
+                </el-menu-item>-->
         <el-menu-item index="/setting">
           <el-icon>
             <svg-icon icon-class="setting"></svg-icon>
