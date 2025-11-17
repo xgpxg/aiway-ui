@@ -2,7 +2,7 @@
 import {onBeforeUnmount, onMounted, ref} from "vue";
 import {R} from "@/utils/R";
 import {U} from "@/utils/util";
-import SvgIcon from "../../components/SvgIcon/index.vue";
+import SvgIcon from "../../../components/SvgIcon/index.vue";
 
 const state = ref({
   node_count: 0,
@@ -18,6 +18,10 @@ const state = ref({
   http_connect_count: 0,
   avg_response_time: 0,
   avg_qps: 0,
+  info_count: 0,
+  warn_count: 0,
+  error_count: 0,
+  last_message_title: null
 })
 
 onMounted(() => {
@@ -48,14 +52,22 @@ onBeforeUnmount(() => {
         <div class="mt5">
           <div>
             <span class="number success">{{ state.online_node_count.toLocaleString() }}</span>
-            <el-text type="info" size="small" class="ml5  mr5">运行中</el-text>
-            <el-text type="info" size="large" class="ml5  mr5">/</el-text>
+            <el-text type="info" size="small" class="ml5 mr5">运行中</el-text>
+            <el-text type="info" size="large" class="ml5 mr5">/</el-text>
             <span class="number">{{ state.node_count.toLocaleString() }}</span>
-            <el-text type="info" size="small" class="ml5  mr5">个节点</el-text>
+            <el-text type="info" size="small" class="ml5 mr5">个节点</el-text>
           </div>
         </div>
         <div class="mt5">
-          <el-text size="small">7个节点异常，请关注</el-text>
+          <el-text size="small" v-if="state.offline_node_count > 0" type="warning">
+            {{ state.offline_node_count }}个节点异常，请关注
+          </el-text>
+          <el-text size="small" v-else type="info">
+            <el-icon color="#67c23a">
+              <SuccessFilled/>
+            </el-icon>
+            所有节点运行正常
+          </el-text>
         </div>
       </div>
     </el-col>
@@ -68,18 +80,20 @@ onBeforeUnmount(() => {
         </div>
         <div class="mt5">
           <div>
-            <span class="number">{{ state.http_connect_count.toLocaleString() }}</span>
+            <span class="number">
+              {{ (state.http_connect_count + (state.sse_connect_count || 0)).toLocaleString() }}
+            </span>
             <el-text type="info" size="small" class="ml10">个连接</el-text>
           </div>
         </div>
         <div class="flex-space-between mt5">
           <div>
             <el-text size="small" type="info">HTTP：</el-text>
-            <el-text size="small" type="info">203,00</el-text>
+            <el-text size="small" type="info">{{ state.http_connect_count.toLocaleString() }}</el-text>
           </div>
           <div>
             <el-text size="small" type="info">SSE：</el-text>
-            <el-text size="small" type="info">312</el-text>
+            <el-text size="small" type="info">{{ (state.sse_connect_count || 0).toLocaleString() }}</el-text>
           </div>
         </div>
       </div>
@@ -123,22 +137,23 @@ onBeforeUnmount(() => {
         <div class="mt5">
           <div class="flex-space-between">
             <div>
-              <span class="number error">2</span>
+              <span class="number error">{{ state.error_count.toLocaleString() }}</span>
               <el-text type="info" size="small" class="ml10">错误</el-text>
             </div>
             <div>
-              <span class="number warning">1</span>
+              <span class="number warning">{{ state.warn_count.toLocaleString() }}</span>
               <el-text type="info" size="small" class="ml10">警告</el-text>
             </div>
             <div>
-              <span class="number info">42</span>
+              <span class="number info">{{ state.info_count.toLocaleString() }}</span>
               <el-text type="info" size="small" class="ml10">提醒</el-text>
             </div>
           </div>
         </div>
         <div class="mt5">
-          <el-text size="small" type="danger" truncated>
-            用户服务在过去的5分钟内出现30次异常调用，异常率超过阈值，请及时处理。建议检查服务日志，定位问题根源并采取相应措施。
+          <el-text size="small" type="info" truncated>
+            <svg-icon icon-class="notice" class="mr5"></svg-icon>
+            {{ state.last_message_title }}
           </el-text>
         </div>
       </div>

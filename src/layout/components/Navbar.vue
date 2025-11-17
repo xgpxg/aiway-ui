@@ -9,11 +9,16 @@
     </div>
 
     <div class="right-menu flex-v">
-      <el-badge value="1" class="ml5">
-        <el-icon>
-          <Bell/>
-        </el-icon>
-      </el-badge>
+      <el-popover width="500px" trigger="click">
+        <template #reference>
+          <el-badge value="1" class="ml5 cursor-pointer">
+            <el-icon>
+              <Bell/>
+            </el-icon>
+          </el-badge>
+        </template>
+        <Message></Message>
+      </el-popover>
       <el-link
           target="_blank"
           class="nav-icon-button"
@@ -50,9 +55,11 @@ import Hamburger from "./Hamburger.vue";
 import Breadcrumb from "./Breadcrumb.vue";
 import UpdatePassword from "../../views/login/update-password.vue";
 import AppBar from "./AppBar.vue";
+import Message from "./Message.vue";
 
 export default {
   components: {
+    Message,
     AppBar,
     UpdatePassword,
     Hamburger,
