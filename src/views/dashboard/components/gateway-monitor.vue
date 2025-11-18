@@ -16,12 +16,15 @@ const state = ref({
   response_4xx_count: 0,
   response_5xx_count: 0,
   http_connect_count: 0,
+  sse_connect_count: 0,
   avg_response_time: 0,
   avg_qps: 0,
   info_count: 0,
   warn_count: 0,
   error_count: 0,
-  last_message_title: null
+  last_message_title: null,
+  net_rx: 0,
+  net_tx: 0
 })
 
 onMounted(() => {
@@ -118,11 +121,11 @@ onBeforeUnmount(() => {
           </div>
           <div>
             <el-text size="small" type="info">IN：</el-text>
-            <el-text size="small" type="info">103 MB</el-text>
+            <el-text size="small" type="info">{{ U.renderSize(state.net_rx) }}</el-text>
           </div>
           <div>
             <el-text size="small" type="info">OUT：</el-text>
-            <el-text size="small" type="info">1.12 GB</el-text>
+            <el-text size="small" type="info">{{ U.renderSize(state.net_tx)}}</el-text>
           </div>
         </div>
       </div>
@@ -152,7 +155,7 @@ onBeforeUnmount(() => {
         </div>
         <div class="mt5">
           <el-text size="small" type="info" truncated>
-            <svg-icon icon-class="notice" class="mr5"></svg-icon>
+            <svg-icon icon-class="notice" class="mr2"></svg-icon>
             {{ state.last_message_title }}
           </el-text>
         </div>

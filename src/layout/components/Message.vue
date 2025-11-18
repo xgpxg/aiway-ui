@@ -1,108 +1,96 @@
 <script setup lang="ts">
-import {ref, computed} from 'vue'
-import {ElButton, ElIcon, ElTabs, ElTabPane, ElBadge, ElEmpty, ElTag} from 'element-plus'
-import {Bell, Warning, InfoFilled, CircleClose} from '@element-plus/icons-vue'
+import {ref, onMounted, watch} from 'vue'
+import {ElButton, ElTabs, ElTabPane, ElBadge, ElEmpty, ElTag} from 'element-plus'
+import {R} from "@/utils/R";
+import SvgIcon from "../../components/SvgIcon/index.vue";
 
 interface Message {
   id: number
   title: string
   content: string
-  time: string
-  type: 'info' | 'warning' | 'error'
-  read: boolean
+  create_time: string
+  level: 'Info' | 'Warn' | 'Error'
+  read_status: 'Unread' | 'Read'
 }
 
 const activeTab = ref('all')
-
-// 模拟消息数据
-const messages = ref<Message[]>([
-  {
-    id: 1,
-    title: '系统通知',
-    content: '您的账户在另一地点登录，如非本人操作请及时修改密码。您的账户在另一地点登录，如非本人操作请及时修改密码。',
-    time: '2025-11-17 14:30',
-    type: 'warning',
-    read: false
-  },
-  {
-    id: 2,
-    title: '系统维护',
-    content: '系统将于今晚00:00-02:00进行例行维护，届时服务可能会短暂中断。',
-    time: '2025-11-17 10:15',
-    type: 'info',
-    read: false
-  },
-  {
-    id: 3,
-    title: '安全警告',
-    content: '检测到多次登录尝试失败，系统已临时锁定您的账户30分钟。',
-    time: '2025-11-17 09:20',
-    type: 'error',
-    read: true
-  },
-  {
-    id: 4,
-    title: '功能更新',
-    content: '新版本API网关已发布，新增负载均衡策略和熔断机制。',
-    time: '2025-11-16 16:45',
-    type: 'info',
-    read: false
-  },
-  {
-    id: 5,
-    title: '性能提醒',
-    content: '当前系统负载较高，建议优化资源配置或增加节点。',
-    time: '2025-11-16 14:20',
-    type: 'warning',
-    read: true
-  },
-  {
-    id: 6,
-    title: '紧急错误',
-    content: '数据库连接异常，已自动切换至备用节点，请尽快处理主节点问题。',
-    time: '2025-11-16 11:30',
-    type: 'error',
-    read: false
-  }
-])
-
-// 计算未读消息数量
-const unreadCounts = computed(() => {
-  return {
-    all: messages.value.filter(msg => !msg.read).length,
-    info: messages.value.filter(msg => msg.type === 'info' && !msg.read).length,
-    warning: messages.value.filter(msg => msg.type === 'warning' && !msg.read).length,
-    error: messages.value.filter(msg => msg.type === 'error' && !msg.read).length
-  }
+const messages = ref<Message[]>([])
+const form = ref({
+  level: null
 })
 
-// 获取当前标签页的消息
-const currentMessages = computed(() => {
-  if (activeTab.value === 'all') {
-    return messages.value
-  }
-  return messages.value.filter(msg => msg.type === activeTab.value)
+const page = ref({
+  page_num: 1,
+  page_size: 5,
+  total: 0
 })
 
-// 标记消息为已读
-const markAsRead = (id: number) => {
-  const message = messages.value.find(msg => msg.id === id)
-  if (message) {
-    message.read = true
-  }
-}
+const unreadCounts = ref({
+  all: 0,
+  info: 0,
+  warn: 0,
+  error: 0
+})
 
-// 标记所有消息为已读
-const markAllAsRead = () => {
-  messages.value.forEach(msg => {
-    msg.read = true
+onMounted(() => {
+  loadMessages()
+})
+const loadMessages = () => {
+  R.postJson('/api/message/list', {
+    page: page.value,
+    level: form.value.level
+  }).then((res: any) => {
+    if (res.code === 0) {
+      messages.value = res.data.list
+      page.value.total = res.data.total
+      unreadCounts.value = {
+        all: res.data.ext.unread_count.info + res.data.ext.unread_count.warn + res.data.ext.unread_count.error,
+        info: res.data.ext.unread_count.info,
+        warn: res.data.ext.unread_count.warn,
+        error: res.data.ext.unread_count.error
+      }
+    }
   })
 }
 
+// 标记消息为已读
+const markAsRead = (message: Message) => {
+  if (message.read_status === 'Read') {
+    return
+  }
+  R.postJson('/api/message/read', {
+    id: message.id
+  }).then((res: any) => {
+    if (res.code === 0) {
+      loadMessages()
+    }
+  })
+}
+
+const markAllAsRead = () => {
+  R.postJson('/api/message/read', {
+    id: -1
+  }).then((res: any) => {
+    if (res.code === 0) {
+      loadMessages()
+    }
+  })
+}
+
+
+watch(activeTab, (newVal) => {
+  form.value.level = newVal === 'all' ? null : newVal
+  loadMessages()
+})
+
 // 删除消息
 const deleteMessage = (id: number) => {
-  messages.value = messages.value.filter(msg => msg.id !== id)
+  // TODO
 }
+
+defineExpose({
+  loadMessages
+})
 </script>
 
 <template>
@@ -111,70 +99,65 @@ const deleteMessage = (id: number) => {
       <el-tab-pane name="all">
         <template #label>
           <el-badge :value="unreadCounts.all" :max="99" :hidden="unreadCounts.all === 0" type="primary">
-            <span>全部消息</span>
+            <span>全部</span>
           </el-badge>
         </template>
       </el-tab-pane>
 
-      <el-tab-pane name="error">
+      <el-tab-pane name="Error">
         <template #label>
           <el-badge :value="unreadCounts.error" :max="99" :hidden="unreadCounts.error === 0" type="danger">
-            <span>
-              错误
-            </span>
+            <span> 错误 </span>
           </el-badge>
         </template>
       </el-tab-pane>
 
-      <el-tab-pane name="warning">
+      <el-tab-pane name="Warn">
         <template #label>
-          <el-badge :value="unreadCounts.warning" :max="99" :hidden="unreadCounts.warning === 0" type="warning">
-            <span>
-              警告
-            </span>
+          <el-badge :value="unreadCounts.warn" :max="99" :hidden="unreadCounts.warn === 0" type="warning">
+            <span> 警告 </span>
           </el-badge>
         </template>
       </el-tab-pane>
 
 
-      <el-tab-pane name="info">
+      <el-tab-pane name="Info">
         <template #label>
           <el-badge :value="unreadCounts.info" :max="99" :hidden="unreadCounts.info === 0" type="info">
-            <span>
-              提醒
-            </span>
+            <span> 提醒 </span>
           </el-badge>
         </template>
       </el-tab-pane>
     </el-tabs>
 
     <div class="message-content">
-      <div v-if="currentMessages.length === 0" class="empty">
-        <el-empty description="暂无消息"/>
+      <div v-if="messages.length === 0" class="empty flex-column-v">
+        <svg-icon icon-class="empty2" size="100"></svg-icon>
+        <el-text type="info">暂无消息</el-text>
       </div>
 
       <div v-else class="message-list">
         <div
-            v-for="msg in currentMessages"
+            v-for="msg in messages"
             :key="msg.id"
             class="message-item"
-            :class="{ 'unread': !msg.read }"
-            @click="markAsRead(msg.id)"
+            :class="{ 'unread': msg.read_status === 'Unread' }"
+            @click="markAsRead(msg)"
         >
           <div class="message-header">
             <div class="message-title">
               <el-tag
-                  :type="msg.type === 'info' ? 'primary' : msg.type === 'warning' ? 'warning' : 'danger'"
+                  :type="msg.level === 'Info' ? 'primary' : msg.level === 'Warn' ? 'warning' : 'danger'"
                   size="small"
               >
-                {{ msg.type === 'info' ? '提醒' : msg.type === 'warning' ? '警告' : '错误' }}
+                {{ msg.level === 'Info' ? '提醒' : msg.level === 'Warn' ? '警告' : '错误' }}
               </el-tag>
               <span class="title-text">{{ msg.title }}</span>
             </div>
             <div class="message-actions">
-              <span class="message-time">{{ msg.time }}</span>
+              <span class="message-time">{{ msg.create_time }}</span>
               <el-button
-                  type="danger"
+                  type="info"
                   link
                   size="small"
                   @click.stop="deleteMessage(msg.id)"
@@ -189,9 +172,19 @@ const deleteMessage = (id: number) => {
           </div>
         </div>
       </div>
+      <el-pagination
+          background
+          layout="prev, pager, next, total"
+          :page-size="page.page_size"
+          :current-page="page.page_num"
+          :total="page.total"
+          hide-on-single-page
+          @current-change="(pageNum: number) => {page.page_num = pageNum; loadMessages()}"
+          class="mt10 fr">
+      </el-pagination>
     </div>
 
-    <div class="message-footer" v-if="currentMessages.length > 0">
+    <div class="message-footer" v-if="messages.length > 0">
       <el-button type="primary" link @click="markAllAsRead">
         全部标记为已读
       </el-button>
@@ -201,7 +194,7 @@ const deleteMessage = (id: number) => {
 
 <style scoped lang="scss">
 .message-container {
-  height: 550px;
+  height: 510px;
   display: flex;
   flex-direction: column;
 
@@ -211,15 +204,6 @@ const deleteMessage = (id: number) => {
 
       .el-tabs__nav-wrap::after {
         height: 1px;
-      }
-    }
-
-    :deep(.el-tabs__item) {
-      font-size: 14px;
-      font-weight: normal;
-
-      &.is-active {
-        font-weight: bold;
       }
     }
 
@@ -250,17 +234,8 @@ const deleteMessage = (id: number) => {
         cursor: pointer;
         transition: background-color 0.2s;
 
-        &:hover {
-          background-color: var(--el-fill-color-light);
-        }
-
         &.unread {
-          background-color: var(--el-color-primary-light-9);
-          //border-left: 3px solid var(--el-color-primary);
-
-          &:hover {
-            background-color: var(--el-color-primary-light-8);
-          }
+          background-color: var(--el-color-primary-light-11);
         }
 
         .message-header {

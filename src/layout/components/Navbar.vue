@@ -9,22 +9,22 @@
     </div>
 
     <div class="right-menu flex-v">
-      <el-popover width="500px" trigger="click">
+      <el-popover width="500px" trigger="click" @show="this.$refs.messageRef?.loadMessages()" placement="bottom-end">
         <template #reference>
-          <el-badge value="1" class="ml5 cursor-pointer">
+          <el-badge :value="unreadCount" class="ml5 cursor-pointer" :show-zero="false">
             <el-icon>
               <Bell/>
             </el-icon>
           </el-badge>
         </template>
-        <Message></Message>
+        <Message ref="messageRef"></Message>
       </el-popover>
       <el-link
           target="_blank"
           class="nav-icon-button"
           @click="toHome"
           :underline="false">
-        <el-dropdown trigger="click">
+        <el-dropdown trigger="click" placement="bottom-end">
           <div class="avatar-wrapper">
             <el-icon class="user-avatar">
               <User></User>
@@ -111,9 +111,9 @@ export default {
       this.$router.push({name: 'Index'})
     },
     loadUnreadCount() {
-      // this.R.get('alert/unread/count').then(res => {
-      //   this.unreadCount = res.data
-      // })
+      this.R.postJson('/api/message/count/unread').then(res => {
+        this.unreadCount = res.data.info + res.data.warn + res.data.error
+      })
     }
   }
 }
@@ -281,4 +281,13 @@ export default {
     }
   }
 }
+
+:deep(.el-badge__content) {
+  height: 14px;
+  line-height: 14px;
+  padding: 0 4px;
+  font-size: 10px;
+  min-width: 12px;
+}
+
 </style>
