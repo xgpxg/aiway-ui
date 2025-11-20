@@ -61,7 +61,7 @@ const initChart = () => {
   // 设置图表选项
   const option = {
     title: {
-      text: '全国调用热力图',
+      text: '地域分布',
       left: 'center',
       textStyle: {
         fontSize: 16,
