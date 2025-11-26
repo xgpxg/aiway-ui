@@ -24,6 +24,9 @@ const activeIndex = ref('100')
               通知和提醒
             </el-menu-item>
           </el-menu-item-group>
+          <el-menu-item index="102">
+            数据存储
+          </el-menu-item>
           <el-menu-item-group title="更新">
             <el-menu-item index="200">
               检查更新

@@ -1,54 +1,164 @@
 <script setup lang="ts">
-import {ref, onMounted} from 'vue'
+import {ref, onMounted, onUnmounted, computed} from 'vue'
 import * as echarts from 'echarts'
 import chinaMapData from '/public/map/china.json'
-// 注册地图
-// 模拟各省调用数据
-const provinceData = ref([
-  {name: '北京', value: 125},
-  {name: '天津', value: 78},
-  {name: '上海', value: 178},
-  {name: '重庆', value: 98},
-  {name: '河北', value: 132},
-  {name: '河南', value: 113},
-  {name: '云南', value: 92},
-  {name: '辽宁', value: 108},
-  {name: '黑龙江', value: 89},
-  {name: '湖南', value: 112},
-  {name: '安徽', value: 99},
-  {name: '山东', value: 145},
-  {name: '新疆', value: 67},
-  {name: '江苏', value: 168},
-  {name: '浙江', value: 189},
-  {name: '江西', value: 82},
-  {name: '湖北', value: 128},
-  {name: '广西', value: 76},
-  {name: '甘肃', value: 58},
-  {name: '山西', value: 95},
-  {name: '内蒙古', value: 73},
-  {name: '陕西', value: 102},
-  {name: '吉林', value: 86},
-  {name: '福建', value: 142},
-  {name: '贵州', value: 69},
-  {name: '广东', value: 210},
-  {name: '青海', value: 42},
-  {name: '西藏', value: 35},
-  {name: '四川', value: 156},
-  {name: '宁夏', value: 53},
-  {name: '海南', value: 65},
-  {name: '台湾', value: 98},
-  {name: '香港', value: 87},
-  {name: '澳门', value: 43}
-])
+import {R} from "@/utils/R";
+
+const DEFAULT = [
+  {name: '北京', value: 0},
+  {name: '天津', value: 0},
+  {name: '上海', value: 0},
+  {name: '重庆', value: 0},
+  {name: '河北', value: 0},
+  {name: '河南', value: 0},
+  {name: '云南', value: 0},
+  {name: '辽宁', value: 0},
+  {name: '黑龙江', value: 0},
+  {name: '湖南', value: 0},
+  {name: '安徽', value: 0},
+  {name: '山东', value: 0},
+  {name: '新疆', value: 0},
+  {name: '江苏', value: 0},
+  {name: '浙江', value: 0},
+  {name: '江西', value: 0},
+  {name: '湖北', value: 0},
+  {name: '广西', value: 0},
+  {name: '甘肃', value: 0},
+  {name: '山西', value: 0},
+  {name: '内蒙古', value: 0},
+  {name: '陕西', value: 0},
+  {name: '吉林', value: 0},
+  {name: '福建', value: 0},
+  {name: '贵州', value: 0},
+  {name: '广东', value: 0},
+  {name: '青海', value: 0},
+  {name: '西藏', value: 0},
+  {name: '四川', value: 0},
+  {name: '宁夏', value: 0},
+  {name: '海南', value: 0},
+  {name: '台湾', value: 0},
+  {name: '香港', value: 0},
+  {name: '澳门', value: 0}
+]
 
 const chartRef = ref<HTMLElement | null>(null)
+// 地图实例
 let chartInstance: echarts.ECharts | null = null
+// 地图数据
+const provinceData = ref<{ name: string; value: number }[]>()
+// 时间范围
+const timeRanges = ref([
+  {label: '今天', value: 'today'},
+  {label: '昨天', value: 'yesterday'},
+  {label: '近7天', value: 'last7Days'},
+  {label: '近30天', value: 'last30Days'},
+  {label: '近一年', value: 'lastYear'}
+])
+// 已选的时间范围，默认今天
+const selectedTimeRange = ref('today')
 
 onMounted(() => {
   if (chartRef.value) {
     initChart()
   }
+  loadData()
 })
+
+const loadData = () => {
+  const {startTime, endTime} = getTimeRange(selectedTimeRange.value);
+  R.postJson('/api/metrics/region/count', {
+    start_time: startTime,
+    end_time: endTime
+  }).then((res: any) => {
+    // 没有数据，使用默认的，用0填充
+    if (res.data.length === 0) {
+      updateData(DEFAULT)
+      return
+    }
+    // 更新
+    updateData(res.data)
+  })
+}
+
+// 每10秒钟刷新
+const timer = setInterval(() => {
+  loadData()
+}, 10000)
+
+onUnmounted(() => {
+  clearInterval(timer)
+})
+
+
+// 获取时间范围的时间戳
+const getTimeRange = (range: string) => {
+  const now = new Date();
+  let startTime: number, endTime: number;
+
+  switch (range) {
+      // 今天
+    case 'today':
+      // 今天0点时间戳
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      startTime = Math.floor(today.getTime() / 1000);
+      // 今天23:59:59时间戳作为结束时间
+      const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+      endTime = Math.floor(endOfToday.getTime() / 1000);
+      break;
+      // 昨天
+    case 'yesterday':
+      // 昨天0点时间戳
+      const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      startTime = Math.floor(yesterday.getTime() / 1000);
+      // 昨天23:59:59时间戳作为结束时间
+      const endOfYesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 23, 59, 59);
+      endTime = Math.floor(endOfYesterday.getTime() / 1000);
+      break;
+      // 近7天
+    case 'last7Days':
+      // 7天前0点时间戳
+      const last7Days = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6);
+      startTime = Math.floor(last7Days.getTime() / 1000);
+      // 今天23:59:59时间戳作为结束时间
+      const endOfPeriod7 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+      endTime = Math.floor(endOfPeriod7.getTime() / 1000);
+      break;
+      // 近30天
+    case 'last30Days':
+      // 30天前0点时间戳
+      const last30Days = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 29);
+      startTime = Math.floor(last30Days.getTime() / 1000);
+      // 今天23:59:59时间戳作为结束时间
+      const endOfPeriod30 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+      endTime = Math.floor(endOfPeriod30.getTime() / 1000);
+      break;
+      // 近一年
+    case 'lastYear':
+      // 去年今天的时间戳
+      const lastYear = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+      startTime = Math.floor(lastYear.getTime() / 1000);
+      // 今年今天前一天的23:59:59时间戳作为结束时间
+      const endOfPeriodYear = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 23, 59, 59);
+      endTime = Math.floor(endOfPeriodYear.getTime() / 1000);
+      break;
+    default:
+      // 默认今天
+      const defaultStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      startTime = Math.floor(defaultStart.getTime() / 1000);
+      // 今天23:59:59时间戳作为结束时间
+      const defaultEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+      endTime = Math.floor(defaultEnd.getTime() / 1000);
+  }
+
+  return {startTime, endTime};
+}
+
+
+const handleTimeRangeChange = (range: string) => {
+  selectedTimeRange.value = range
+  loadData()
+}
+
 
 const initChart = () => {
   if (!chartRef.value) return
@@ -61,7 +171,7 @@ const initChart = () => {
   // 设置图表选项
   const option = {
     title: {
-      text: '地域分布',
+      text: '',
       left: 'center',
       textStyle: {
         fontSize: 16,
@@ -76,13 +186,13 @@ const initChart = () => {
     },
     visualMap: {
       min: 0,
-      max: 250,
+      max: 10,
       left: 'left',
       top: 'bottom',
       text: ['高', '低'],
       calculable: true,
       inRange: {
-        color: ['#e0f3f8', '#abd9e9', '#74add1', '#4575b4', '#313695']
+        color: ['#ffffff', '#e0f3f8', '#abd9e9', '#74add1', '#4575b4', '#313695']
       }
     },
     series: [
@@ -113,10 +223,24 @@ const initChart = () => {
 const updateData = (newData: { name: string; value: number }[]) => {
   provinceData.value = newData
   if (chartInstance) {
+    const maxValue = Math.max(...newData.map(item => item.value))
+    const visualMax = maxValue > 0 ? maxValue : 10
+
     chartInstance.setOption({
       series: [{
         data: newData
-      }]
+      }],
+      visualMap: {
+        max: visualMax
+      }
+    })
+    chartInstance.setOption({
+      series: [{
+        data: newData
+      }],
+      visualMap: {
+        max: visualMax
+      }
     })
   }
 }
@@ -124,6 +248,20 @@ const updateData = (newData: { name: string; value: number }[]) => {
 
 <template>
   <div class="invoke-map-container">
+    <div class="header">
+      <div class="title">地域分布</div>
+      <div class="time-filter">
+        <el-button
+            v-for="range in timeRanges"
+            :key="range.value"
+            :type="selectedTimeRange === range.value ? 'primary' : 'default'"
+            size="small"
+            @click="handleTimeRangeChange(range.value)"
+        >
+          {{ range.label }}
+        </el-button>
+      </div>
+    </div>
     <div ref="chartRef" class="chart-wrapper"></div>
   </div>
 </template>
@@ -138,6 +276,23 @@ const updateData = (newData: { name: string; value: number }[]) => {
   border-radius: 8px;
   padding: 20px;
   box-sizing: border-box;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+
+    .title {
+      font-size: 16px;
+      font-weight: normal;
+    }
+
+    .time-filter {
+      display: flex;
+      gap: 8px;
+    }
+  }
 
   .chart-wrapper {
     flex: 1;

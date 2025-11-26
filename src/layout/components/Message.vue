@@ -148,7 +148,7 @@ defineExpose({
             <div class="message-title">
               <el-tag
                   :type="msg.level === 'Info' ? 'primary' : msg.level === 'Warn' ? 'warning' : 'danger'"
-                  size="small"
+                  size="small" disable-transitions
               >
                 {{ msg.level === 'Info' ? '提醒' : msg.level === 'Warn' ? '警告' : '错误' }}
               </el-tag>
