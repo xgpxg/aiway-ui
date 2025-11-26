@@ -1,12 +1,8 @@
 <script setup>
-
-import Statistics from "./statistics.vue";
-import RequestChart from "./request-chart.vue";
-import NotifyList from "./notify-list.vue";
-import RankList from "./rank-list.vue";
 import GatewayMonitor from "./components/gateway-monitor.vue";
 import InvokeMap from "./components/invoke-map.vue";
 import NodeList from "./components/node-list.vue";
+import RequestChart from "./components/request-chart.vue";
 </script>
 
 <template>
@@ -16,7 +12,7 @@ import NodeList from "./components/node-list.vue";
         <gateway-monitor></gateway-monitor>
       </el-col>
     </el-row>
-    <el-row :gutter="20" class="mt10">
+    <el-row :gutter="10" class="mt10">
       <el-col :span="12">
         <invoke-map></invoke-map>
       </el-col>
