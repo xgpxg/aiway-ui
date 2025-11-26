@@ -27,6 +27,15 @@ onUnmounted(() => {
 const selectTimeRange = (range) => {
   activeTimeRange.value = range;
   updateChartData();
+  
+  // 重置缩放
+  if (myChart) {
+    myChart.dispatchAction({
+      type: 'dataZoom',
+      start: 0,
+      end: 100
+    });
+  }
 }
 
 // 根据时间范围计算起止时间戳
