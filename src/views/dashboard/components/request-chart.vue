@@ -79,8 +79,8 @@ const calculateTimeRange = () => {
 const loadData = async (startTime, endTime) => {
   try {
     const res = await R.postJson('/api/metrics/status/count', {
-      start_time: startTime,
-      end_time: endTime
+      start_timestamp: startTime,
+      end_timestamp: endTime
     });
 
     if (res.code === 0) {

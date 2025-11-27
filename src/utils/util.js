@@ -328,7 +328,13 @@ export const U = {
             }
             for (const k in o) {
                 if (new RegExp('(' + k + ')').test(fmt)) {
-                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
+                    if (k === 'S') {
+                        // 毫秒固定为3位
+                        const ms = '' + o[k]
+                        fmt = fmt.replace(RegExp.$1, ms.padStart(3, '0').substring(0, 3))
+                    } else {
+                        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
+                    }
                 }
             }
             return fmt

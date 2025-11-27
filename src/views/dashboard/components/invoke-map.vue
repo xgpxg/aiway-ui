@@ -67,8 +67,8 @@ onMounted(() => {
 const loadData = () => {
   const {startTime, endTime} = getTimeRange(selectedTimeRange.value);
   R.postJson('/api/metrics/region/count', {
-    start_time: startTime,
-    end_time: endTime
+    start_timestamp: startTime,
+    end_timestamp: endTime
   }).then((res: any) => {
     // 没有数据，使用默认的，用0填充
     if (res.data.length === 0) {
