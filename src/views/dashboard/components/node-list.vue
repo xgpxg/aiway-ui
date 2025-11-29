@@ -1,101 +1,63 @@
 <script setup lang="ts">
-import {Timer, Search} from '@element-plus/icons-vue'
-import {ref, computed} from 'vue'
+import {Timer} from '@element-plus/icons-vue'
+import {ref, onMounted, onUnmounted} from 'vue'
+import {R} from "@/utils/R";
+import {U} from "@/utils/util";
+import SvgIcon from "../../../components/SvgIcon/index.vue";
 
 interface NodeInfo {
   id: string;
+  node_id: string;
+  ip: string;
+  port: number;
   address: string;
   status: 'online' | 'offline' | 'error';
-  connections: number;
-  exceptions: number;
-  cpuUsage: number;
-  memoryUsage: number;
-  uptime: string;
+  online_time: string;
+  state: {
+    os: string;
+    cpu_usage: number;
+    mem_total: number;
+    mem_used: number;
+    http_connect_count: number;
+    sse_connect_count: number;
+    avg_qps: number;
+  }
 }
 
-const nodeList: NodeInfo[] = [
-  {
-    id: 'node-001',
-    address: '192.168.1.101:8080',
-    status: 'online',
-    connections: 1243,
-    exceptions: 0,
-    cpuUsage: 42,
-    memoryUsage: 65,
-    uptime: '12天 5小时'
-  },
-  {
-    id: 'node-002',
-    address: '192.168.1.102:8080',
-    status: 'online',
-    connections: 986,
-    exceptions: 2,
-    cpuUsage: 38,
-    memoryUsage: 57,
-    uptime: '8天 12小时'
-  },
-  {
-    id: 'node-003',
-    address: '192.168.1.103:8080',
-    status: 'error',
-    connections: 0,
-    exceptions: 15,
-    cpuUsage: 0,
-    memoryUsage: 0,
-    uptime: '0天 0小时'
-  },
-  {
-    id: 'node-004',
-    address: '192.168.1.104:8080',
-    status: 'offline',
-    connections: 0,
-    exceptions: 0,
-    cpuUsage: 0,
-    memoryUsage: 0,
-    uptime: '0天 0小时'
-  },
-  {
-    id: 'node-005',
-    address: '192.168.1.105:8080',
-    status: 'online',
-    connections: 2105,
-    exceptions: 1,
-    cpuUsage: 67,
-    memoryUsage: 78,
-    uptime: '15天 3小时'
-  },
-  {
-    id: 'node-006',
-    address: '192.168.1.106:8080',
-    status: 'online',
-    connections: 765,
-    exceptions: 0,
-    cpuUsage: 29,
-    memoryUsage: 42,
-    uptime: '5天 18小时'
-  }
-];
+const nodeList = ref<NodeInfo[]>([]);
 
-// 筛选条件
-const filterStatus = ref<string>('')
-const filterAddress = ref<string>('')
-
-// 计算过滤后的节点列表
-const filteredNodeList = computed(() => {
-  return nodeList.filter(node => {
-    const statusMatch = filterStatus.value ? node.status === filterStatus.value : true
-    const addressMatch = filterAddress.value ? node.address.includes(filterAddress.value) : true
-    return statusMatch && addressMatch
-  })
+onMounted(() => {
+  loadData()
 })
+
+// 每5秒钟刷新
+const timer = setInterval(() => {
+  loadData()
+}, 5000)
+
+onUnmounted(() => {
+  clearInterval(timer)
+})
+
+const loadData = () => {
+  R.postJson('/api/node/list', {
+    page: {
+      page_num: 1,
+      page_size: 10
+    }
+  }).then((res: any) => {
+    nodeList.value = res.data.list
+  })
+}
+
 
 const getStatusText = (status: string) => {
   switch (status) {
-    case 'online':
+    case 'Online':
       return '在线';
-    case 'offline':
+    case 'Offline':
       return '离线';
-    case 'error':
+    case 'Error':
       return '异常';
     default:
       return '未知';
@@ -104,66 +66,36 @@ const getStatusText = (status: string) => {
 
 const getStatusType = (status: string) => {
   switch (status) {
-    case 'online':
+    case 'Online':
       return 'success';
-    case 'offline':
+    case 'Offline':
       return 'info';
-    case 'error':
+    case 'Error':
       return 'danger';
     default:
       return 'info';
   }
 };
-
-const statusOptions = [
-  {value: '', label: '全部状态'},
-  {value: 'online', label: '在线'},
-  {value: 'offline', label: '离线'},
-  {value: 'error', label: '异常'}
-]
 </script>
 
 <template>
-  <div class="node-dashboard">
-    <!-- 筛选区域 -->
-    <div class="filter-section">
-      <el-select
-          v-model="filterStatus"
-          placeholder="选择节点状态"
-          clearable
-          style="width: 200px"
-      >
-        <el-option
-            v-for="item in statusOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-        />
-      </el-select>
-      <el-input
-          v-model="filterAddress"
-          placeholder="搜索节点地址..."
-          clearable
-          prefix-icon="Search"
-      >
-        <template #append>
-          <el-button :icon="Search"/>
-        </template>
-      </el-input>
-    </div>
-
-    <!-- 节点列表 -->
+  <div class="node-dashboard" v-if="nodeList.length>0">
     <div class="nodes-section">
       <el-row :gutter="16">
         <el-col
-            v-for="node in filteredNodeList"
+            v-for="node in nodeList"
             :key="node.id"
-            :span="6"
+            :span="8"
         >
           <div class="node-card">
             <div class="node-header">
               <div class="node-title">
-                <h3>{{ node.address }}</h3>
+                <div class="flex-v">
+                  <el-icon class="mr5">
+                    <svg-icon icon-class="server"></svg-icon>
+                  </el-icon>
+                  <h3>{{ node.ip }}:{{ node.port }}</h3>
+                </div>
                 <el-tag
                     :type="getStatusType(node.status)"
                     size="small"
@@ -173,48 +105,44 @@ const statusOptions = [
               </div>
             </div>
 
+
             <div class="node-body">
               <div class="metrics-grid">
+
                 <div class="metric-item">
                   <div class="metric-label">连接数</div>
-                  <div class="metric-value connections">{{ node.connections.toLocaleString() }}</div>
+                  <div class="metric-value connections">
+                    {{ (node.state?.http_connect_count + node.state?.sse_connect_count).toLocaleString() }}
+                  </div>
                 </div>
 
                 <div class="metric-item">
-                  <div class="metric-label">异常数</div>
-                  <div class="metric-value exceptions" :class="{ 'has-exceptions': node.exceptions > 0 }">
-                    {{ node.exceptions }}
+                  <div class="metric-label">QPS</div>
+                  <div class="metric-value">
+                    {{ node.state.avg_qps }}
                   </div>
                 </div>
 
                 <div class="metric-item">
                   <div class="metric-label">CPU使用率</div>
-                  <div class="metric-value cpu">{{ node.cpuUsage }}%</div>
+                  <div class="metric-value cpu">{{ node.state.cpu_usage?.toFixed(2) }}%</div>
                 </div>
 
                 <div class="metric-item">
                   <div class="metric-label">内存使用率</div>
-                  <div class="metric-value memory">{{ node.memoryUsage }}%</div>
+                  <div class="metric-value memory">{{ (node.state.mem_used / node.state.mem_total)?.toFixed(2) }}%</div>
                 </div>
               </div>
 
               <div class="node-footer">
                 <div class="uptime">
-                  <el-icon>
-                    <Timer/>
-                  </el-icon>
-                  <span>{{ node.uptime }}</span>
+                  <span> 已运行：{{ U.getTimeIntervalString(new Date(node.online_time), new Date()) }}</span>
                 </div>
               </div>
             </div>
           </div>
         </el-col>
       </el-row>
-
-      <!-- 无数据提示 -->
-      <div v-if="filteredNodeList.length === 0" class="no-data">
-        <el-empty description="未找到匹配的节点"/>
-      </div>
     </div>
   </div>
 </template>
@@ -236,18 +164,18 @@ const statusOptions = [
     .node-card {
       margin-bottom: 12px;
       border-radius: 8px;
-      background: var(--el-bg-color-overlay);
-      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+      //box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
       transition: all 0.3s ease;
       border: 1px solid var(--el-border-color-lighter);
+      padding: 8px;
 
       &:hover {
-        transform: translateY(-2px);
+        //transform: translateY(-2px);
         box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
       }
 
       .node-header {
-        padding: 12px 12px 0;
+        padding: 6px 6px 0;
 
         .node-title {
           display: flex;
@@ -256,7 +184,7 @@ const statusOptions = [
 
           h3 {
             margin: 0;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--el-text-color-primary);
           }
@@ -264,43 +192,28 @@ const statusOptions = [
       }
 
       .node-body {
-        padding: 12px;
+        padding: 8px;
 
         .metrics-grid {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 12px;
-          margin-bottom: 12px;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 8px;
+          margin-bottom: 8px;
 
           .metric-item {
             .metric-label {
               font-size: 12px;
               color: var(--el-text-color-secondary);
-              margin-bottom: 4px;
+              margin-bottom: 2px;
             }
 
             .metric-value {
-              font-size: 18px;
+              font-size: 16px;
               font-weight: 600;
+              color: var(--el-text-color-primary);
 
               &.connections {
-                color: #409eff;
-              }
-
-              &.exceptions {
-                color: #67c23a;
-
-                &.has-exceptions {
-                  color: #f56c6c;
-                }
-              }
-
-              &.cpu {
-                color: #e6a23c;
-              }
-
-              &.memory {
-                color: #f56c6c;
+                //color: #409eff;
               }
             }
           }
@@ -314,7 +227,7 @@ const statusOptions = [
             font-size: 12px;
 
             .el-icon {
-              margin-right: 4px;
+              margin-right: 2px;
             }
           }
         }

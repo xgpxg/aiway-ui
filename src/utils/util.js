@@ -470,6 +470,26 @@ export const U = {
             allSeconds: Math.floor((date2 - date1) / 1000)
         }
     },
+    getTimeIntervalString(date1, date2) {
+        let str = ''
+        let data = this.getTimeInterval(date1, date2)
+        if (data.days > 0) {
+            str += data.days + '天'
+        }
+        if (data.hours > 0) {
+            str += data.hours + '时'
+        }
+        if (data.minutes > 0) {
+            str += data.minutes + '分'
+        }
+        if (data.seconds > 0) {
+            str += data.seconds + '秒'
+        }
+        if (str === '') {
+            str = '0秒'
+        }
+        return str
+    },
     randomString(e) {
         e = e || 32
         const t = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'
