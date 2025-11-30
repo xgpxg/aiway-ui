@@ -60,9 +60,6 @@ const updatePassword = () => {
 <template>
   <el-dialog v-model="isShow" title="修改密码" width="500">
     <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
-      <el-form-item label="用户名">
-        {{ user.username }}
-      </el-form-item>
       <el-form-item label="新密码" prop="password">
         <el-input v-model="form.password" type="password" show-password placeholder="请填写新密码"></el-input>
       </el-form-item>

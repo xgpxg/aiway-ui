@@ -135,9 +135,7 @@ const getStatusType = (status: string) => {
               </div>
 
               <div class="node-footer">
-                <div class="uptime">
-                  <span> 已运行：{{ U.getTimeIntervalString(new Date(node.online_time), new Date()) }}</span>
-                </div>
+
               </div>
             </div>
           </div>

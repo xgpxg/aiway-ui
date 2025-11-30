@@ -1,17 +1,24 @@
 <template>
   <div class="navbar flex-space-between">
     <div class="flex-v fill-width">
-      <!--      <Hamburger class="hamburger-container"
-                       @toggleClick="toggleSideBar"></Hamburger>
-            <Breadcrumb class="breadcrumb-container"></Breadcrumb>
-            <search-input class="ml50"></search-input>-->
+      <Hamburger class="hamburger-container"
+                 @toggleClick="toggleSideBar" :is-active="collapse"></Hamburger>
+      <!--            <Breadcrumb class="breadcrumb-container"></Breadcrumb>
+                  <search-input class="ml50"></search-input>-->
       <AppBar></AppBar>
     </div>
 
     <div class="right-menu flex-v">
+      <el-popover width="500px" trigger="click" @show="" placement="bottom-end">
+        <template #reference>
+          <el-icon class="cursor-pointer" style="margin-top: -2px;margin-right: 10px">
+            <svg-icon icon-class="app"></svg-icon>
+          </el-icon>
+        </template>
+      </el-popover>
       <el-popover width="500px" trigger="click" @show="this.$refs.messageRef?.loadMessages()" placement="bottom-end">
         <template #reference>
-          <el-badge :value="unreadCount" class="ml5 cursor-pointer" :show-zero="false">
+          <el-badge :value="unreadCount" class="ml20 cursor-pointer" :show-zero="false">
             <el-icon>
               <Bell/>
             </el-icon>
