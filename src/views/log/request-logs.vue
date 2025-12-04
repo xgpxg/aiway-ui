@@ -102,11 +102,11 @@ const toView = (log: any) => {
           </el-text>
         </template>
       </el-table-column>
-<!--      <el-table-column label="操作" width="80">
-        <template #default="{row}">
-          <el-button type="primary" link @click="toView(row)">查看</el-button>
-        </template>
-      </el-table-column>-->
+      <!--      <el-table-column label="操作" width="80">
+              <template #default="{row}">
+                <el-button type="primary" link @click="toView(row)">查看</el-button>
+              </template>
+            </el-table-column>-->
     </el-table>
     <el-pagination
         background

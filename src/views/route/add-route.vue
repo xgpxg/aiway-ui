@@ -7,6 +7,8 @@ import PluginDropdown from "../plugin/plugin-dropdown.vue";
 import draggable from 'vuedraggable'
 import {CodeEditor} from 'monaco-editor-vue3';
 import {ElMessage} from "element-plus";
+import WarningTip from "../../components/Tip/WarningTip.vue";
+import InfoTip from "../../components/Tip/InfoTip.vue";
 
 const value = defineModel('value')
 
@@ -30,6 +32,8 @@ const defaultForm = {
   query: {},
   pre_filters: [],
   post_filters: [],
+  is_auth: true,
+  auth_white_list: [],
 }
 const form = ref(structuredClone(defaultForm))
 const rules = {
@@ -93,6 +97,8 @@ const save = () => {
       delete item.config_text
     })
 
+    form.value.auth_white_list = form.value.auth_white_list?.filter(item => !!item)
+
     let api: string;
     if (value.value) {
       api = '/api/route/update'
@@ -132,6 +138,8 @@ watch(value, (newVal: any) => {
       // 配置转字符串，以便在编辑器中显示和修改
       config_text: JSON.stringify(item.config, null, 2)
     })),
+    is_auth: newVal.is_auth,
+    auth_white_list: newVal.auth_white_list,
   }
   headers.value = Object.entries(form.value.header).map(item => {
     return {
@@ -213,7 +221,7 @@ const reset = () => {
       <el-form-item label="路径匹配" prop="path">
         <template #label>路径匹配
           <help-tip placement="top-start">
-            <p>通过该路径匹配路由，如果配置了“路径前缀”，则完整的请求路径为：【路径前缀】 + 【路径匹配】</p>
+            <p>通过该路径匹配路由。</p>
             <p>支持的通配符：</p>
             <p>? : 匹配任意单个字符</p>
             <p>* : 匹配零个或多个字符</p>
@@ -268,6 +276,55 @@ const reset = () => {
           <el-text class="ml5 mr5">-</el-text>
           <el-input v-model="query.value" placeholder="值"></el-input>
           <el-button @click="queries.splice(queries.indexOf(query),1)" link icon="minus" class="ml10"></el-button>
+        </div>
+      </el-form-item>
+      <div class="title-block">鉴权</div>
+      <el-form-item label="权限验证">
+        <template #label>
+          <div class="flex-space-between">
+            <div>
+              权限验证
+            </div>
+            <div>
+              <el-text v-if="form.is_auth" type="info" size="small">权限验证已开启，目前仅支持API Key验证</el-text>
+              <el-text v-if="!form.is_auth" type="warning" size="small">当前路由未开启权限验证，所有人均可访问</el-text>
+            </div>
+          </div>
+        </template>
+        <div class="fill-width flex-space-between">
+          <el-switch v-model="form.is_auth">
+          </el-switch>
+
+        </div>
+      </el-form-item>
+      <el-form-item label="白名单" v-if="form.is_auth">
+        <template #label>
+          <div class="flex-space-between">
+            <div class="fill-width">
+              白名单
+              <help-tip placement="top-start">
+                <p>匹配到白名单中的接口路径将忽略权限验证。</p>
+                <p>支持的通配符：</p>
+                <p>? : 匹配任意单个字符</p>
+                <p>* : 匹配零个或多个字符</p>
+                <p>** : 匹配多层路径</p>
+                <p>{a,b} : 匹配 a 或 b，其中 a 和 b 是以上匹配模式的一种</p>
+                <p>[ab] : 匹配 a 或 b，使用 [!ab] 匹配除 a 和 b 之外的任何字符</p>
+              </help-tip>
+            </div>
+            <div>
+              <el-button @click="form.auth_white_list.push(null)" link icon="plus"></el-button>
+            </div>
+          </div>
+        </template>
+        <div v-if="form.auth_white_list?.length>0" class="fill-width">
+          <div v-for="(item,index) in form.auth_white_list" class="fill-width flex-space-between mb10">
+            <el-input v-model="form.auth_white_list[index]" placeholder="请填写API路径，支持通配符"></el-input>
+            <el-button @click="form.auth_white_list.splice(index,1)" link icon="minus" class="ml10"></el-button>
+          </div>
+        </div>
+        <div v-else class="fill-width bg-card mt10 br5 flex-center">
+          <el-text type="info">暂未配置</el-text>
         </div>
       </el-form-item>
       <div class="title-block">插件</div>
