@@ -83,8 +83,7 @@ const globalPluginRef = ref()
     <div class="mt20">
       <el-table :data="routes">
         <el-table-column label="路由名称" min-width="150" prop="name" show-overflow-tooltip></el-table-column>
-        <el-table-column label="关联服务" width="150" prop="service"></el-table-column>
-        <el-table-column label="域名匹配" width="150" prop="host" show-overflow-tooltip>
+        <el-table-column label="域名匹配" width="200" prop="host" show-overflow-tooltip>
           <template #default="{row}">
             <template v-if="row.host">
               {{ row.host }}
@@ -109,6 +108,7 @@ const globalPluginRef = ref()
                     <el-text v-else type="info">未配置</el-text>
                   </template>
                 </el-table-column>-->
+        <el-table-column label="关联服务" width="150" prop="service"></el-table-column>
         <el-table-column label="状态" width="80" prop="status">
           <template #default="{row}">
             <el-text v-if="row.status==='Ok'" type="success">已启用</el-text>

@@ -26,7 +26,7 @@ const defaultForm = {
   name: null,
   description: null,
   service: null,
-  host: null,
+  host: '*',
   path: null,
   header: {},
   query: {},
@@ -38,16 +38,43 @@ const defaultForm = {
 const form = ref(structuredClone(defaultForm))
 const rules = {
   name: [
-    {required: true, message: '请输入路由名称', trigger: 'blur'},
+    {required: true, message: '请填写路由名称', trigger: 'blur'},
     {min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur'}
   ],
   path: [
-    {required: true, message: '请输入路径匹配规则', trigger: 'blur'},
+    {required: true, message: '请填写路径匹配规则', trigger: 'blur'},
     {min: 1, max: 50, message: '长度在 1 到 100 个字符', trigger: 'blur'}
   ],
   service: [
     {required: true, message: '请选择关联服务', trigger: 'blur'}
-  ]
+  ],
+  host: [
+    {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'},
+    {
+      validator: (rule: any, value: any, callback: any) => {
+        if (!value) {
+          callback(new Error('请填写域名'));
+          return;
+        }
+
+        if (value === '*') {
+          callback();
+          return;
+        }
+
+        // 支持泛域名格式: *.example.com
+        const hostRegex = /^(\*\.)?([a-zA-Z0-9][-a-zA-Z0-9]{0,62}\.)+[a-zA-Z]{2,}$/;
+
+        if (!hostRegex.test(value)) {
+          callback(new Error('域名格式不正确，支持完整域名或泛域名，如：abc.example.com， *.example.com'));
+          return;
+        }
+
+        callback();
+      },
+      trigger: 'blur'
+    }
+  ],
 }
 const headers = ref([])
 const queries = ref([])
@@ -208,37 +235,36 @@ const reset = () => {
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
       <div class="title-block">基本信息</div>
       <el-form-item label="路由名称" prop="name">
-        <el-input v-model="form.name" placeholder="路由名称" maxlength="50" show-word-limit></el-input>
+        <el-input v-model="form.name" placeholder="请填写路由名称" maxlength="50" show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="路由描述" prop="description">
-        <el-input v-model="form.description" placeholder="路由描述" maxlength="500" show-word-limit></el-input>
+        <el-input v-model="form.description" placeholder="路由描述，可选" maxlength="500" show-word-limit></el-input>
       </el-form-item>
       <div class="title-block">目标服务</div>
       <el-form-item label="关联服务" prop="service">
-        <service-select v-model="form.service" status="Ok" placeholder="关联服务"></service-select>
+        <service-select v-model="form.service" status="Ok" placeholder="请选择关联服务"></service-select>
       </el-form-item>
       <div class="title-block">匹配规则</div>
       <el-form-item label="路径匹配" prop="path">
         <template #label>路径匹配
           <help-tip placement="top-start">
             <p>通过该路径匹配路由。</p>
-            <p>支持的通配符：</p>
-            <p>? : 匹配任意单个字符</p>
-            <p>* : 匹配零个或多个字符</p>
-            <p>** : 匹配多层路径</p>
-            <p>{a,b} : 匹配 a 或 b，其中 a 和 b 是以上匹配模式的一种</p>
-            <p>[ab] : 匹配 a 或 b，使用 [!ab] 匹配除 a 和 b 之外的任何字符</p>
+            <p>匹配格式：</p>
+            <p>完全匹配：/api/a => /api/a</p>
+            <p>模糊匹配：/api/{*any} => /api/a/b/c/d, /api/a/b/c/d</p>
+            <p>匹配单层路径：/api/{any} => /api/a</p>
+            <p>匹配多层路径：/api/{p1}/{p2} => /api/a/b, /api/a/b/c, /api/a/b/c/d</p>
           </help-tip>
         </template>
-        <el-input v-model="form.path" placeholder="路径匹配" maxlength="100" show-word-limit></el-input>
+        <el-input v-model="form.path" placeholder="请填写路径" maxlength="100" show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="域名匹配" prop="host">
         <template #label>域名匹配
           <help-tip placement="top-start">
-            <p>当配置了域名时，只有Host请求头等于该域名时，才会匹配该路由</p>
+            <p>当指定域名时，只有Host请求头满足域名条件时，才会匹配该路由。如果需要匹配所有，请填写 “ * ”。</p>
           </help-tip>
         </template>
-        <el-input v-model="form.host" placeholder="域名匹配" maxlength="100" show-word-limit></el-input>
+        <el-input v-model="form.host" placeholder="请填写域名" maxlength="100" show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="Header匹配" prop="header">
         <template #label>
