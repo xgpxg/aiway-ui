@@ -91,7 +91,10 @@ const toView = (log: any) => {
       </el-table-column>
       <el-table-column label="地区" prop="client_province" width="150" show-overflow-tooltip>
         <template #default="{row}">
-          <el-text v-if="row.client_country==='0'">
+          <el-text v-if="row.client_city === '内网IP'">
+            内网
+          </el-text>
+          <el-text v-else if="row.client_country==='0'">
             未知
           </el-text>
           <el-text v-else>
@@ -102,11 +105,11 @@ const toView = (log: any) => {
           </el-text>
         </template>
       </el-table-column>
-      <!--      <el-table-column label="操作" width="80">
-              <template #default="{row}">
-                <el-button type="primary" link @click="toView(row)">查看</el-button>
-              </template>
-            </el-table-column>-->
+      <el-table-column label="操作" width="80">
+        <template #default="{row}">
+          <el-button type="primary" link @click="toView(row)">详情</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <el-pagination
         background
@@ -120,21 +123,35 @@ const toView = (log: any) => {
     </el-pagination>
   </div>
   <el-dialog v-model="isShowViewLogDialog" title="日志详情" destroy-on-close>
-    <div class="pd20">
-      <div class="bg-card">
-        级别：
-        <el-text v-if="currLog.level === 'DEBUG'" type="info" class="mr10">{{ currLog.level }}</el-text>
-        <el-text v-if="currLog.level === 'INFO'" type="primary" class="mr10">{{ currLog.level }}</el-text>
-        <el-text v-if="currLog.level === 'WARN'" type="warning" class="mr10">{{ currLog.level }}</el-text>
-        <el-text v-if="currLog.level === 'ERROR'" type="danger" class="mr10">{{ currLog.level }}</el-text>
-        <el-divider direction="vertical"></el-divider>
-        来源服务：
-        <el-text class="mr10">{{ currLog.service }}</el-text>
-        <el-text type="info" class=" fr">{{ currLog.time }}</el-text>
-      </div>
-      <div class="mt10 bg-card">
-        <el-text>{{ currLog.message }}</el-text>
-      </div>
+    <div class="" v-if="currLog">
+      <el-descriptions :column="2">
+        <el-descriptions-item label="请求ID">{{ currLog.request_id }}</el-descriptions-item>
+        <el-descriptions-item label="客户端IP">{{ currLog.client_ip }}</el-descriptions-item>
+        <el-descriptions-item label="国家">{{
+            currLog.client_country === '0' ? '未知' : currLog.client_country
+          }}
+        </el-descriptions-item>
+        <el-descriptions-item label="省份">{{
+            currLog.client_province === '0' ? '未知' : currLog.client_province
+          }}
+        </el-descriptions-item>
+        <el-descriptions-item label="城市">{{ currLog.client_city }}</el-descriptions-item>
+        <el-descriptions-item label="请求方法">{{ currLog.method }}</el-descriptions-item>
+        <el-descriptions-item label="请求路径">{{ currLog.path }}</el-descriptions-item>
+        <el-descriptions-item label="请求时间">{{
+            U.dateUtil.formatDate(currLog.request_time, 'yyyy-MM-dd hh:mm:ss.S')
+          }}
+        </el-descriptions-item>
+        <el-descriptions-item label="响应时间">
+          {{ U.dateUtil.formatDate(currLog.response_time, 'yyyy-MM-dd hh:mm:ss.S') }}
+        </el-descriptions-item>
+        <el-descriptions-item label="处理耗时">{{ currLog.elapsed }} ms</el-descriptions-item>
+        <el-descriptions-item label="状态码">{{ currLog.status_code }}</el-descriptions-item>
+        <el-descriptions-item label="响应大小">{{ currLog.response_size }} 字节</el-descriptions-item>
+        <el-descriptions-item label="User Agent">{{ currLog.user_agent }}</el-descriptions-item>
+        <el-descriptions-item label="Referer">{{ currLog.referer || '无' }}</el-descriptions-item>
+        <el-descriptions-item label="网关节点">{{ currLog.node_address }}</el-descriptions-item>
+      </el-descriptions>
     </div>
   </el-dialog>
 </template>
