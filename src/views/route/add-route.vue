@@ -49,6 +49,7 @@ const rules = {
     {required: true, message: '请选择关联服务', trigger: 'blur'}
   ],
   host: [
+    {required: true, message: '请填写域名', trigger: 'blur'},
     {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'},
     {
       validator: (rule: any, value: any, callback: any) => {
