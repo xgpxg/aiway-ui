@@ -2,12 +2,12 @@
   <div class="menu">
     <div class="logo">
       <div class="flex-center" v-if="!collapse">
-        <el-image src="/public/images/logo.png" style="height: 22px" class="mr10"></el-image>
+        <el-image src="/images/logo.png" style="height: 22px" class="mr10"></el-image>
         {{ version }}
       </div>
       <div v-else>
         <el-image
-            src="/public/images/logo2.png"
+            src="/images/logo2.png"
             fit="cover" class="mt5"></el-image>
       </div>
     </div>
