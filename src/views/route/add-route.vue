@@ -7,6 +7,8 @@ import PluginDropdown from "../plugin/plugin-dropdown.vue";
 import draggable from 'vuedraggable'
 import {CodeEditor} from 'monaco-editor-vue3';
 import {ElMessage} from "element-plus";
+import WarningTip from "../../components/Tip/WarningTip.vue";
+import InfoTip from "../../components/Tip/InfoTip.vue";
 
 const value = defineModel('value')
 
@@ -24,26 +26,56 @@ const defaultForm = {
   name: null,
   description: null,
   service: null,
-  host: null,
+  host: '*',
   path: null,
   header: {},
   query: {},
   pre_filters: [],
   post_filters: [],
+  is_auth: true,
+  auth_white_list: [],
 }
 const form = ref(structuredClone(defaultForm))
 const rules = {
   name: [
-    {required: true, message: '请输入路由名称', trigger: 'blur'},
+    {required: true, message: '请填写路由名称', trigger: 'blur'},
     {min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur'}
   ],
   path: [
-    {required: true, message: '请输入路径匹配规则', trigger: 'blur'},
+    {required: true, message: '请填写路径匹配规则', trigger: 'blur'},
     {min: 1, max: 50, message: '长度在 1 到 100 个字符', trigger: 'blur'}
   ],
   service: [
     {required: true, message: '请选择关联服务', trigger: 'blur'}
-  ]
+  ],
+  host: [
+    {required: true, message: '请填写域名', trigger: 'blur'},
+    {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'},
+    {
+      validator: (rule: any, value: any, callback: any) => {
+        if (!value) {
+          callback(new Error('请填写域名'));
+          return;
+        }
+
+        if (value === '*') {
+          callback();
+          return;
+        }
+
+        // 支持泛域名格式: *.example.com
+        const hostRegex = /^(\*\.)?([a-zA-Z0-9][-a-zA-Z0-9]{0,62}\.)+[a-zA-Z]{2,}$/;
+
+        if (!hostRegex.test(value)) {
+          callback(new Error('域名格式不正确，支持完整域名或泛域名，如：abc.example.com， *.example.com'));
+          return;
+        }
+
+        callback();
+      },
+      trigger: 'blur'
+    }
+  ],
 }
 const headers = ref([])
 const queries = ref([])
@@ -93,6 +125,8 @@ const save = () => {
       delete item.config_text
     })
 
+    form.value.auth_white_list = form.value.auth_white_list?.filter(item => !!item)
+
     let api: string;
     if (value.value) {
       api = '/api/route/update'
@@ -132,6 +166,8 @@ watch(value, (newVal: any) => {
       // 配置转字符串，以便在编辑器中显示和修改
       config_text: JSON.stringify(item.config, null, 2)
     })),
+    is_auth: newVal.is_auth,
+    auth_white_list: newVal.auth_white_list,
   }
   headers.value = Object.entries(form.value.header).map(item => {
     return {
@@ -180,7 +216,7 @@ if (!window['MonacoEnvironment']) {
 }
 const editorOptions = {
   fontSize: 14,
-  minimap: {enabled: true},
+  minimap: {enabled: false},
   automaticLayout: true,
   padding: {
     top: 10,
@@ -200,37 +236,36 @@ const reset = () => {
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
       <div class="title-block">基本信息</div>
       <el-form-item label="路由名称" prop="name">
-        <el-input v-model="form.name" placeholder="路由名称" maxlength="50" show-word-limit></el-input>
+        <el-input v-model="form.name" placeholder="请填写路由名称" maxlength="50" show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="路由描述" prop="description">
-        <el-input v-model="form.description" placeholder="路由描述" maxlength="500" show-word-limit></el-input>
+        <el-input v-model="form.description" placeholder="路由描述，可选" maxlength="500" show-word-limit></el-input>
       </el-form-item>
       <div class="title-block">目标服务</div>
       <el-form-item label="关联服务" prop="service">
-        <service-select v-model="form.service" status="Ok" placeholder="关联服务"></service-select>
+        <service-select v-model="form.service" status="Ok" placeholder="请选择关联服务"></service-select>
       </el-form-item>
       <div class="title-block">匹配规则</div>
       <el-form-item label="路径匹配" prop="path">
         <template #label>路径匹配
           <help-tip placement="top-start">
-            <p>通过该路径匹配路由，如果配置了“路径前缀”，则完整的请求路径为：【路径前缀】 + 【路径匹配】</p>
-            <p>支持的通配符：</p>
-            <p>? : 匹配任意单个字符</p>
-            <p>* : 匹配零个或多个字符</p>
-            <p>** : 匹配多层路径</p>
-            <p>{a,b} : 匹配 a 或 b，其中 a 和 b 是以上匹配模式的一种</p>
-            <p>[ab] : 匹配 a 或 b，使用 [!ab] 匹配除 a 和 b 之外的任何字符</p>
+            <p>通过该路径匹配路由。</p>
+            <p>匹配格式：</p>
+            <p>完全匹配：/api/a => /api/a</p>
+            <p>模糊匹配：/api/{*any} => /api/a/b/c/d, /api/a/b/c/d</p>
+            <p>匹配单层路径：/api/{any} => /api/a</p>
+            <p>匹配多层路径：/api/{p1}/{p2} => /api/a/b, /api/a/b/c, /api/a/b/c/d</p>
           </help-tip>
         </template>
-        <el-input v-model="form.path" placeholder="路径匹配" maxlength="100" show-word-limit></el-input>
+        <el-input v-model="form.path" placeholder="请填写路径" maxlength="100" show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="域名匹配" prop="host">
         <template #label>域名匹配
           <help-tip placement="top-start">
-            <p>当配置了域名时，只有Host请求头等于该域名时，才会匹配该路由</p>
+            <p>当指定域名时，只有Host请求头满足域名条件时，才会匹配该路由。如果需要匹配所有，请填写 “ * ”。</p>
           </help-tip>
         </template>
-        <el-input v-model="form.host" placeholder="域名匹配" maxlength="100" show-word-limit></el-input>
+        <el-input v-model="form.host" placeholder="请填写域名" maxlength="100" show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="Header匹配" prop="header">
         <template #label>
@@ -242,7 +277,7 @@ const reset = () => {
           </div>
         </template>
         <div v-if="headers.length===0" class="fill-width bg-card mt10 br5 flex-center">
-          <el-text type="info">暂未配置，请点击右侧按钮添加</el-text>
+          <el-text type="info">暂未配置</el-text>
         </div>
         <div v-for="header in headers" class="flex-space-between fill-width mb10">
           <el-input v-model="header.name" placeholder="名称"></el-input>
@@ -261,13 +296,62 @@ const reset = () => {
           </div>
         </template>
         <div v-if="queries.length===0" class="fill-width bg-card mt10 br5 flex-center">
-          <el-text type="info">暂未配置，请点击右侧按钮添加</el-text>
+          <el-text type="info">暂未配置</el-text>
         </div>
         <div v-for="query in queries" class="flex-space-between fill-width mb10">
           <el-input v-model="query.name" placeholder="名称"></el-input>
           <el-text class="ml5 mr5">-</el-text>
           <el-input v-model="query.value" placeholder="值"></el-input>
           <el-button @click="queries.splice(queries.indexOf(query),1)" link icon="minus" class="ml10"></el-button>
+        </div>
+      </el-form-item>
+      <div class="title-block">鉴权</div>
+      <el-form-item label="权限验证">
+        <template #label>
+          <div class="flex-space-between">
+            <div>
+              权限验证
+            </div>
+            <div>
+              <el-text v-if="form.is_auth" type="info" size="small">权限验证已开启，目前仅支持API Key验证</el-text>
+              <el-text v-if="!form.is_auth" type="warning" size="small">当前路由未开启权限验证，所有人均可访问</el-text>
+            </div>
+          </div>
+        </template>
+        <div class="fill-width flex-space-between">
+          <el-switch v-model="form.is_auth">
+          </el-switch>
+
+        </div>
+      </el-form-item>
+      <el-form-item label="白名单" v-if="form.is_auth">
+        <template #label>
+          <div class="flex-space-between">
+            <div class="fill-width">
+              白名单
+              <help-tip placement="top-start">
+                <p>匹配到白名单中的接口路径将忽略权限验证。</p>
+                <p>支持的通配符：</p>
+                <p>? : 匹配任意单个字符</p>
+                <p>* : 匹配零个或多个字符</p>
+                <p>** : 匹配多层路径</p>
+                <p>{a,b} : 匹配 a 或 b，其中 a 和 b 是以上匹配模式的一种</p>
+                <p>[ab] : 匹配 a 或 b，使用 [!ab] 匹配除 a 和 b 之外的任何字符</p>
+              </help-tip>
+            </div>
+            <div>
+              <el-button @click="form.auth_white_list.push(null)" link icon="plus"></el-button>
+            </div>
+          </div>
+        </template>
+        <div v-if="form.auth_white_list?.length>0" class="fill-width">
+          <div v-for="(item,index) in form.auth_white_list" class="fill-width flex-space-between mb10">
+            <el-input v-model="form.auth_white_list[index]" placeholder="请填写API路径，支持通配符"></el-input>
+            <el-button @click="form.auth_white_list.splice(index,1)" link icon="minus" class="ml10"></el-button>
+          </div>
+        </div>
+        <div v-else class="fill-width bg-card mt10 br5 flex-center">
+          <el-text type="info">暂未配置</el-text>
         </div>
       </el-form-item>
       <div class="title-block">插件</div>
@@ -321,7 +405,7 @@ const reset = () => {
             <div class="fill-width">
               后置过滤器
               <help-tip placement="top-start">
-                <p>后置过滤器插件在网关返回响应前执行，在此可以修改响应头、响应参数据等。</p>
+                <p>后置过滤器插件在网关返回响应前执行，在此可以修改响应头、响应数据等。</p>
               </help-tip>
               <el-text type="info" class="ml10" size="small">拖动可调整顺序</el-text>
             </div>

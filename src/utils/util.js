@@ -328,7 +328,13 @@ export const U = {
             }
             for (const k in o) {
                 if (new RegExp('(' + k + ')').test(fmt)) {
-                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
+                    if (k === 'S') {
+                        // 毫秒固定为3位
+                        const ms = '' + o[k]
+                        fmt = fmt.replace(RegExp.$1, ms.padStart(3, '0').substring(0, 3))
+                    } else {
+                        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
+                    }
                 }
             }
             return fmt
@@ -463,6 +469,26 @@ export const U = {
             seconds: seconds > 0 ? seconds : 0,
             allSeconds: Math.floor((date2 - date1) / 1000)
         }
+    },
+    getTimeIntervalString(date1, date2) {
+        let str = ''
+        let data = this.getTimeInterval(date1, date2)
+        if (data.days > 0) {
+            str += data.days + '天'
+        }
+        if (data.hours > 0) {
+            str += data.hours + '时'
+        }
+        if (data.minutes > 0) {
+            str += data.minutes + '分'
+        }
+        if (data.seconds > 0) {
+            str += data.seconds + '秒'
+        }
+        if (str === '') {
+            str = '0秒'
+        }
+        return str
     },
     randomString(e) {
         e = e || 32

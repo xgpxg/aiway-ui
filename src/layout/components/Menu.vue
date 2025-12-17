@@ -2,12 +2,13 @@
   <div class="menu">
     <div class="logo">
       <div class="flex-center" v-if="!collapse">
-        <el-image src="/public/images/logo.png" style="height: 22px" class="mr10"></el-image> {{ version }}
+        <el-image src="/images/logo.png" style="height: 22px" class="mr10"></el-image>
+        {{ version }}
       </div>
       <div v-else>
         <el-image
-            src="/images/logo_collapse.png"
-            fit="cover" style="scale: 1.3" class="mt5"></el-image>
+            src="/images/logo2.png"
+            fit="cover" class="mt5"></el-image>
       </div>
     </div>
     <el-menu
@@ -20,32 +21,32 @@
         <el-icon>
           <svg-icon icon-class="dashboard"></svg-icon>
         </el-icon>
-        <span>仪表盘</span>
+        <span v-if="!isCollapse">仪表盘</span>
       </el-menu-item>
       <el-menu-item-group title="网关">
-        <el-menu-item index="/route">
-          <el-icon>
-            <svg-icon icon-class="route"></svg-icon>
-          </el-icon>
-          <span>路由配置</span>
-        </el-menu-item>
         <el-menu-item index="/service">
           <el-icon>
             <svg-icon icon-class="service"></svg-icon>
           </el-icon>
-          <span>服务管理</span>
+          <span v-if="!isCollapse">服务管理</span>
+        </el-menu-item>
+        <el-menu-item index="/route">
+          <el-icon>
+            <svg-icon icon-class="route"></svg-icon>
+          </el-icon>
+          <span v-if="!isCollapse">路由配置</span>
         </el-menu-item>
         <el-menu-item index="/plugin">
           <el-icon>
             <svg-icon icon-class="plugin"></svg-icon>
           </el-icon>
-          <span>插件管理</span>
+          <span v-if="!isCollapse">插件管理</span>
         </el-menu-item>
         <el-menu-item index="/log">
           <el-icon>
             <svg-icon icon-class="log"></svg-icon>
           </el-icon>
-          <span>日志</span>
+          <span v-if="!isCollapse">日志</span>
         </el-menu-item>
       </el-menu-item-group>
 
@@ -54,13 +55,13 @@
           <el-icon>
             <svg-icon icon-class="key"></svg-icon>
           </el-icon>
-          <span>密钥管理</span>
+          <span v-if="!isCollapse">密钥管理</span>
         </el-menu-item>
         <el-menu-item index="/firewall">
           <el-icon>
             <svg-icon icon-class="security"></svg-icon>
           </el-icon>
-          <span>防火墙</span>
+          <span v-if="!isCollapse">防火墙</span>
         </el-menu-item>
       </el-menu-item-group>
 
@@ -69,19 +70,19 @@
           <el-icon>
             <svg-icon icon-class="user"></svg-icon>
           </el-icon>
-          <span>用户管理</span>
+          <span v-if="!isCollapse">用户管理</span>
         </el-menu-item>
-<!--        <el-menu-item index="/operation">
-          <el-icon>
-            <svg-icon icon-class="log2"></svg-icon>
-          </el-icon>
-          <span>操作日志</span>
-        </el-menu-item>-->
+        <!--        <el-menu-item index="/operation">
+                  <el-icon>
+                    <svg-icon icon-class="log2"></svg-icon>
+                  </el-icon>
+                  <span>操作日志</span>
+                </el-menu-item>-->
         <el-menu-item index="/setting">
           <el-icon>
             <svg-icon icon-class="setting"></svg-icon>
           </el-icon>
-          <span>系统设置</span>
+          <span v-if="!isCollapse">系统设置</span>
         </el-menu-item>
       </el-menu-item-group>
     </el-menu>
@@ -124,12 +125,12 @@ export default {
 <style scoped lang="scss">
 .menu {
   height: calc(100vh);
-  //background: #fafafa;
+  background: #fafafa;
   border-right: #eeeeee 1px solid;
 
   :deep(.el-menu) {
     border-right: unset;
-    //background: #fafafa;
+    background: #fafafa;
 
   }
 

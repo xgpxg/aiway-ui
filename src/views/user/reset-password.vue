@@ -64,7 +64,7 @@ const randomPassword = () => {
 
 <template>
   <el-dialog v-model="isShow" title="重置登录密码" width="500" destroy-on-close @closed="reset">
-    <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
+    <el-form ref="formRef" :model="form" :rules="rules" label-position="left" label-width="70" require-asterisk-position="right">
       <el-form-item label="用户名" prop="name">
         <el-text>{{ value?.username }}</el-text>
       </el-form-item>

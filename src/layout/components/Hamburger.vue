@@ -1,16 +1,18 @@
 <template>
-    <div style="padding: 0 15px;" @click="toggleClick">
-        <svg
-                :class="{'is-active':isActive}"
-                class="hamburger"
-                viewBox="0 0 1024 1024"
-                xmlns="http://www.w3.org/2000/svg"
-                width="64"
-                height="64"
-        >
-            <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM142.4 642.1L298.7 519a8.84 8.84 0 0 0 0-13.9L142.4 381.9c-5.8-4.6-14.4-.5-14.4 6.9v246.3a8.9 8.9 0 0 0 14.4 7z" />
-        </svg>
-    </div>
+  <div style="padding: 0 15px;" @click="toggleClick">
+    <svg
+        :class="{'is-active':isActive}"
+        class="hamburger"
+        viewBox="0 0 1024 1024"
+        xmlns="http://www.w3.org/2000/svg"
+        width="54"
+        height="54"
+    >
+      <path
+          d="M110.9 128.34a32 32 0 0 1 32-32h773a32 32 0 0 1 0 64h-773a32 32 0 0 1-32-32z m4.58 402.15L260 651.38c15.62 13.07 39.4 2 39.4-18.41V391.19c0-20.37-23.78-31.48-39.4-18.41L115.48 493.67a24 24 0 0 0 0 36.82z m800.41-50.41H405.54a32 32 0 1 0 0 64h510.35a32 32 0 0 0 0-64z m0 383.58h-773a32 32 0 1 0 0 64h773a32 32 0 0 0 0-64z"
+      ></path>
+    </svg>
+  </div>
 </template>
 
 <script>
@@ -32,13 +34,13 @@ export default {
 
 <style scoped>
 .hamburger {
-    display: inline-block;
-    vertical-align: middle;
-    width: 20px;
-    height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  width: 20px;
+  height: 20px;
 }
 
 .hamburger.is-active {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 </style>

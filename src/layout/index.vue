@@ -2,7 +2,7 @@
   <div class="common-layout">
     <el-container>
       <el-aside :width="menuWidth+'px'">
-        <Menu></Menu>
+        <Menu :collapse="collapse"></Menu>
       </el-aside>
       <el-main>
         <el-header>

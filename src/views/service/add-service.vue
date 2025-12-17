@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
 import {R} from "../../utils/R";
+import InfoTip from "../../components/Tip/InfoTip.vue";
 
 const value = defineModel('value')
 
@@ -78,11 +79,11 @@ const reset = () => {
   <el-drawer v-model="isShow" :title="value ? '修改服务' : '添加服务'" size="500" destroy-on-close @closed="reset">
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
       <el-form-item label="服务名称" prop="name">
-        <el-input v-model="form.name" placeholder="填写服务名称，新增后不可修改" maxlength="100"
+        <el-input v-model="form.name" placeholder="填写唯一的服务名称，例如：user-service，新增后不可修改" maxlength="100"
                   show-word-limit :disabled="!!value"></el-input>
       </el-form-item>
       <el-form-item label="服务描述" prop="description">
-        <el-input v-model="form.description" placeholder="填写服务描述" maxlength="500" show-word-limit></el-input>
+        <el-input v-model="form.description" placeholder="简要描述服务功能" maxlength="500" show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="节点地址" prop="nodes">
         <template #label>
@@ -94,7 +95,8 @@ const reset = () => {
         <div v-for="(node,index) in form.nodes" class="fill-width mb10 flex">
           <el-form-item class="fill-width flex" :rules="{required:true,message:'请填写节点地址'}"
                         :prop="'nodes.'+index" inline-message>
-            <el-input v-model="form.nodes[index]" placeholder="填写服务节点地址，点击右上角 + 按钮添加新节点">
+            <el-input v-model="form.nodes[index]"
+                      placeholder="填写服务节点地址，格式：IP:PORT，点击右上角 + 按钮添加新节点">
               <template #suffix>
                 <el-button @click="form.nodes.splice(index,1)" link icon="minus" class="ml10"
                            v-if="form.nodes.length>1"></el-button>
@@ -108,6 +110,12 @@ const reset = () => {
           <el-radio label="random">随机</el-radio>
           <el-radio label="random_robin">轮询</el-radio>
         </el-radio-group>
+        <div class="fill-width mt5">
+          <info-tip size="small">
+            随机：从所有节点中随机选择一个节点调用；
+            轮询：按照顺序依次从所有节点中选择一个节点调用。
+          </info-tip>
+        </div>
       </el-form-item>
     </el-form>
     <template #footer>

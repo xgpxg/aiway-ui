@@ -1,20 +1,37 @@
 <template>
   <div class="navbar flex-space-between">
     <div class="flex-v fill-width">
-<!--      <Hamburger class="hamburger-container"
-                 @toggleClick="toggleSideBar"></Hamburger>
-      <Breadcrumb class="breadcrumb-container"></Breadcrumb>
-      <search-input class="ml50"></search-input>-->
+      <Hamburger class="hamburger-container"
+                 @toggleClick="toggleSideBar" :is-active="collapse"></Hamburger>
+      <!--            <Breadcrumb class="breadcrumb-container"></Breadcrumb>
+                  <search-input class="ml50"></search-input>-->
       <AppBar></AppBar>
     </div>
 
     <div class="right-menu flex-v">
+      <el-popover width="500px" trigger="click" @show="" placement="bottom-end">
+        <template #reference>
+          <el-icon class="cursor-pointer" style="margin-top: -2px;margin-right: 10px">
+            <svg-icon icon-class="app"></svg-icon>
+          </el-icon>
+        </template>
+      </el-popover>
+      <el-popover width="500px" trigger="click" @show="this.$refs.messageRef?.loadMessages()" placement="bottom-end">
+        <template #reference>
+          <el-badge :value="unreadCount" class="ml20 cursor-pointer" :show-zero="false">
+            <el-icon>
+              <Bell/>
+            </el-icon>
+          </el-badge>
+        </template>
+        <Message ref="messageRef"></Message>
+      </el-popover>
       <el-link
           target="_blank"
           class="nav-icon-button"
           @click="toHome"
           :underline="false">
-        <el-dropdown trigger="click">
+        <el-dropdown trigger="click" placement="bottom-end">
           <div class="avatar-wrapper">
             <el-icon class="user-avatar">
               <User></User>
@@ -45,9 +62,11 @@ import Hamburger from "./Hamburger.vue";
 import Breadcrumb from "./Breadcrumb.vue";
 import UpdatePassword from "../../views/login/update-password.vue";
 import AppBar from "./AppBar.vue";
+import Message from "./Message.vue";
 
 export default {
   components: {
+    Message,
     AppBar,
     UpdatePassword,
     Hamburger,
@@ -99,9 +118,9 @@ export default {
       this.$router.push({name: 'Index'})
     },
     loadUnreadCount() {
-      // this.R.get('alert/unread/count').then(res => {
-      //   this.unreadCount = res.data
-      // })
+      this.R.postJson('/api/message/count/unread').then(res => {
+        this.unreadCount = res.data.info + res.data.warn + res.data.error
+      })
     }
   }
 }
@@ -183,7 +202,7 @@ export default {
     margin-right: 20px;
 
     .nav-icon-button {
-      margin: 0 6px;
+      margin: 0 6px 0 20px;
       background: transparent;
       border: none;
       color: #595959;
@@ -269,4 +288,13 @@ export default {
     }
   }
 }
+
+:deep(.el-badge__content) {
+  height: 14px;
+  line-height: 14px;
+  padding: 0 4px;
+  font-size: 10px;
+  min-width: 12px;
+}
+
 </style>

@@ -1,0 +1,397 @@
+<script setup lang="ts">
+import { ref, onMounted, watch } from 'vue'
+import * as echarts from 'echarts'
+
+// 定义时间维度枚举
+type TimeDimension = 'minute' | 'hour' | 'day' | 'month'
+
+interface NetworkDataPoint {
+  timestamp: number
+  in: number
+  out: number
+}
+
+const chartRef = ref<HTMLElement | null>(null)
+const timeDimension = ref<TimeDimension>('minute')
+const chart = ref<echarts.EChartsType | null>(null)
+
+// 生成模拟数据
+const generateMockData = (dimension: TimeDimension): NetworkDataPoint[] => {
+  const data: NetworkDataPoint[] = []
+  const now = Date.now()
+  
+  switch (dimension) {
+    case 'minute':
+      // 最近1小时，每分钟一个数据点
+      for (let i = 59; i >= 0; i--) {
+        data.push({
+          timestamp: now - i * 60 * 1000,
+          in: Math.floor(Math.random() * 1000) + Math.sin(i / 10) * 500 + 500,
+          out: Math.floor(Math.random() * 800) + Math.sin(i / 8) * 400 + 400
+        })
+      }
+      break
+    case 'hour':
+      // 最近24小时，每小时一个数据点
+      for (let i = 23; i >= 0; i--) {
+        data.push({
+          timestamp: now - i * 3600 * 1000,
+          in: Math.floor(Math.random() * 5000) + Math.sin(i / 4) * 2000 + 3000,
+          out: Math.floor(Math.random() * 4000) + Math.sin(i / 5) * 1500 + 2500
+        })
+      }
+      break
+    case 'day':
+      // 最近30天，每天一个数据点
+      for (let i = 29; i >= 0; i--) {
+        data.push({
+          timestamp: now - i * 24 * 3600 * 1000,
+          in: Math.floor(Math.random() * 20000) + Math.sin(i / 5) * 10000 + 15000,
+          out: Math.floor(Math.random() * 18000) + Math.sin(i / 6) * 8000 + 12000
+        })
+      }
+      break
+    case 'month':
+      // 最近12个月，每月一个数据点
+      for (let i = 11; i >= 0; i--) {
+        data.push({
+          timestamp: now - i * 30 * 24 * 3600 * 1000,
+          in: Math.floor(Math.random() * 100000) + Math.sin(i / 2) * 50000 + 80000,
+          out: Math.floor(Math.random() * 90000) + Math.sin(i / 3) * 40000 + 70000
+        })
+      }
+      break
+  }
+  
+  return data
+}
+
+// 格式化时间显示
+const formatTime = (timestamp: number, dimension: TimeDimension): string => {
+  const date = new Date(timestamp)
+  
+  switch (dimension) {
+    case 'minute':
+      return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+    case 'hour':
+      return `${date.getHours().toString().padStart(2, '0')}:00`
+    case 'day':
+      return `${date.getMonth() + 1}-${date.getDate()}`
+    case 'month':
+      return `${date.getFullYear()}-${date.getMonth() + 1}`
+    default:
+      return date.toLocaleString()
+  }
+}
+
+// 格式化网络流量显示
+const formatNetwork = (bytes: number): string => {
+  if (bytes > 1024 * 1024 * 1024) {
+    return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB'
+  } else if (bytes > 1024 * 1024) {
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
+  } else if (bytes > 1024) {
+    return (bytes / 1024).toFixed(2) + ' KB'
+  } else {
+    return bytes + ' B'
+  }
+}
+
+// 初始化图表
+const initChart = () => {
+  if (chartRef.value) {
+    chart.value = echarts.init(chartRef.value)
+    updateChart()
+  }
+}
+
+// 更新图表
+const updateChart = () => {
+  if (!chart.value) return
+  
+  const data = generateMockData(timeDimension.value)
+  
+  const option = {
+    title: {
+      text: '网络流量监控',
+      left: 'center',
+      textStyle: {
+        fontSize: 16,
+        fontWeight: 'normal'
+      }
+    },
+    tooltip: {
+      trigger: 'axis',
+      formatter: (params: any) => {
+        const inItem = params[0]
+        const outItem = params[1]
+        const dataIndex = inItem.dataIndex
+        const networkData = data[dataIndex]
+        return `${formatTime(networkData.timestamp, timeDimension.value)}<br/>
+                入站: ${formatNetwork(networkData.in)}/s<br/>
+                出站: ${formatNetwork(networkData.out)}/s`
+      }
+    },
+    legend: {
+      data: ['入站流量', '出站流量'],
+      top: 30
+    },
+    xAxis: {
+      type: 'category',
+      data: data.map(item => formatTime(item.timestamp, timeDimension.value)),
+      boundaryGap: false
+    },
+    yAxis: [
+      {
+        type: 'value',
+        name: '流量 (bytes/s)',
+        axisLabel: {
+          formatter: (value: number) => {
+            if (value > 1024 * 1024 * 1024) {
+              return (value / (1024 * 1024 * 1024)).toFixed(1) + 'G'
+            } else if (value > 1024 * 1024) {
+              return (value / (1024 * 1024)).toFixed(1) + 'M'
+            } else if (value > 1024) {
+              return (value / 1024).toFixed(1) + 'K'
+            } else {
+              return value
+            }
+          }
+        }
+      }
+    ],
+    series: [
+      {
+        name: '入站流量',
+        data: data.map(item => [item.timestamp, item.in]),
+        type: 'line',
+        smooth: true,
+        showSymbol: false,
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [{
+              offset: 0,
+              color: 'rgba(102, 126, 234, 0.3)'
+            }, {
+              offset: 1,
+              color: 'rgba(102, 126, 234, 0.01)'
+            }]
+          }
+        },
+        lineStyle: {
+          color: '#667eea',
+          width: 2
+        }
+      },
+      {
+        name: '出站流量',
+        data: data.map(item => [item.timestamp, item.out]),
+        type: 'line',
+        smooth: true,
+        showSymbol: false,
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [{
+              offset: 0,
+              color: 'rgba(118, 75, 162, 0.3)'
+            }, {
+              offset: 1,
+              color: 'rgba(118, 75, 162, 0.01)'
+            }]
+          }
+        },
+        lineStyle: {
+          color: '#764ba2',
+          width: 2
+        }
+      }
+    ],
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    }
+  }
+  
+  chart.value.setOption(option)
+}
+
+// 切换时间维度
+const switchTimeDimension = (dimension: TimeDimension) => {
+  timeDimension.value = dimension
+  updateChart()
+}
+
+// 监听时间维度变化
+watch(timeDimension, () => {
+  updateChart()
+})
+
+// 组件挂载时初始化图表
+onMounted(() => {
+  initChart()
+  
+  // 窗口大小改变时重置图表大小
+  window.addEventListener('resize', () => {
+    if (chart.value) {
+      chart.value.resize()
+    }
+  })
+  
+  // 模拟实时数据更新
+  setInterval(() => {
+    updateChart()
+  }, 10000)
+})
+</script>
+
+<template>
+  <div class="network-monitor-container">
+    <div class="header">
+      <div class="title">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+        </div>
+        <h3>网络流量监控</h3>
+      </div>
+      <div class="time-switcher">
+        <button 
+          :class="{ active: timeDimension === 'minute' }" 
+          @click="switchTimeDimension('minute')"
+        >
+          分钟
+        </button>
+        <button 
+          :class="{ active: timeDimension === 'hour' }" 
+          @click="switchTimeDimension('hour')"
+        >
+          小时
+        </button>
+        <button 
+          :class="{ active: timeDimension === 'day' }" 
+          @click="switchTimeDimension('day')"
+        >
+          天
+        </button>
+        <button 
+          :class="{ active: timeDimension === 'month' }" 
+          @click="switchTimeDimension('month')"
+        >
+          月
+        </button>
+      </div>
+    </div>
+    
+    <div ref="chartRef" class="chart-container"></div>
+  </div>
+</template>
+
+<style scoped lang="scss">
+.network-monitor-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #ffffff;
+  height: 400px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    
+    .title {
+      display: flex;
+      align-items: center;
+      
+      .icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        
+        svg {
+          color: white;
+        }
+      }
+      
+      h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+      }
+    }
+    
+    .time-switcher {
+      display: flex;
+      gap: 8px;
+      
+      button {
+        padding: 6px 12px;
+        border: 1px solid #e0e0e0;
+        background: #ffffff;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        color: #666;
+        transition: all 0.2s;
+        
+        &:hover {
+          border-color: #667eea;
+          color: #667eea;
+        }
+        
+        &.active {
+          background: #667eea;
+          border-color: #667eea;
+          color: white;
+        }
+      }
+    }
+  }
+  
+  .chart-container {
+    flex: 1;
+    width: 100%;
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .network-monitor-container {
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      
+      .time-switcher {
+        align-self: flex-end;
+      }
+    }
+  }
+}
+</style>

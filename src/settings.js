@@ -17,7 +17,7 @@ const defaultSettings = {
   /**
    * 是否显示开发备注
    */
-  showDevRemark: false
+  showDevRemark: true
 }
 
 export default defaultSettings

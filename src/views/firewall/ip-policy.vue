@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {R} from "../../utils/R";
 import {ElMessage} from "element-plus";
+import InfoTip from "../../components/Tip/InfoTip.vue";
 
 const value = defineModel()
 
@@ -22,6 +23,11 @@ const update = () => {
         <el-radio-button value="Allow">允许</el-radio-button>
         <el-radio-button value="Deny">拒绝</el-radio-button>
       </el-radio-group>
+      <el-text type="info" size="small" class="fill-width">
+        关闭：关闭IP校验；
+        允许：允许指定IP访问；
+        拒绝：拒绝指定IP访问。
+      </el-text>
     </el-form-item>
     <el-form-item label="策略值">
       <el-input-tag v-model="value['ip_policy']" type="textarea"
