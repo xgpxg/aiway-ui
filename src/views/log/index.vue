@@ -8,7 +8,7 @@ const active = ref('aiway-logs')
 </script>
 
 <template>
-  <div class="pd10">
+  <div>
     <el-tabs v-model="active" tab-position="left">
       <el-tab-pane label="通用日志" name="aiway-logs">
         <div class="mt10">

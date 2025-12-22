@@ -74,6 +74,14 @@ const routes = [
                 }
             },
             {
+                path: 'model',
+                name: 'Model',
+                component: () => import('@/views/model/index.vue'),
+                meta: {
+                    title: '模型代理'
+                }
+            },
+            {
                 path: 'users',
                 name: 'Users',
                 component: () => import('@/views/user/index.vue'),

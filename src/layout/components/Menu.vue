@@ -8,7 +8,7 @@
       <div v-else>
         <el-image
             src="/images/logo2.png"
-            fit="cover" class="mt5"></el-image>
+            fit="cover" class=""></el-image>
       </div>
     </div>
     <el-menu
@@ -62,6 +62,15 @@
             <svg-icon icon-class="security"></svg-icon>
           </el-icon>
           <span v-if="!isCollapse">防火墙</span>
+        </el-menu-item>
+      </el-menu-item-group>
+
+      <el-menu-item-group title="模型" v-if="U.isDev()">
+        <el-menu-item index="/model">
+          <el-icon>
+            <svg-icon icon-class="model"></svg-icon>
+          </el-icon>
+          <span v-if="!isCollapse">模型代理</span>
         </el-menu-item>
       </el-menu-item-group>
 

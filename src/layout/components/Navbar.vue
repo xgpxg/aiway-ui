@@ -3,9 +3,8 @@
     <div class="flex-v fill-width">
       <Hamburger class="hamburger-container"
                  @toggleClick="toggleSideBar" :is-active="collapse"></Hamburger>
-      <!--            <Breadcrumb class="breadcrumb-container"></Breadcrumb>
-                  <search-input class="ml50"></search-input>-->
-      <AppBar></AppBar>
+                  <Breadcrumb class="breadcrumb-container"></Breadcrumb>
+<!--      <AppBar></AppBar>-->
     </div>
 
     <div class="right-menu flex-v">

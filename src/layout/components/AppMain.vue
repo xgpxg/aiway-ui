@@ -1,8 +1,10 @@
 <template>
   <section class="app-main">
-    <transition name="fade-transform" mode="out-in">
-      <router-view/>
-    </transition>
+    <div class="pd10">
+      <transition name="fade-transform" mode="out-in">
+        <router-view/>
+      </transition>
+    </div>
   </section>
 </template>
 

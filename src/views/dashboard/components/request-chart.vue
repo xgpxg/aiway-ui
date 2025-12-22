@@ -425,7 +425,7 @@ const initChart = () => {
 
 <style scoped lang="scss">
 .chart-container {
-  padding: 20px;
+  padding: 10px;
   background: transparent;
 
   #request-chart {

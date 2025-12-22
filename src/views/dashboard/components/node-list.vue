@@ -147,7 +147,7 @@ const getStatusType = (status: string) => {
 
 <style scoped lang="scss">
 .node-dashboard {
-
+  padding: 10px;
   .filter-section {
     margin-bottom: 16px;
     //padding: 12px;

@@ -65,7 +65,7 @@ const globalPluginRef = ref()
 </script>
 
 <template>
-  <div class="pd20">
+  <div>
     <div class="flex-v">
       <service-select v-model="form.service" @change="loadRoutes" placeholder="关联服务" clearable style="width: 200px"
                       class="mr10"></service-select>

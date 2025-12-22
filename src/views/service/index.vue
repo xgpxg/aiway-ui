@@ -54,7 +54,7 @@ const updateStatus = (route: any, status: string) => {
 </script>
 
 <template>
-  <div class="pd20">
+  <div>
     <div class="flex-v">
       <el-select v-model="form.status" @change="loadServices" placeholder="状态" style="width: 200px" class="mr10"
                  clearable>

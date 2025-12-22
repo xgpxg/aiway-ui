@@ -53,7 +53,7 @@ const toEdit = (row: any) => {
 </script>
 
 <template>
-  <div class="pd20">
+  <div>
     <div class="flex-v">
       <el-input v-model="form.filter_text" prefix-icon="search" placeholder="搜索用户名/昵称"
                 @input="loadUsers"></el-input>

@@ -8,7 +8,7 @@ const activeIndex = ref('100')
 </script>
 
 <template>
-  <div class="pdr20 pdt20">
+  <div>
     <el-row :gutter="10">
       <el-col :span="3">
         <el-menu

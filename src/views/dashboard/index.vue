@@ -6,7 +6,7 @@ import RequestChart from "./components/request-chart.vue";
 </script>
 
 <template>
-  <div class="pd10">
+  <div class="">
     <el-row :gutter="20">
       <el-col :span="24">
         <gateway-monitor></gateway-monitor>

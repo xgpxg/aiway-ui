@@ -43,7 +43,7 @@ const toEdit = (plugin: any) => {
 </script>
 
 <template>
-  <div class="pd20">
+  <div>
     <div class="flex-v">
       <el-input v-model="form.filter_text" prefix-icon="search" placeholder="搜索插件名称/功能描述"
                 @input="loadPlugins"></el-input>
