@@ -8,7 +8,7 @@
     </div>
 
     <div class="right-menu flex-v">
-      <el-popover width="500px" trigger="click" @show="" placement="bottom-end">
+      <el-popover width="500px" trigger="click" @show="" placement="bottom-end" v-if="U.isDev()">
         <template #reference>
           <el-icon class="cursor-pointer" style="margin-top: -2px;margin-right: 10px">
             <svg-icon icon-class="app"></svg-icon>
@@ -62,6 +62,7 @@ import Breadcrumb from "./Breadcrumb.vue";
 import UpdatePassword from "../../views/login/update-password.vue";
 import AppBar from "./AppBar.vue";
 import Message from "./Message.vue";
+import {U} from "../../utils/util";
 
 export default {
   components: {
@@ -81,6 +82,9 @@ export default {
     }
   },
   computed: {
+    U() {
+      return U
+    },
     user() {
       return this.$store.state.user
     },
