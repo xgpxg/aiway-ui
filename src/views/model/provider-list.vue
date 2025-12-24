@@ -29,6 +29,7 @@ const providerForm = ref({
   name: null,
   api_url: null,
   api_key: null,
+  target_model_name: null,
   weight: 1
 })
 const rules = {
@@ -76,6 +77,7 @@ const openAddProviderDialog = () => {
     name: '',
     api_url: '',
     api_key: '',
+    target_model_name: '',
     weight: 1  // 默认权重为1
   }
   currentProvider.value = null
@@ -86,6 +88,7 @@ const openAddProviderDialog = () => {
 const openEditProviderDialog = (row) => {
   providerForm.value = {
     ...row,
+    target_model_name: row.target_model_name || '',
     weight: row.weight || 1  // 确保权重字段存在，默认为1
   }
   currentProvider.value = row
@@ -103,6 +106,7 @@ const saveProvider = () => {
         name: providerForm.value.name,
         api_url: providerForm.value.api_url,
         api_key: providerForm.value.api_key,
+        target_model_name: providerForm.value.target_model_name,
       }
 
       // 如果当前模型使用加权随机策略，则包含权重
@@ -124,6 +128,10 @@ const saveProvider = () => {
       }
       if (props.selectedModelId) {
         providerData.model_id = props.selectedModelId
+      }
+      // 如果target_model_name不为空，则包含该字段
+      if (providerData.target_model_name !== undefined && providerData.target_model_name !== null) {
+        // 不需要额外处理，因为target_model_name可能为空
       }
 
       // 如果当前模型使用加权随机策略，则包含权重
@@ -180,23 +188,28 @@ const toggleStatus = (provider: any, newStatus: string) => {
     <div class="card">
       <div class="mt10">
         <el-table class="mt10" :data="filteredProviderList">
-          <el-table-column prop="name" label="提供商" min-width="150">
+          <el-table-column prop="name" label="提供商" min-width="100" show-overflow-tooltip>
             <template #default="{row}">
               {{ row.name }}
             </template>
           </el-table-column>
-          <el-table-column prop="api_url" label="API地址" min-width="350">
+          <el-table-column prop="api_url" label="API地址" min-width="300" show-overflow-tooltip>
             <template #default="{row}">
               {{ row.api_url }}
             </template>
           </el-table-column>
-          <el-table-column label="API Key" min-width="100">
+          <el-table-column label="API Key" min-width="100" show-overflow-tooltip>
             <template #default="{row}">
               {{ row.api_key ? row.api_key.substring(0, 5) + '******' : '-' }}
             </template>
           </el-table-column>
+          <el-table-column label="目标模型" min-width="150" show-overflow-tooltip>
+            <template #default="{row}">
+              {{ row.target_model_name || '-' }}
+            </template>
+          </el-table-column>
           <!-- 权重列 - 仅在加权随机策略时显示 -->
-          <el-table-column v-if="showWeightColumn" prop="weight" label="权重" width="100">
+          <el-table-column v-if="showWeightColumn" prop="weight" label="权重" width="100" show-overflow-tooltip>
             <template #default="{row}">
               {{ row.weight }}
             </template>
@@ -243,6 +256,10 @@ const toggleStatus = (provider: any, newStatus: string) => {
         </el-form-item>
         <el-form-item label="API Key" prop="api_key">
           <el-input v-model="providerForm.api_key" placeholder="请输入API Key" show-password></el-input>
+        </el-form-item>
+        <el-form-item label="目标模型" prop="target_model_name">
+          <el-input v-model="providerForm.target_model_name"
+                    placeholder="请输入提供商处的模型名称，不填则使用默认名称"></el-input>
         </el-form-item>
         <!-- 权重输入框 - 仅在加权随机策略时显示 -->
         <el-form-item v-if="showWeightColumn" label="权重" prop="weight">

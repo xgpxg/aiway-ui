@@ -162,10 +162,11 @@ onMounted(() => {
               </el-text>
             </div>
             <div>
-              <el-button type="primary" size="small" link @click.stop="openEditModelDialog(model)">编辑</el-button>
+              <el-button type="primary" size="small" link @click.stop="openEditModelDialog(model)"
+                         icon="edit"></el-button>
               <el-popconfirm title="确定删除吗？" @confirm="deleteModel(model.id)">
                 <template #reference>
-                  <el-button type="danger" link size="small">删除
+                  <el-button type="danger" link size="small" icon="delete">
                   </el-button>
                 </template>
               </el-popconfirm>
@@ -182,7 +183,7 @@ onMounted(() => {
               :modelList="modelList"
               :selectedModelId="selectedModelId"
               @refresh="loadModelList"
-          />,
+          />
         </div>
       </div>
     </el-col>
