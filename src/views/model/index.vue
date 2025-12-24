@@ -140,7 +140,7 @@ onMounted(() => {
       </div>
       <div class="providers">
         <div
-            class="bg-card br5 mb10 mr5 cursor-pointer"
+            class="bg-card br5 mb10 cursor-pointer"
             :class="{ 'selected': selectedModelId === model.id }"
             v-for="model in filteredModelList"
             :key="model.id"
@@ -149,7 +149,7 @@ onMounted(() => {
           <div class="title flex-space-between">
             {{ model.name }}
             <el-switch v-model="model.status" active-value="Ok" inactive-value="Disable" size="small"
-                       @change="toggleStatus(model, $event)" active-text="启用" inactive-text="停用" inline-prompt>
+                       @change="toggleStatus(model, $event)" inactive-text="停用" inline-prompt>
             </el-switch>
           </div>
           <div class="mt5">
