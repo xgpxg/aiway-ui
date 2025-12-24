@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, ref, computed} from 'vue'
+import {onMounted, ref, computed, watch} from 'vue'
 import {R} from '@/utils/R'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import ProviderList from './provider-list.vue'
@@ -36,16 +36,17 @@ const loadModelList = () => {
     if (!selectedModelId.value && modelList.value.length > 0) {
       selectedModelId.value = modelList.value[0].id
     }
-  }).catch(err => {
-    console.error('加载模型列表失败:', err)
-    modelList.value = []
-    ElMessage.error('加载模型列表失败')
   })
 }
 
+const filteredModelList = computed(() => {
+  return modelList.value.filter(model => model.name.includes(modelQuery.value))
+})
+
+
 // 新增模型弹窗
 const openAddModelDialog = () => {
-  modelForm.value = {name: ''}
+  modelForm.value = {name: '', lb_strategy: 'Random'}
   currentModel.value = null
   modelDialogTitle.value = '新增模型'
   modelDialogVisible.value = true
@@ -69,7 +70,7 @@ const saveModel = () => {
       R.postJson('/api/model/update', {
         id: currentModel.value.id,
         name: modelForm.value.name
-      }).then(res => {
+      }).then((res: any) => {
         if (res.code === 0) {
           ElMessage.success('已更新')
           modelDialogVisible.value = false
@@ -89,22 +90,15 @@ const saveModel = () => {
   })
 }
 
-const deleteModel = (id) => {
-  ElMessageBox.confirm('确定要删除这个模型吗？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    R.postJson('/api/model/delete', {id}).then(res => {
-      if (res.ok) {
-        ElMessage.success('删除成功')
-        // 如果删除的是当前选中的模型，则清除选中状态
-        if (selectedModelId.value === id) {
-          selectedModelId.value = null
-        }
-        loadModelList()
+const deleteModel = (id: number) => {
+  R.postJson('/api/model/delete', {id}).then(res => {
+    if (res.ok) {
+      // 如果删除的是当前选中的模型，则清除选中状态
+      if (selectedModelId.value === id) {
+        selectedModelId.value = null
       }
-    })
+      loadModelList()
+    }
   })
 }
 
@@ -141,39 +135,41 @@ onMounted(() => {
     <el-col :span="6">
       <div class="flex mb10">
         <el-input v-model="modelQuery" placeholder="模型名称" prefix-icon="search" clearable></el-input>
-        <el-button type="primary" class="ml10" icon="plus" @click="openAddModelDialog">新增</el-button>
+        <el-button type="primary" class="ml10" icon="plus" @click="openAddModelDialog">新增模型</el-button>
       </div>
       <div class="providers">
         <div
             class="bg-card br5 mb10 mr5 cursor-pointer"
             :class="{ 'selected': selectedModelId === model.id }"
-            v-for="model in modelList"
+            v-for="model in filteredModelList"
             :key="model.id"
             @click="selectModel(model.id)"
         >
           <div class="title flex-space-between">
             {{ model.name }}
-            <el-tag
-                class="ml10"
-                :type="model.status === 'Ok' ? 'success' : 'info'"
-                size="small"
-            >
-              {{ model.status === 'Ok' ? '启用' : '停用' }}
-            </el-tag>
+            <el-switch v-model="model.status" active-value="Ok" inactive-value="Disable" size="small"
+                       @change="toggleStatus(model, $event)" active-text="启用" inactive-text="停用" inline-prompt>
+            </el-switch>
           </div>
           <div class="mt5">
-            <el-text effect="plain" size="small">{{ model.providers ? model.providers.length : 0 }} 提供商</el-text>
+            <el-text effect="plain" size="small">{{ model.providers ? model.providers.length : 0 }} 个提供商</el-text>
           </div>
-          <div class="mt10 flex" style="justify-content: flex-end;">
-            <el-button type="primary" size="small" link @click.stop="toggleStatus(model,'Disable')"
-                       v-if="model.status==='Ok'">停用
-            </el-button>
-            <el-button type="primary" size="small" link @click.stop="toggleStatus(model,'Ok')"
-                       v-if="model.status==='Disable'">启用
-            </el-button>
-            <el-button type="primary" size="small" link @click.stop="openEditModelDialog(model)">编辑</el-button>
-            <el-button type="danger" size="small" link @click.stop="deleteModel(model.id)">删除
-            </el-button>
+          <div class="mt10 flex-v flex-space-between">
+            <div>
+              <el-text type="info" size="small">
+                {{ model.update_time || model.create_time }}
+              </el-text>
+            </div>
+            <div>
+              <el-button type="primary" size="small" link @click.stop="openEditModelDialog(model)">编辑</el-button>
+              <el-popconfirm title="确定删除吗？" @confirm="deleteModel(model.id)">
+                <template #reference>
+                  <el-button type="danger" link size="small">删除
+                  </el-button>
+                </template>
+              </el-popconfirm>
+
+            </div>
           </div>
         </div>
       </div>

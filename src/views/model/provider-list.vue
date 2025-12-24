@@ -135,35 +135,36 @@ const toggleStatus = (provider: any, newStatus: string) => {
   <div>
     <div class="flex mb10">
       <el-input v-model="providerQuery" placeholder="提供商名称" prefix-icon="search" clearable></el-input>
+      <el-button type="" class="ml10" icon="refresh" @click="emit('refresh')"></el-button>
       <el-button type="primary" class="ml10" icon="plus" @click="openAddProviderDialog">新增提供商</el-button>
     </div>
 
     <div class="card">
       <div class="mt10">
         <el-table class="mt10" :data="filteredProviderList">
-          <el-table-column prop="name" label="提供商">
+          <el-table-column prop="name" label="提供商" min-width="150">
             <template #default="{row}">
               {{ row.name }}
             </template>
           </el-table-column>
-          <el-table-column prop="api_url" label="API地址">
+          <el-table-column prop="api_url" label="API地址" min-width="300">
             <template #default="{row}">
               {{ row.api_url }}
             </template>
           </el-table-column>
-          <el-table-column label="API Key">
+          <el-table-column label="API Key" min-width="150">
             <template #default="{row}">
-              {{ row.api_key ? '******' : '-' }}
+              {{ row.api_key ? row.api_key.substring(0, 5) + '******' : '-' }}
             </template>
           </el-table-column>
-          <el-table-column label="状态">
+          <el-table-column label="状态" width="100">
             <template #default="{row}">
               <el-switch v-model="row.status" active-value="Ok" inactive-value="Disable"
                          @change="toggleStatus(row, $event)" active-text="启用" inactive-text="停用" inline-prompt>
               </el-switch>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="150">
+          <el-table-column label="操作" width="110">
             <template #default="{row}">
               <el-button link type="primary" @click="openEditProviderDialog(row)">编辑</el-button>
               <el-button link type="danger" @click="deleteProvider(row.id)">删除</el-button>
