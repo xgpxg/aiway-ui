@@ -69,7 +69,8 @@ const saveModel = () => {
     if (currentModel.value) {
       R.postJson('/api/model/update', {
         id: currentModel.value.id,
-        name: modelForm.value.name
+        name: modelForm.value.name,
+        lb_strategy: modelForm.value.lb_strategy
       }).then((res: any) => {
         if (res.code === 0) {
           ElMessage.success('已更新')
@@ -181,7 +182,7 @@ onMounted(() => {
               :modelList="modelList"
               :selectedModelId="selectedModelId"
               @refresh="loadModelList"
-          />
+          />,
         </div>
       </div>
     </el-col>

@@ -26,9 +26,10 @@ const providerDialogTitle = ref('')
 const providerForm = ref({
   id: null,
   model_id: null,
-  name: '',
-  api_url: '',
-  api_key: ''
+  name: null,
+  api_url: null,
+  api_key: null,
+  weight: 1
 })
 const rules = {
   name: [
@@ -36,6 +37,10 @@ const rules = {
   ],
   api_url: [
     {required: true, message: '请输入API地址', trigger: 'blur'}
+  ],
+  weight: [
+    {required: true, message: '请输入权重值', trigger: 'blur'},
+    {type: 'number', message: '权重必须为数字值', trigger: 'blur'}
   ]
 }
 const formRef = ref(null)
@@ -49,6 +54,20 @@ const filteredProviderList = computed(() => {
   return selectedModel ? (selectedModel.providers || []).filter(provider => !providerQuery.value || provider.name.indexOf(providerQuery.value) > -1) : []
 })
 
+// 获取当前选中模型的负载策略
+const currentModelLbStrategy = computed(() => {
+  if (!props.selectedModelId) {
+    return ''
+  }
+  const selectedModel = props.modelList.find(model => model.id === props.selectedModelId)
+  return selectedModel ? selectedModel.lb_strategy : ''
+})
+
+// 判断是否显示权重相关功能
+const showWeightColumn = computed(() => {
+  return currentModelLbStrategy.value === 'WeightedRandom'
+})
+
 // 模型提供商操作
 const openAddProviderDialog = () => {
   providerForm.value = {
@@ -56,7 +75,8 @@ const openAddProviderDialog = () => {
     model_id: props.selectedModelId,
     name: '',
     api_url: '',
-    api_key: ''
+    api_key: '',
+    weight: 1  // 默认权重为1
   }
   currentProvider.value = null
   providerDialogTitle.value = '新增提供商'
@@ -64,7 +84,10 @@ const openAddProviderDialog = () => {
 }
 
 const openEditProviderDialog = (row) => {
-  providerForm.value = {...row}
+  providerForm.value = {
+    ...row,
+    weight: row.weight || 1  // 确保权重字段存在，默认为1
+  }
   currentProvider.value = row
   providerDialogTitle.value = '修改提供商'
   providerDialogVisible.value = true
@@ -75,12 +98,19 @@ const saveProvider = () => {
 
     if (currentProvider.value) {
       // 编辑模式 - 使用更新接口
-      R.postJson('/api/model/provider/update', {
+      const updateData = {
         id: currentProvider.value.id,
         name: providerForm.value.name,
         api_url: providerForm.value.api_url,
-        api_key: providerForm.value.api_key
-      }).then(res => {
+        api_key: providerForm.value.api_key,
+      }
+
+      // 如果当前模型使用加权随机策略，则包含权重
+      if (showWeightColumn.value) {
+        updateData['weight'] = providerForm.value.weight
+      }
+
+      R.postJson('/api/model/provider/update', updateData).then(res => {
         if (res.code === 0) {
           ElMessage.success('已更新')
           providerDialogVisible.value = false
@@ -89,9 +119,17 @@ const saveProvider = () => {
       })
     } else {
       // 新增模式 - 将提供商与当前选中的模型关联
-      const providerData = {...providerForm.value}
+      const providerData = {
+        ...providerForm.value
+      }
       if (props.selectedModelId) {
         providerData.model_id = props.selectedModelId
+      }
+
+      // 如果当前模型使用加权随机策略，则包含权重
+      if (!showWeightColumn.value) {
+        // 如果不显示权重列，移除权重字段，避免后端错误
+        delete providerData.weight
       }
 
       R.postJson('/api/model/provider/add', providerData).then(res => {
@@ -147,14 +185,20 @@ const toggleStatus = (provider: any, newStatus: string) => {
               {{ row.name }}
             </template>
           </el-table-column>
-          <el-table-column prop="api_url" label="API地址" min-width="300">
+          <el-table-column prop="api_url" label="API地址" min-width="350">
             <template #default="{row}">
               {{ row.api_url }}
             </template>
           </el-table-column>
-          <el-table-column label="API Key" min-width="150">
+          <el-table-column label="API Key" min-width="100">
             <template #default="{row}">
               {{ row.api_key ? row.api_key.substring(0, 5) + '******' : '-' }}
+            </template>
+          </el-table-column>
+          <!-- 权重列 - 仅在加权随机策略时显示 -->
+          <el-table-column v-if="showWeightColumn" prop="weight" label="权重" width="100">
+            <template #default="{row}">
+              {{ row.weight }}
             </template>
           </el-table-column>
           <el-table-column label="状态" width="100">
@@ -199,6 +243,11 @@ const toggleStatus = (provider: any, newStatus: string) => {
         </el-form-item>
         <el-form-item label="API Key" prop="api_key">
           <el-input v-model="providerForm.api_key" placeholder="请输入API Key" show-password></el-input>
+        </el-form-item>
+        <!-- 权重输入框 - 仅在加权随机策略时显示 -->
+        <el-form-item v-if="showWeightColumn" label="权重" prop="weight">
+          <el-input-number v-model="providerForm.weight" :min="1" :max="100" placeholder="请填写权重"/>
+          <el-text type="info" size="small" class="fill-width">权重值越大，被选中的概率越高</el-text>
         </el-form-item>
       </el-form>
       <template #footer>
