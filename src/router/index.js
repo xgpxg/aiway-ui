@@ -78,7 +78,7 @@ const routes = [
                 name: 'Model',
                 component: () => import('@/views/model/index.vue'),
                 meta: {
-                    title: '模型代理'
+                    title: '模型管理'
                 }
             },
             {

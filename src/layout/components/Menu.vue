@@ -65,12 +65,12 @@
         </el-menu-item>
       </el-menu-item-group>
 
-      <el-menu-item-group title="模型" v-if="U.isDev()">
+      <el-menu-item-group title="模型">
         <el-menu-item index="/model">
           <el-icon>
             <svg-icon icon-class="model"></svg-icon>
           </el-icon>
-          <span v-if="!isCollapse">模型代理</span>
+          <span v-if="!isCollapse">模型管理</span>
         </el-menu-item>
       </el-menu-item-group>
 

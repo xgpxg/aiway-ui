@@ -214,6 +214,9 @@ onMounted(() => {
           <el-option label="轮询" value="RoundRobin"></el-option>
           <el-option label="加权随机" value="WeightedRandom"></el-option>
         </el-select>
+        <el-text type="info" size="small" class="compact mt5">
+          当模型有多个提供商时，可使用不同的负载策略来决定使用哪一个提供商。
+        </el-text>
       </el-form-item>
     </el-form>
     <template #footer>
