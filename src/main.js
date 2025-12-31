@@ -48,3 +48,15 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
 
+
+// 解决报错：You must define a function MonacoEnvironment.getWorkerUrl or MonacoEnvironment.getWorker
+if (!window['MonacoEnvironment']) {
+    window['MonacoEnvironment'] = {
+        getWorkerUrl: function (moduleId, label) {
+            if (label === 'json') {
+                return './node_modules/monaco-editor/esm/vs/language/json/json.worker.js'
+            }
+            return './node_modules/monaco-editor/esm/vs/editor/editor.worker.js'
+        }
+    }
+}

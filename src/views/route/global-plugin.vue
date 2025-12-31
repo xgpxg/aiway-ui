@@ -101,17 +101,7 @@ const appendPostFilter = (plugin: any) => {
 const activePreFilter = ref(null)
 const activePostFilter = ref(null)
 
-// 解决报错：You must define a function MonacoEnvironment.getWorkerUrl or MonacoEnvironment.getWorker
-if (!window['MonacoEnvironment']) {
-  window['MonacoEnvironment'] = {
-    getWorkerUrl: function (moduleId: string, label: string) {
-      if (label === 'json') {
-        return './node_modules/monaco-editor/esm/vs/language/json/json.worker.js'
-      }
-      return './node_modules/monaco-editor/esm/vs/editor/editor.worker.js'
-    }
-  }
-}
+
 const editorOptions = {
   fontSize: 14,
   minimap: {enabled: false},
@@ -246,8 +236,8 @@ const reset = () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100px;
     height: 34px;
+    padding: 0 10px;
     margin: 5px 10px 10px 0;
     text-align: center;
     border-radius: 4px;

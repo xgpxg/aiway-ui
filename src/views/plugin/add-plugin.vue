@@ -2,6 +2,7 @@
 import {ref, watch} from "vue";
 import {R} from "../../utils/R";
 import {CodeEditor} from 'monaco-editor-vue3';
+import {UploadFilled} from '@element-plus/icons-vue';
 
 const value = defineModel('value')
 
@@ -41,6 +42,23 @@ const rules = {
   ],
 }
 
+const info = () => {
+  R.post('/api/plugin/info', {file: form.value.file}).then(res => {
+    if (res.code === 0) {
+      form.value = {
+        ...form.value, ...res.data,
+        // default_config返回值为Object，转为JSON字符串，以便在编辑器中展示和修改
+        default_config: res.data.default_config ? JSON.stringify(res.data.default_config, null, 2) : null
+      }
+    }
+  })
+}
+
+watch(() => form.value.file, (newFile) => {
+  if (newFile) { // 只在 file 有值时调用
+    info()
+  }
+})
 const save = () => {
   formRef.value.validate().then((ok: boolean) => {
     if (!ok) {
@@ -92,17 +110,6 @@ const pluginFileExceed = (files: any) => {
   form.value.file = files[0]
 }
 
-// 解决报错：You must define a function MonacoEnvironment.getWorkerUrl or MonacoEnvironment.getWorker
-if (!window['MonacoEnvironment']) {
-  window['MonacoEnvironment'] = {
-    getWorkerUrl: function (moduleId: string, label: string) {
-      if (label === 'json') {
-        return './node_modules/monaco-editor/esm/vs/language/json/json.worker.js'
-      }
-      return './node_modules/monaco-editor/esm/vs/editor/editor.worker.js'
-    }
-  }
-}
 const editorOptions = {
   fontSize: 14,
   minimap: {enabled: false},
@@ -118,15 +125,8 @@ const editorOptions = {
 <template>
   <el-drawer v-model="isShow" :title="value ? '修改插件' : '添加插件'" size="500" destroy-on-close @closed="reset">
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
-      <el-form-item label="插件名称" prop="name">
-        <el-input v-model="form.name" placeholder="填写插件名称，新增后不可修改" maxlength="100"
-                  show-word-limit :disabled="!!value"></el-input>
-      </el-form-item>
-      <el-form-item label="插件功能" prop="description">
-        <el-input v-model="form.description" placeholder="简要描述插件功能" maxlength="500" show-word-limit></el-input>
-      </el-form-item>
       <el-form-item label="插件文件" :prop="!value?'file':''">
-        <div class="fill-width flex-space-between">
+        <div class="fill-width">
           <el-upload :auto-upload="false"
                      :show-file-list="false"
                      :on-change="pluginFileChange"
@@ -134,22 +134,26 @@ const editorOptions = {
                      :limit="1"
                      accept=".so"
           >
-            <el-button>选择文件</el-button>
+            <div class="flex-space-between fill-width">
+              <el-button>选择文件</el-button>
+              <el-text type="info" size="small">仅支持.so格式</el-text>
+            </div>
           </el-upload>
-          <div>
-            <template v-if="form.file">
-              <el-tag size="large" disable-transitions style="font-size: 14px">
-                {{ form.file?.name }}
-              </el-tag>
-            </template>
-            <template v-else-if="form.url">
-              <el-tag size="large" disable-transitions style="font-size: 14px">
-                {{ form['url'].substring(form['url'].lastIndexOf('/') + 21) }}
-              </el-tag>
-            </template>
+          <div v-if="form.file || form.url" class="mt10">
+            <el-tag size="large" disable-transitions style="font-size: 14px">
+              {{ form.file ? form.file.name : form['url'].substring(form['url'].lastIndexOf('/') + 21) }}
+            </el-tag>
           </div>
         </div>
       </el-form-item>
+      <el-form-item label="插件名称" prop="name">
+        <el-input v-model="form.name" placeholder="填写插件名称，新增后不可修改" maxlength="100"
+                  show-word-limit :disabled="!!value"></el-input>
+      </el-form-item>
+      <el-form-item label="功能描述" prop="description">
+        <el-input v-model="form.description" placeholder="简要描述插件功能" maxlength="500" show-word-limit></el-input>
+      </el-form-item>
+
       <el-form-item label="插件版本" prop="version">
         <el-input v-model="form.version" placeholder="填写插件版本" maxlength="20" show-word-limit></el-input>
       </el-form-item>
@@ -166,10 +170,10 @@ const editorOptions = {
             :options="editorOptions"
         />
       </el-form-item>
-      <el-form-item label="插件说明" prop="document">
-        <el-input v-model="form.document" type="textarea" placeholder="填写插件说明"
-                  :autosize="{minRows: 3, maxRows: 10}"></el-input>
-      </el-form-item>
+      <!--      <el-form-item label="插件说明" prop="document">
+              <el-input v-model="form.document" type="textarea" placeholder="填写插件说明"
+                        :autosize="{minRows: 3, maxRows: 10}"></el-input>
+            </el-form-item>-->
     </el-form>
     <template #footer>
       <el-button @click="isShow = false">取消</el-button>
@@ -200,5 +204,10 @@ const editorOptions = {
   .overflow-guard {
     border-radius: 5px;
   }
+}
+
+
+:deep(.el-upload) {
+  width: 100%;
 }
 </style>

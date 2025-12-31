@@ -203,17 +203,6 @@ const appendPostFilter = (plugin: any) => {
 const activePreFilter = ref(null)
 const activePostFilter = ref(null)
 
-// 解决报错：You must define a function MonacoEnvironment.getWorkerUrl or MonacoEnvironment.getWorker
-if (!window['MonacoEnvironment']) {
-  window['MonacoEnvironment'] = {
-    getWorkerUrl: function (moduleId: string, label: string) {
-      if (label === 'json') {
-        return './node_modules/monaco-editor/esm/vs/language/json/json.worker.js'
-      }
-      return './node_modules/monaco-editor/esm/vs/editor/editor.worker.js'
-    }
-  }
-}
 const editorOptions = {
   fontSize: 14,
   minimap: {enabled: false},
@@ -252,9 +241,8 @@ const reset = () => {
             <p>通过该路径匹配路由。</p>
             <p>匹配格式：</p>
             <p>完全匹配：/api/a => /api/a</p>
-            <p>模糊匹配：/api/{*any} => /api/a/b/c/d, /api/a/b/c/d</p>
-            <p>匹配单层路径：/api/{any} => /api/a</p>
-            <p>匹配多层路径：/api/{p1}/{p2} => /api/a/b, /api/a/b/c, /api/a/b/c/d</p>
+            <p>匹配单层路径：/api/* => /api/a, /api/b</p>
+            <p>匹配多层路径：/api/** => /api/a, /api/a/b</p>
           </help-tip>
         </template>
         <el-input v-model="form.path" placeholder="请填写路径" maxlength="100" show-word-limit></el-input>
@@ -332,11 +320,9 @@ const reset = () => {
               <help-tip placement="top-start">
                 <p>匹配到白名单中的接口路径将忽略权限验证。</p>
                 <p>支持的通配符：</p>
-                <p>? : 匹配任意单个字符</p>
-                <p>* : 匹配零个或多个字符</p>
-                <p>** : 匹配多层路径</p>
-                <p>{a,b} : 匹配 a 或 b，其中 a 和 b 是以上匹配模式的一种</p>
-                <p>[ab] : 匹配 a 或 b，使用 [!ab] 匹配除 a 和 b 之外的任何字符</p>
+                <p>完全匹配：/api/a => /api/a</p>
+                <p>匹配单层路径：/api/* => /api/a, /api/b</p>
+                <p>匹配多层路径：/api/** => /api/a, /api/a/b</p>
               </help-tip>
             </div>
             <div>
@@ -465,8 +451,8 @@ const reset = () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100px;
     height: 34px;
+    padding: 0 10px;
     margin: 5px 10px 10px 0;
     text-align: center;
     border-radius: 4px;
