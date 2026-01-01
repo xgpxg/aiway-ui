@@ -32,8 +32,10 @@ const loadPlugins = () => {
     plugins.value.forEach(item => {
       if (item.name === value.value?.name) {
         item.config_text = JSON.stringify(value.value.config || item.default_config, null, 2)
+        //item.config_text = item.config_text === 'null' ? '{}' : item.config_text
       } else {
         item.config_text = JSON.stringify(item.default_config, null, 2)
+        //item.config_text = item.config_text === 'null' ? '{}' : item.config_text
       }
     })
     page.value.total = res.data.total
@@ -68,7 +70,7 @@ const editorOptions = {
     </el-option>
   </el-select>
   <template v-for="item in plugins">
-    <div class="fill-width mt10" v-if="item.name === value?.name">
+    <div class="fill-width mt10" v-if="item.name === value?.name && item.default_config">
       <CodeEditor
           v-model:value="item.config_text"
           language="json"
