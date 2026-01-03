@@ -62,7 +62,7 @@ const editorOptions = {
 
 
 <template>
-  <el-select v-model="value" clearable value-key="name">
+  <el-select v-model="value" clearable value-key="name" filterable placeholder="请选择插件">
     <el-option v-for="item in plugins" :value="{name: item.name, config: JSON.parse(item.config_text)}"
                :label="item.name">
       {{ item.name }}
