@@ -46,7 +46,6 @@ const loadPlugins = () => {
 }
 
 
-
 const editorOptions = {
   fontSize: 14,
   minimap: {enabled: false},
