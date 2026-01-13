@@ -96,7 +96,7 @@ const reset = () => {
           <el-form-item class="fill-width flex" :rules="{required:true,message:'请填写节点地址'}"
                         :prop="'nodes.'+index" inline-message>
             <el-input v-model="form.nodes[index]"
-                      placeholder="填写服务节点地址，格式：IP:PORT，点击右上角 + 按钮添加新节点">
+                      placeholder="填写服务节点地址，格式：http://IP:PORT，点击右上角 + 按钮添加新节点">
               <template #suffix>
                 <el-button @click="form.nodes.splice(index,1)" link icon="minus" class="ml10"
                            v-if="form.nodes.length>1"></el-button>

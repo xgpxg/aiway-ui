@@ -52,20 +52,14 @@ const toEdit = (plugin: any) => {
     </div>
     <div class="mt20">
       <el-table :data="plugins">
-        <el-table-column label="插件名称" prop="name" width="200"></el-table-column>
+        <el-table-column label="插件名称" prop="name" width="300"></el-table-column>
         <el-table-column label="功能描述" prop="description" min-width="200"></el-table-column>
-        <el-table-column label="当前版本" prop="version" width="200"></el-table-column>
-        <el-table-column label="插件文件" prop="file" width="300" show-overflow-tooltip>
-          <template #default="{row}">
-            {{ row['url'].substring(row['url'].lastIndexOf('/') + 21) }}
-            <el-button @click="R.download(row['url'])" link icon="download">
-            </el-button>
-          </template>
-        </el-table-column>
+        <el-table-column label="版本" prop="version" width="200"></el-table-column>
         <el-table-column label="创建时间" prop="create_time" width="160"></el-table-column>
-        <el-table-column label="操作" width="120">
+        <el-table-column label="操作" width="150">
           <template #default="{row}">
             <el-button type="primary" link @click="toEdit(row)">修改</el-button>
+            <el-button type="primary" link @click="R.download(row['url'])">下载</el-button>
             <el-popconfirm title="确定删除吗？" @confirm="deletePlugin(row)">
               <template #reference>
                 <el-button type="danger" link>删除</el-button>
