@@ -28,6 +28,7 @@ const defaultForm = {
   service: null,
   host: '*',
   path: null,
+  methods: null,
   header: {},
   query: {},
   pre_filters: [],
@@ -154,6 +155,7 @@ watch(value, (newVal: any) => {
     service: newVal.service,
     host: newVal.host,
     path: newVal.path,
+    methods: newVal.methods,
     header: newVal.header,
     query: newVal.query,
     pre_filters: newVal.pre_filters?.map((item: any) => ({
@@ -235,6 +237,14 @@ const reset = () => {
         <service-select v-model="form.service" status="Ok" placeholder="请选择关联服务"></service-select>
       </el-form-item>
       <div class="title-block">匹配规则</div>
+      <el-form-item label="域名匹配" prop="host">
+        <template #label>域名匹配
+          <help-tip placement="top-start">
+            <p>当指定域名时，只有Host请求头满足域名条件时，才会匹配该路由。如果需要匹配所有，请填写 “ * ”。</p>
+          </help-tip>
+        </template>
+        <el-input v-model="form.host" placeholder="请填写域名" maxlength="100" show-word-limit></el-input>
+      </el-form-item>
       <el-form-item label="路径匹配" prop="path">
         <template #label>路径匹配
           <help-tip placement="top-start">
@@ -247,13 +257,16 @@ const reset = () => {
         </template>
         <el-input v-model="form.path" placeholder="请填写路径" maxlength="100" show-word-limit></el-input>
       </el-form-item>
-      <el-form-item label="域名匹配" prop="host">
-        <template #label>域名匹配
-          <help-tip placement="top-start">
-            <p>当指定域名时，只有Host请求头满足域名条件时，才会匹配该路由。如果需要匹配所有，请填写 “ * ”。</p>
-          </help-tip>
+      <el-form-item label="请求方法" prop="methods">
+        <template #label>请求方法匹配
         </template>
-        <el-input v-model="form.host" placeholder="请填写域名" maxlength="100" show-word-limit></el-input>
+        <el-select v-model="form.methods" multiple placeholder="请选择请求方法，留空则不限制" clearable>
+          <el-option value="GET">GET</el-option>
+          <el-option value="POST">POST</el-option>
+          <el-option value="PUT">PUT</el-option>
+          <el-option value="DELETE">DELETE</el-option>
+          <el-option value="PATCH">PATCH</el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="Header匹配" prop="header">
         <template #label>
