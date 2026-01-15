@@ -53,7 +53,8 @@ const randomGen = () => {
   <el-form :model="value" :rules="rules" label-position="left" label-width="140" @submit.prevent>
     <el-form-item label="API Key加解密密钥" prop="api_secret_encrypt_key">
       <el-input class="half-width" placeholder="请输入API Key加密密钥，长度固定为32位"
-                v-model="value['api_secret_encrypt_key']" minlength="32" maxlength="32" show-word-limit>
+                v-model="value['api_secret_encrypt_key']" minlength="32" maxlength="32" show-word-limit
+                type="password" show-password>
       </el-input>
       <el-button @click="randomGen" class="ml10">随机生成</el-button>
       <el-text type="info" size="small" class="fill-width">

@@ -15,22 +15,20 @@ const activeIndex = ref('ip-policy');
 const firewall = ref({})
 
 onMounted(() => {
-  // 从路由参数获取当前激活的标签页，如果没有则默认为 'ip-policy'
-  const tab = route.query.tab || 'ip-policy';
-  activeIndex.value = tab;
-  loadFirewall();
+  loadFirewall()
 })
 
 const loadFirewall = () => {
   R.get('/api/firewall/detail').then(res => {
     firewall.value = res.data
+    activeIndex.value = route.query.tab || 'ip-policy'
   })
 }
 
 watch(activeIndex, (newTab) => {
   // 更新路由参数，但不刷新页面
-  router.push({query: {...route.query, tab: newTab}});
-  loadFirewall();
+  router.push({query: {...route.query, tab: newTab}})
+  loadFirewall()
 })
 </script>
 
@@ -39,7 +37,7 @@ watch(activeIndex, (newTab) => {
     <el-row :gutter="10">
       <el-col :span="3">
         <el-menu
-            default-active="ip-policy"
+            :default-active="activeIndex"
             class="el-menu-vertical-demo"
             style="width: 130px"
             @select="(index) =>{activeIndex = index}"
