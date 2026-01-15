@@ -28,7 +28,7 @@ export default {
   components: {AppBar, Menu, AppMain, Navbar},
   data() {
     return {
-      menuWidth: 160,
+      menuWidth: 170,
       top: 0,
       showLogin: false,
       collapse: false,
@@ -62,7 +62,7 @@ export default {
       if (isCollapse) {
         this.menuWidth = 65
       } else {
-        this.menuWidth = 160
+        this.menuWidth = 170
       }
     },
     /**
