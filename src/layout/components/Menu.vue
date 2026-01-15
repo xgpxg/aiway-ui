@@ -2,13 +2,13 @@
   <div class="menu">
     <div class="logo">
       <div class="flex-center" v-if="!collapse">
-        <el-image src="/images/logo.png" style="height: 22px" class="mr10"></el-image>
-        {{ version }}
+        <el-image src="/images/logo.png" style="height: 24px;"></el-image>
       </div>
       <div v-else>
         <el-image
             src="/images/logo2.png"
-            fit="cover" class=""></el-image>
+            fit="cover" class=""
+            style="height: 22px;"></el-image>
       </div>
     </div>
     <el-menu
@@ -191,11 +191,9 @@ export default {
 }
 
 .logo {
-  font-weight: bold;
   padding: 20px 20px 0 20px;
-  font-size: 18px;
+  font-size: 16px;
   height: 38px;
-  color: #409eff;
 }
 
 </style>
