@@ -4,6 +4,7 @@ import {ref, onMounted, onUnmounted} from 'vue'
 import {R} from "@/utils/R";
 import {U} from "@/utils/util";
 import SvgIcon from "../../../components/SvgIcon/index.vue";
+import NodeMonitor from "./node-monitor.vue";
 
 interface NodeInfo {
   id: string;
@@ -25,6 +26,8 @@ interface NodeInfo {
 }
 
 const nodeList = ref<NodeInfo[]>([]);
+const isShowNodeDetail = ref(false)
+const currNodeId = ref()
 
 onMounted(() => {
   loadData()
@@ -86,6 +89,7 @@ const getStatusType = (status: string) => {
             v-for="node in nodeList"
             :key="node.id"
             :span="8"
+            @click="currNodeId=node.id;isShowNodeDetail=true"
         >
           <div class="node-card">
             <div class="node-header">
@@ -143,11 +147,15 @@ const getStatusType = (status: string) => {
       </el-row>
     </div>
   </div>
+  <el-drawer v-if="U.isDev()" title="节点详情" v-model="isShowNodeDetail" size="50vw" destroy-on-close>
+    <node-monitor :id="currNodeId"></node-monitor>
+  </el-drawer>
 </template>
 
 <style scoped lang="scss">
 .node-dashboard {
   padding: 10px;
+
   .filter-section {
     margin-bottom: 16px;
     //padding: 12px;

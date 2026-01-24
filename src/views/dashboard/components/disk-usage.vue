@@ -110,7 +110,7 @@ const updateChart = () => {
   
   const option = {
     title: {
-      text: '磁盘使用率监控',
+      text: '',
       left: 'center',
       textStyle: {
         fontSize: 16,
@@ -130,7 +130,7 @@ const updateChart = () => {
       }
     },
     xAxis: {
-      type: 'category',
+      type: 'time',
       data: data.map(item => formatTime(item.timestamp, timeDimension.value)),
       boundaryGap: false
     },
@@ -169,7 +169,7 @@ const updateChart = () => {
       },
       lineStyle: {
         color: '#8eecf5',
-        width: 2
+        width: 1
       }
     }],
     grid: {
@@ -196,7 +196,9 @@ watch(timeDimension, () => {
 
 // 组件挂载时初始化图表
 onMounted(() => {
-  initChart()
+  setTimeout(()=>{
+    initChart()
+  },100)
   
   // 窗口大小改变时重置图表大小
   window.addEventListener('resize', () => {
@@ -214,121 +216,18 @@ onMounted(() => {
 
 <template>
   <div class="disk-monitor-container">
-    <div class="header">
-      <div class="title">
-        <div class="icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="2" y1="12" x2="22" y2="12"></line>
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-          </svg>
-        </div>
-        <h3>磁盘使用率监控</h3>
-      </div>
-      <div class="time-switcher">
-        <button 
-          :class="{ active: timeDimension === 'minute' }" 
-          @click="switchTimeDimension('minute')"
-        >
-          分钟
-        </button>
-        <button 
-          :class="{ active: timeDimension === 'hour' }" 
-          @click="switchTimeDimension('hour')"
-        >
-          小时
-        </button>
-        <button 
-          :class="{ active: timeDimension === 'day' }" 
-          @click="switchTimeDimension('day')"
-        >
-          天
-        </button>
-        <button 
-          :class="{ active: timeDimension === 'month' }" 
-          @click="switchTimeDimension('month')"
-        >
-          月
-        </button>
-      </div>
-    </div>
-    
+    <el-descriptions title="磁盘使用率">
+    </el-descriptions>
     <div ref="chartRef" class="chart-container"></div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .disk-monitor-container {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  background: #ffffff;
   height: 400px;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 20px;
-    border-bottom: 1px solid #f0f0f0;
-    
-    .title {
-      display: flex;
-      align-items: center;
-      
-      .icon {
-        width: 32px;
-        height: 32px;
-        background: linear-gradient(135deg, #8eecf5 0%, #64beff 100%);
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 12px;
-        
-        svg {
-          color: white;
-        }
-      }
-      
-      h3 {
-        margin: 0;
-        font-size: 16px;
-        font-weight: 600;
-        color: #333;
-      }
-    }
-    
-    .time-switcher {
-      display: flex;
-      gap: 8px;
-      
-      button {
-        padding: 6px 12px;
-        border: 1px solid #e0e0e0;
-        background: #ffffff;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 13px;
-        color: #666;
-        transition: all 0.2s;
-        
-        &:hover {
-          border-color: #8eecf5;
-          color: #8eecf5;
-        }
-        
-        &.active {
-          background: #8eecf5;
-          border-color: #8eecf5;
-          color: white;
-        }
-      }
-    }
-  }
   
   .chart-container {
     flex: 1;
@@ -336,19 +235,4 @@ onMounted(() => {
   }
 }
 
-// 响应式设计
-@media (max-width: 768px) {
-  .disk-monitor-container {
-    .header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 12px 16px;
-      
-      .time-switcher {
-        align-self: flex-end;
-      }
-    }
-  }
-}
 </style>
