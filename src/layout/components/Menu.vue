@@ -149,8 +149,8 @@ export default {
   :deep(.el-menu-item) {
     background-color: transparent !important;
     border: unset;
-    margin: 4px 8px;
-    border-radius: 8px;
+    margin: 4px 0;
+    // border-radius: 8px;
     //  transition: all 0.3s ease;
   }
 
@@ -164,7 +164,6 @@ export default {
       color: var(--el-color-primary) !important;
       background: var(--el-color-primary-light-8) !important;
       font-weight: 500;
-      box-shadow: 0 2px 6px rgba(0, 94, 235, 0.15);
 
       /*&::before {
         content: '';
@@ -187,12 +186,6 @@ export default {
       background: var(--el-color-primary-light-9) !important;
     }
 
-    .el-icon {
-      > :hover {
-        font-size: 1.5em;
-        transition: all 0.3s;
-      }
-    }
   }
 
   :deep(.el-badge__content) {
