@@ -1,35 +1,8 @@
 <script setup lang="ts">
-import {ref, onMounted} from 'vue'
+import {ref, onMounted, onUnmounted} from 'vue'
+import {U} from "@/utils/util";
 
-interface SystemInfo {
-  os: string
-  version: string
-  uptime: string
-  hostname: string
-  architecture: string
-  cpuUsage: number
-  memoryUsage: number
-  diskUsage: number
-  network: {
-    in: string
-    out: string
-  }
-}
-
-const systemInfo = ref<SystemInfo>({
-  os: '',
-  version: '',
-  uptime: '',
-  hostname: '',
-  architecture: '',
-  cpuUsage: 0,
-  memoryUsage: 0,
-  diskUsage: 0,
-  network: {
-    in: '',
-    out: ''
-  }
-})
+const props = defineProps(['attr', 'state'])
 
 // 格式化运行时间
 const formatUptime = (seconds: number): string => {
@@ -40,70 +13,37 @@ const formatUptime = (seconds: number): string => {
   const minutes = Math.floor(seconds / 60)
 
   if (days > 0) {
-    return `${days}天${hours}小时${minutes}分钟`
+    return `${days} 天 ${hours} 小时 ${minutes} 分钟`
   } else if (hours > 0) {
-    return `${hours}小时${minutes}分钟`
+    return `${hours} 小时 ${minutes} 分钟`
   } else {
-    return `${minutes}分钟`
+    return `${minutes} 分钟`
   }
 }
 
-// 格式化网络流量
-const formatNetwork = (bytes: number): string => {
-  if (bytes > 1024 * 1024 * 1024) {
-    return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB'
-  } else if (bytes > 1024 * 1024) {
-    return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
-  } else if (bytes > 1024) {
-    return (bytes / 1024).toFixed(2) + ' KB'
-  } else {
-    return bytes + ' B'
-  }
-}
 
-// 模拟获取系统信息数据
-const fetchSystemInfo = () => {
-  // 在实际应用中，这里会是API调用
-  systemInfo.value = {
-    os: 'Ubuntu',
-    version: '22.04 LTS',
-    uptime: formatUptime(Math.floor(Math.random() * 1000000)),
-    hostname: 'server-01',
-    architecture: 'x86_64',
-    cpuUsage: Math.floor(Math.random() * 100),
-    memoryUsage: Math.floor(Math.random() * 100),
-    diskUsage: Math.floor(Math.random() * 100),
-    network: {
-      in: formatNetwork(Math.floor(Math.random() * 1000000000)),
-      out: formatNetwork(Math.floor(Math.random() * 1000000000))
-    }
-  }
-}
-
-onMounted(() => {
-  fetchSystemInfo()
-  // 定时更新数据
-  setInterval(fetchSystemInfo, 5000)
-})
 </script>
 
 <template>
   <div>
     <el-descriptions title="基本信息" :column="2">
       <el-descriptions-item label="操作系统" width="50%">
-        {{ systemInfo.os }} {{ systemInfo.version }}
+        {{ attr.os }}
       </el-descriptions-item>
-      <el-descriptions-item label="运行时间" width="50%">{{ systemInfo.uptime }}</el-descriptions-item>
-      <el-descriptions-item label="主机名" width="50%">{{ systemInfo.hostname }}</el-descriptions-item>
-      <el-descriptions-item label="架构" width="50%">{{ systemInfo.architecture }}</el-descriptions-item>
+      <el-descriptions-item label="运行时间" width="50%">{{ formatUptime(attr.uptime) }}</el-descriptions-item>
+      <el-descriptions-item label="主机名" width="50%">{{ attr.host_name }}</el-descriptions-item>
+      <el-descriptions-item label="CPU 架构" width="50%">{{ attr.arch }}</el-descriptions-item>
     </el-descriptions>
     <el-descriptions title="资源使用情况" :column="2">
-      <el-descriptions-item label="CPU使用率" width="50%">{{ systemInfo.cpuUsage }}%</el-descriptions-item>
-      <el-descriptions-item label="内存使用率" width="50%">{{ systemInfo.memoryUsage }}%</el-descriptions-item>
-      <el-descriptions-item label="磁盘使用率" width="50%">{{ systemInfo.diskUsage }}%</el-descriptions-item>
-      <el-descriptions-item label="网络流量" width="50%"> {{ systemInfo.network.in }} / {{
-          systemInfo.network.out
-        }}
+      <el-descriptions-item label="CPU 使用率" width="50%">{{ state.cpu_usage.toFixed(2) }}%</el-descriptions-item>
+      <el-descriptions-item label="内存用量" width="50%">
+        {{ U.renderSize(state.mem_free) }} 可用 / 共 {{ U.renderSize(state.mem_total) }}
+      </el-descriptions-item>
+      <el-descriptions-item label="磁盘用量" width="50%">
+        {{ U.renderSize(state.disk_free) }} 可用 / 共 {{ U.renderSize(state.disk_total) }}
+      </el-descriptions-item>
+      <el-descriptions-item label="网络流量" width="50%">
+        {{ U.renderSize(state.net_rx) }} / {{ U.renderSize(state.net_tx) }}
       </el-descriptions-item>
     </el-descriptions>
   </div>

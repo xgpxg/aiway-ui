@@ -1,209 +1,190 @@
 <script setup lang="ts">
-import {ref, onMounted, watch} from 'vue'
+import {ref, onMounted, watch, onUnmounted} from 'vue'
 import * as echarts from 'echarts'
+import {R} from "@/utils/R";
+import {U} from "@/utils/util";
 
-// 定义时间维度枚举
-type TimeDimension = 'minute' | 'hour' | 'day' | 'month'
+const props = defineProps(['nodeId'])
 
-interface CPUDataPoint {
-  timestamp: number
-  usage: number
+interface DataPoint {
+  t: number
+  v: number
 }
 
+let chart: echarts.EChartsType
 const chartRef = ref<HTMLElement | null>(null)
-const timeDimension = ref<TimeDimension>('minute')
-const chart = ref<echarts.EChartsType | null>(null)
-
-// 生成模拟数据
-const generateMockData = (dimension: TimeDimension): CPUDataPoint[] => {
-  const data: CPUDataPoint[] = []
-  const now = Date.now()
-
-  switch (dimension) {
-    case 'minute':
-      // 最近1小时，每分钟一个数据点
-      for (let i = 59; i >= 0; i--) {
-        data.push({
-          timestamp: now - i * 60 * 1000,
-          usage: Math.floor(Math.random() * 30) + Math.sin(i / 10) * 20 + 30
-        })
-      }
-      break
-    case 'hour':
-      // 最近24小时，每小时一个数据点
-      for (let i = 23; i >= 0; i--) {
-        data.push({
-          timestamp: now - i * 3600 * 1000,
-          usage: Math.floor(Math.random() * 40) + Math.sin(i / 4) * 15 + 35
-        })
-      }
-      break
-    case 'day':
-      // 最近30天，每天一个数据点
-      for (let i = 29; i >= 0; i--) {
-        data.push({
-          timestamp: now - i * 24 * 3600 * 1000,
-          usage: Math.floor(Math.random() * 50) + Math.sin(i / 5) * 10 + 25
-        })
-      }
-      break
-    case 'month':
-      // 最近12个月，每月一个数据点
-      for (let i = 11; i >= 0; i--) {
-        data.push({
-          timestamp: now - i * 30 * 24 * 3600 * 1000,
-          usage: Math.floor(Math.random() * 60) + Math.sin(i / 2) * 10 + 20
-        })
-      }
-      break
-  }
-
-  return data
-}
-
-// 格式化时间显示
-const formatTime = (timestamp: number, dimension: TimeDimension): string => {
-  const date = new Date(timestamp)
-
-  switch (dimension) {
-    case 'minute':
-      return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
-    case 'hour':
-      return `${date.getHours().toString().padStart(2, '0')}:00`
-    case 'day':
-      return `${date.getMonth() + 1}-${date.getDate()}`
-    case 'month':
-      return `${date.getFullYear()}-${date.getMonth() + 1}`
-    default:
-      return date.toLocaleString()
-  }
-}
-
-// 初始化图表
-const initChart = () => {
-  if (chartRef.value) {
-    chart.value = echarts.init(chartRef.value)
-    updateChart()
-  }
-}
-
-// 更新图表
-const updateChart = () => {
-  if (!chart.value) return
-
-  const data = generateMockData(timeDimension.value)
-
-  const option = {
-    title: {
-      text: '',
-      left: 'center',
-      textStyle: {
-        fontSize: 16,
-        fontWeight: 'normal'
-      }
+const timeDimension = ref<string>('minute')
+const timer = ref<any>(null)
+const chartOption = {
+  tooltip: {
+    trigger: 'axis',
+    formatter: (params: any) => {
+      const item = params[0]
+      return `${U.dateUtil.formatDate(item.data[0], 'hh:mm:ss')}<br/>使用率: ${item.data[1].toFixed(2)}%`
     },
-    tooltip: {
-      trigger: 'axis',
-      formatter: (params: any) => {
-        const item = params[0]
-        return `${formatTime(item.data[0], timeDimension.value)}<br/>使用率: ${item.data[1].toFixed(2)}%`
-      }
-    },
-    xAxis: {
-      type: 'time',
-      data: data.map(item => formatTime(item.timestamp, timeDimension.value)),
-      boundaryGap: false
-    },
-    yAxis: {
-      type: 'value',
-      name: '使用率 (%)',
-      min: 0,
-      max: 100,
-      axisLabel: {
-        formatter: '{value}%'
-      }
-    },
-    series: [{
-      data: data.map(item => [item.timestamp, item.usage]),
-      type: 'line',
-      smooth: true,
-      showSymbol: false,
-      areaStyle: {
-        color: {
-          type: 'linear',
-          x: 0,
-          y: 0,
-          x2: 0,
-          y2: 1,
-          colorStops: [{
-            offset: 0,
-            color: 'rgba(102, 126, 234, 0.3)'
-          }, {
-            offset: 1,
-            color: 'rgba(102, 126, 234, 0.01)'
-          }]
-        }
-      },
-      lineStyle: {
-        color: '#667eea',
-        width: 1
-      }
-    }],
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
+  },
+  xAxis: {
+    type: 'time',
+    boundaryGap: false
+  },
+  yAxis: {
+    type: 'value',
+    name: '使用率 (%)',
+    max: 100,
+    axisLabel: {
+      formatter: '{value}%'
     }
-  }
-  chart.value.setOption(option)
+  },
+  visualMap: {
+    type: 'continuous',
+    min: 0,
+    max: 100,
+    top: 'middle',
+    right: 10,
+    inRange: {
+      color: ['#99d193', '#ffae00', '#ff0000']
+    },
+    show: false,
+  },
+  series: [{
+    data: [],
+    type: 'line',
+    smooth: true,
+    showSymbol: false,
+    areaStyle: {
+      opacity: 0.2
+    },
+    lineStyle: {
+      width: 1,
+    }
+  }],
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '3%',
+    //containLabel: true
+  },
+  dataZoom: [
+    {
+      type: 'inside',
+      throttle: 100
+    }
+  ]
 }
 
-// 切换时间维度
-const switchTimeDimension = (dimension: TimeDimension) => {
-  timeDimension.value = dimension
-  updateChart()
-}
 
-// 监听时间维度变化
-watch(timeDimension, () => {
-  updateChart()
-})
-
-// 组件挂载时初始化图表
 onMounted(() => {
   setTimeout(() => {
     initChart();
   }, 100);
 
-  // 窗口大小改变时重置图表大小
+
+  timer.value = setInterval(() => {
+    loadData()
+  }, 5000)
+
   window.addEventListener('resize', () => {
-    if (chart.value) {
-      chart.value.resize()
+    if (chart) {
+      chart.resize()
     }
   })
 
-  // 模拟实时数据更新
-  setInterval(() => {
-    updateChart()
-  }, 1000)
 })
+
+onUnmounted(() => {
+  clearInterval(timer.value)
+})
+
+const initChart = () => {
+  if (chartRef.value) {
+    chart = echarts.init(chartRef.value)
+    chart.setOption(chartOption)
+
+    loadData()
+  }
+}
+
+const loadData = async () => {
+  const now = Date.now()
+  let startTimestamp = 0
+
+  switch (timeDimension.value) {
+    case 'minute':
+      startTimestamp = now - 60 * 1000
+      break
+    case 'five_minute':
+      startTimestamp = now - 5 * 60 * 1000
+      break
+    case 'hour':
+      startTimestamp = now - 60 * 60 * 1000
+      break
+    case 'day':
+      startTimestamp = now - 24 * 60 * 60 * 1000
+      break
+    default:
+      startTimestamp = now - 60 * 1000
+  }
+
+  const response = await R.get(`/api/node/${props.nodeId}/cpu_usage`, {
+    start_timestamp: startTimestamp,
+    end_timestamp: now,
+  })
+
+  // 更新图表数据
+  chart.setOption({
+    series: [{
+      data: response.data.map((item: any) => [item.t, item.v])
+    }]
+  })
+}
+
+// 切换时间维度
+const switchTimeDimension = (dimension: string) => {
+  timeDimension.value = dimension
+  loadData()
+}
+
+// 监听时间维度变化
+watch(timeDimension, () => {
+  loadData()
+})
+
 </script>
 
 <template>
-  <div class="cpu-usage">
-    <el-descriptions title="CPU使用率">
-    </el-descriptions>
+  <div class="chart">
+    <div class="header">
+      <h4>CPU使用率</h4>
+      <div>
+        <el-button
+            v-for="dimension in ['minute', 'five_minute', 'hour', 'day']"
+            :key="dimension"
+            :type="timeDimension === dimension ? 'primary' : 'default'"
+            @click="switchTimeDimension(dimension)"
+            size="small"
+        >
+          <template v-if="dimension === 'minute'">近1分钟</template>
+          <template v-else-if="dimension === 'five_minute'">近5分钟</template>
+          <template v-else-if="dimension === 'hour'">近1小时</template>
+          <template v-else-if="dimension === 'day'">近1天</template>
+        </el-button>
+      </div>
+    </div>
     <div ref="chartRef" class="chart-container"></div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.cpu-usage {
+.chart {
   height: 300px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+  }
 
   .chart-container {
     flex: 1;

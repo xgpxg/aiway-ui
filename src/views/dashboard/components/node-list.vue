@@ -27,7 +27,7 @@ interface NodeInfo {
 
 const nodeList = ref<NodeInfo[]>([]);
 const isShowNodeDetail = ref(false)
-const currNodeId = ref()
+const currNode = ref()
 
 onMounted(() => {
   loadData()
@@ -50,6 +50,11 @@ const loadData = () => {
     }
   }).then((res: any) => {
     nodeList.value = res.data.list
+    nodeList.value.forEach(node => {
+      if (node.node_id === currNode.value?.node_id) {
+        currNode.value = node
+      }
+    })
   })
 }
 
@@ -89,7 +94,7 @@ const getStatusType = (status: string) => {
             v-for="node in nodeList"
             :key="node.id"
             :span="8"
-            @click="currNodeId=node.id;isShowNodeDetail=true"
+            @click="currNode=node;isShowNodeDetail=true"
         >
           <div class="node-card">
             <div class="node-header">
@@ -147,8 +152,9 @@ const getStatusType = (status: string) => {
       </el-row>
     </div>
   </div>
-  <el-drawer v-if="U.isDev()" title="节点详情" v-model="isShowNodeDetail" size="50vw" destroy-on-close>
-    <node-monitor :id="currNodeId"></node-monitor>
+  <el-drawer v-if="U.isDev()" :title="`节点详情（${currNode.ip}:${currNode.port}）`" v-model="isShowNodeDetail"
+             size="50vw" destroy-on-close append-to-body>
+    <node-monitor :node-id="currNode.node_id" :attr="currNode.attr" :state="currNode.state"></node-monitor>
   </el-drawer>
 </template>
 

@@ -1,233 +1,196 @@
 <script setup lang="ts">
-import {ref, onMounted, watch} from 'vue'
+import {ref, onMounted, watch, onUnmounted} from 'vue'
 import * as echarts from 'echarts'
+import {R} from "@/utils/R";
+import {U} from "@/utils/util";
 
-// 定义时间维度枚举
-type TimeDimension = 'minute' | 'hour' | 'day' | 'month'
+const props = defineProps(['nodeId', 'state'])
 
-interface MemoryDataPoint {
-  timestamp: number
-  usage: number
-  used: number
-  total: number
+interface DataPoint {
+  t: number
+  v: number
 }
 
+let chart: echarts.EChartsType
 const chartRef = ref<HTMLElement | null>(null)
-const timeDimension = ref<TimeDimension>('minute')
-const chart = ref<echarts.EChartsType | null>(null)
-
-// 生成模拟数据
-const generateMockData = (dimension: TimeDimension): MemoryDataPoint[] => {
-  const data: MemoryDataPoint[] = []
-  const now = Date.now()
-  const totalMemory = 16; // 总内存 16GB
-
-  switch (dimension) {
-    case 'minute':
-      // 最近1小时，每分钟一个数据点
-      for (let i = 59; i >= 0; i--) {
-        const usage = Math.floor(Math.random() * 30) + Math.sin(i / 10) * 20 + 40;
-        data.push({
-          timestamp: now - i * 60 * 1000,
-          usage: usage,
-          used: totalMemory * usage / 100,
-          total: totalMemory
-        })
+const timeDimension = ref<string>('minute')
+const data = ref<DataPoint[]>([])
+const timer = ref<any>(null)
+const chartOption = {
+  tooltip: {
+    trigger: 'axis',
+    formatter: (params: any) => {
+      const item = params[0]
+      return `${U.dateUtil.formatDate(item.data[0], 'hh:mm:ss')}<br/>已用: ${U.renderSize(item.data[1])}`
+    },
+  },
+  xAxis: {
+    type: 'time',
+    boundaryGap: false
+  },
+  yAxis: {
+    type: 'value',
+    name: '用量',
+    max: props.state?.mem_total,
+    axisLabel: {
+      formatter: (value: number) => {
+        return U.renderSize(value)
       }
-      break
-    case 'hour':
-      // 最近24小时，每小时一个数据点
-      for (let i = 23; i >= 0; i--) {
-        const usage = Math.floor(Math.random() * 40) + Math.sin(i / 4) * 15 + 35;
-        data.push({
-          timestamp: now - i * 3600 * 1000,
-          usage: usage,
-          used: totalMemory * usage / 100,
-          total: totalMemory
-        })
-      }
-      break
-    case 'day':
-      // 最近30天，每天一个数据点
-      for (let i = 29; i >= 0; i--) {
-        const usage = Math.floor(Math.random() * 50) + Math.sin(i / 5) * 10 + 30;
-        data.push({
-          timestamp: now - i * 24 * 3600 * 1000,
-          usage: usage,
-          used: totalMemory * usage / 100,
-          total: totalMemory
-        })
-      }
-      break
-    case 'month':
-      // 最近12个月，每月一个数据点
-      for (let i = 11; i >= 0; i--) {
-        const usage = Math.floor(Math.random() * 60) + Math.sin(i / 2) * 10 + 25;
-        data.push({
-          timestamp: now - i * 30 * 24 * 3600 * 1000,
-          usage: usage,
-          used: totalMemory * usage / 100,
-          total: totalMemory
-        })
-      }
-      break
-  }
-
-  return data
+    }
+  },
+  visualMap: {
+    type: 'continuous',
+    min: 0,
+    max: props.state?.mem_total,
+    top: 'middle',
+    right: 10,
+    inRange: {
+      color: ['#99d193', '#ffae00', '#ff0000']
+    },
+    show: false,
+  },
+  series: [{
+    data: [],
+    type: 'line',
+    smooth: true,
+    showSymbol: false,
+    areaStyle: {
+      opacity: 0.2
+    },
+    lineStyle: {
+      width: 1,
+    }
+  }],
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '3%',
+    //containLabel: true
+  },
+  dataZoom: [
+    {
+      type: 'inside',
+      throttle: 100
+    }
+  ]
 }
 
-// 格式化时间显示
-const formatTime = (timestamp: number, dimension: TimeDimension): string => {
-  const date = new Date(timestamp)
 
-  switch (dimension) {
-    case 'minute':
-      return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
-    case 'hour':
-      return `${date.getHours().toString().padStart(2, '0')}:00`
-    case 'day':
-      return `${date.getMonth() + 1}-${date.getDate()}`
-    case 'month':
-      return `${date.getFullYear()}-${date.getMonth() + 1}`
-    default:
-      return date.toLocaleString()
-  }
-}
+onMounted(() => {
+  setTimeout(() => {
+    initChart();
+  }, 100);
 
-// 初始化图表
+
+  timer.value = setInterval(() => {
+    loadData()
+  }, 5000)
+
+  window.addEventListener('resize', () => {
+    if (chart) {
+      chart.resize()
+    }
+  })
+
+})
+
+onUnmounted(() => {
+  clearInterval(timer.value)
+})
+
 const initChart = () => {
   if (chartRef.value) {
-    chart.value = echarts.init(chartRef.value)
-    updateChart()
+    chart = echarts.init(chartRef.value)
+    chart.setOption(chartOption)
+
+    loadData()
   }
 }
 
-// 更新图表
-const updateChart = () => {
-  if (!chart.value) return
+const loadData = async () => {
+  const now = Date.now()
+  let startTimestamp = 0
 
-  const data = generateMockData(timeDimension.value)
-
-  const option = {
-    title: {
-      text: '',
-      left: 'center',
-      textStyle: {
-        fontSize: 16,
-        fontWeight: 'normal'
-      }
-    },
-    tooltip: {
-      trigger: 'axis',
-      formatter: (params: any) => {
-        const item = params[0]
-        const dataIndex = item.dataIndex
-        const memoryData = data[dataIndex]
-        return `${formatTime(memoryData.timestamp, timeDimension.value)}<br/>
-                使用率: ${memoryData.usage.toFixed(2)}%<br/>
-                已用: ${memoryData.used.toFixed(2)} GB<br/>
-                总计: ${memoryData.total} GB`
-      }
-    },
-    xAxis: {
-      type: 'time',
-      data: data.map(item => formatTime(item.timestamp, timeDimension.value)),
-      boundaryGap: false
-    },
-    yAxis: [
-      {
-        type: 'value',
-        name: '使用率 (%)',
-        min: 0,
-        max: 100,
-        axisLabel: {
-          formatter: '{value}%'
-        }
-      }
-    ],
-    series: [{
-      name: '内存使用率',
-      data: data.map(item => [item.timestamp, item.usage]),
-      type: 'line',
-      smooth: true,
-      showSymbol: false,
-      areaStyle: {
-        color: {
-          type: 'linear',
-          x: 0,
-          y: 0,
-          x2: 0,
-          y2: 1,
-          colorStops: [{
-            offset: 0,
-            color: 'rgba(255, 154, 158, 0.3)'
-          }, {
-            offset: 1,
-            color: 'rgba(255, 154, 158, 0.01)'
-          }]
-        }
-      },
-      lineStyle: {
-        color: '#ff9a9e',
-        width: 1
-      }
-    }],
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    }
+  switch (timeDimension.value) {
+    case 'minute':
+      startTimestamp = now - 60 * 1000
+      break
+    case 'five_minute':
+      startTimestamp = now - 5 * 60 * 1000
+      break
+    case 'hour':
+      startTimestamp = now - 60 * 60 * 1000
+      break
+    case 'day':
+      startTimestamp = now - 24 * 60 * 60 * 1000
+      break
+    default:
+      startTimestamp = now - 60 * 1000
   }
 
-  chart.value.setOption(option)
+  const response = await R.get(`/api/node/${props.nodeId}/memory_usage`, {
+    start_timestamp: startTimestamp,
+    end_timestamp: now,
+  })
+
+  // 更新本地数据
+  data.value = response.data
+
+  // 更新图表数据
+  chart.setOption({
+    series: [{
+      data: response.data.map((item: any) => [item.t, item.v])
+    }]
+  })
 }
 
 // 切换时间维度
-const switchTimeDimension = (dimension: TimeDimension) => {
+const switchTimeDimension = (dimension: string) => {
   timeDimension.value = dimension
-  updateChart()
+  loadData()
 }
 
 // 监听时间维度变化
 watch(timeDimension, () => {
-  updateChart()
+  loadData()
 })
 
-// 组件挂载时初始化图表
-onMounted(() => {
-  setTimeout(() => {
-    initChart()
-  }, 100)
-
-  // 窗口大小改变时重置图表大小
-  window.addEventListener('resize', () => {
-    if (chart.value) {
-      chart.value.resize()
-    }
-  })
-
-  // 模拟实时数据更新
-  setInterval(() => {
-    updateChart()
-  }, 10000)
-})
 </script>
 
 <template>
-  <div class="memory-monitor-container">
-    <el-descriptions title="内存使用率">
-    </el-descriptions>
+  <div class="chart">
+    <div class="header">
+      <h4>内存用量</h4>
+      <div>
+        <el-button
+            v-for="dimension in ['minute', 'five_minute', 'hour', 'day']"
+            :key="dimension"
+            :type="timeDimension === dimension ? 'primary' : 'default'"
+            @click="switchTimeDimension(dimension)"
+            size="small"
+        >
+          <template v-if="dimension === 'minute'">近1分钟</template>
+          <template v-else-if="dimension === 'five_minute'">近5分钟</template>
+          <template v-else-if="dimension === 'hour'">近1小时</template>
+          <template v-else-if="dimension === 'day'">近1天</template>
+        </el-button>
+      </div>
+    </div>
     <div ref="chartRef" class="chart-container"></div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.memory-monitor-container {
+.chart {
   height: 300px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+  }
 
   .chart-container {
     flex: 1;
