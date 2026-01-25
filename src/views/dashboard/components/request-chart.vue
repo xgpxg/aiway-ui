@@ -1,8 +1,9 @@
-<script setup>import * as echarts from 'echarts';
+<script setup lang="ts">import * as echarts from 'echarts';
 import {onMounted, onUnmounted, ref} from "vue";
 import {R} from '@/utils/R.js';
 
 let myChart = null;
+const chartRef = ref(null);
 const activeTimeRange = ref('hour');
 
 onMounted(() => {
@@ -27,7 +28,7 @@ onUnmounted(() => {
 const selectTimeRange = (range) => {
   activeTimeRange.value = range;
   updateChartData();
-  
+
   // 重置缩放
   if (myChart) {
     myChart.dispatchAction({
@@ -163,8 +164,8 @@ const updateChartData = async () => {
 }
 
 const initChart = () => {
-  const chartDom = document.getElementById('request-chart');
-  myChart = echarts.init(chartDom);
+
+  myChart = echarts.init(chartRef.value);
 
   // 自适应窗口变化
   window.addEventListener('resize', () => {
@@ -419,7 +420,7 @@ const initChart = () => {
         </el-button>
       </div>
     </div>
-    <div id="request-chart"></div>
+    <div ref="chartRef" id="request-chart"></div>
   </div>
 </template>
 

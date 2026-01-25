@@ -152,8 +152,8 @@ const getStatusType = (status: string) => {
       </el-row>
     </div>
   </div>
-  <el-drawer v-if="U.isDev()" :title="`节点详情（${currNode.ip}:${currNode.port}）`" v-model="isShowNodeDetail"
-             size="50vw" destroy-on-close append-to-body>
+  <el-drawer :title="`节点详情（${currNode?.ip}:${currNode?.port}）`" v-model="isShowNodeDetail"
+             size="50vw" destroy-on-close>
     <node-monitor :node-id="currNode.node_id" :attr="currNode.attr" :state="currNode.state"></node-monitor>
   </el-drawer>
 </template>
