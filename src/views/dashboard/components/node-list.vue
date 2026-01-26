@@ -121,7 +121,9 @@ const getStatusType = (status: string) => {
                 <div class="metric-item">
                   <div class="metric-label">连接数</div>
                   <div class="metric-value connections">
-                    {{ (node.state?.http_connect_count + node.state?.sse_connect_count).toLocaleString() }}
+                    {{
+                      (node.state?.http_connect_count + node.state?.sse_connect_count + node.state?.websocket_connect_count).toLocaleString()
+                    }}
                   </div>
                 </div>
 

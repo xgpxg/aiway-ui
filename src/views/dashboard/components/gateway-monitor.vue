@@ -17,6 +17,7 @@ const state = ref({
   response_5xx_count: 0,
   http_connect_count: 0,
   sse_connect_count: 0,
+  websocket_connect_count: 0,
   avg_response_time: 0,
   avg_qps: 0,
   info_count: 0,
@@ -84,7 +85,7 @@ onBeforeUnmount(() => {
         <div class="mt5">
           <div>
             <span class="number">
-              {{ (state.http_connect_count + (state.sse_connect_count || 0)).toLocaleString() }}
+              {{ (state.http_connect_count + state.sse_connect_count + state.websocket_connect_count).toLocaleString() }}
             </span>
             <el-text type="info" size="small" class="ml10">个连接</el-text>
           </div>
@@ -97,6 +98,10 @@ onBeforeUnmount(() => {
           <div>
             <el-text size="small" type="info">SSE：</el-text>
             <el-text size="small" type="info">{{ (state.sse_connect_count || 0).toLocaleString() }}</el-text>
+          </div>
+          <div>
+            <el-text size="small" type="info">Websocket：</el-text>
+            <el-text size="small" type="info">{{ (state.websocket_connect_count || 0).toLocaleString() }}</el-text>
           </div>
         </div>
       </div>

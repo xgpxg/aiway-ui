@@ -29,7 +29,7 @@ const chartOption = {
     },
   },
   legend: {
-    data: ['TCP', 'HTTP', 'SSE'],
+    data: ['TCP', 'HTTP', 'SSE', 'Websocket'],
     top: '30px'
   },
   xAxis: {
@@ -78,6 +78,18 @@ const chartOption = {
 
       lineStyle: {
         color: '#439f8b',
+        width: 1
+      }
+    },
+    {
+      name: 'Websocket',
+      data: [],
+      type: 'line',
+      smooth: true,
+      showSymbol: false,
+
+      lineStyle: {
+        color: '#6c439f',
         width: 1
       }
     }
@@ -171,6 +183,10 @@ const loadData = async () => {
       {
         name: 'SSE',
         data: (response.data[2] || []).map((item: any) => [item.t, item.v])
+      },
+      {
+        name: 'Websocket',
+        data: (response.data[3] || []).map((item: any) => [item.t, item.v])
       }
     ]
   })
