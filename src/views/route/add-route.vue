@@ -28,7 +28,7 @@ const defaultForm = {
   service: null,
   host: '*',
   path: null,
-  methods: null,
+  methods: [],
   header: {},
   query: {},
   pre_filters: [],
