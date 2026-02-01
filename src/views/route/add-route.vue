@@ -281,6 +281,8 @@ const reset = () => {
           <el-option value="PUT">PUT</el-option>
           <el-option value="DELETE">DELETE</el-option>
           <el-option value="PATCH">PATCH</el-option>
+          <el-option value="OPTIONS">OPTIONS</el-option>
+          <el-option value="HEAD">HEAD</el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="Header匹配" prop="header">

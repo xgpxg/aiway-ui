@@ -44,7 +44,7 @@ const toView = (log: any) => {
 <template>
   <div class="flex-v">
     <el-select v-model="form.level" @change="loadLogs" clearable class="mr20" placeholder="级别"
-               style="width: 200px">
+               style="width: 250px">
       <el-option label="DEBUG" value="DEBUG"></el-option>
       <el-option label="INFO" value="INFO"></el-option>
       <el-option label="WARN" value="WARN"></el-option>
