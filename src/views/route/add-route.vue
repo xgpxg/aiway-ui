@@ -44,7 +44,23 @@ const rules = {
   ],
   path: [
     {required: true, message: '请填写路径匹配规则', trigger: 'blur'},
-    {min: 1, max: 50, message: '长度在 1 到 100 个字符', trigger: 'blur'}
+    {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'},
+    {
+      validator: (rule: any, value: any, callback: any) => {
+        if (!value) {
+          callback();
+          return;
+        }
+
+        if (!value.startsWith('/')) {
+          callback(new Error('路径必须以 "/" 开头'));
+          return;
+        }
+
+        callback();
+      },
+      trigger: 'blur'
+    }
   ],
   service: [
     {required: true, message: '请选择关联服务', trigger: 'blur'}
@@ -65,8 +81,7 @@ const rules = {
         }
 
         // 支持泛域名格式: *.example.com
-        const hostRegex = /^(\*\.)?([a-zA-Z0-9][-a-zA-Z0-9]{0,62}\.)+[a-zA-Z]{2,}$/;
-
+        const hostRegex = /^(\*\.)?([a-zA-Z0-9][-a-zA-Z0-9]{0,62}\.)+[a-zA-Z]{2,}(:(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[1-9][0-9]{0,3}))?$/;
         if (!hostRegex.test(value)) {
           callback(new Error('域名格式不正确，支持完整域名或泛域名，如：abc.example.com， *.example.com'));
           return;
