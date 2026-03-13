@@ -82,6 +82,24 @@ const routes = [
                 }
             },
             {
+                path: 'mcp',
+                name: 'Mcp',
+                component: () => import('@/views/mcp/index.vue'),
+                meta: {
+                    title: 'MCP服务'
+                },
+                children: [
+                    {
+                        path: ':mcpServiceId',
+                        name: 'Tools',
+                        component: () => import('@/views/mcp/tool-list.vue'),
+                        meta: {
+                            title: '工具列表'
+                        }
+                    },
+                ]
+            },
+            {
                 path: 'users',
                 name: 'Users',
                 component: () => import('@/views/user/index.vue'),

@@ -10,23 +10,23 @@ const props = defineProps(['nodeId', 'attr', 'state']);
 </script>
 
 <template>
-  <el-row :gutter="10">
-    <el-col :span="24" class="mb10">
+  <el-row :gutter="10" class="">
+    <el-col :span="24" class="mb50">
       <system-info :attr="attr" :state="state"></system-info>
     </el-col>
-    <el-col :span="24" class="mb10">
+    <el-col :span="24" class="mb50">
       <cpu-usage :node-id="nodeId"></cpu-usage>
     </el-col>
-    <el-col :span="24" class="mb10">
+    <el-col :span="24" class="mb50">
       <memery-usage :node-id="nodeId" :state="state"></memery-usage>
     </el-col>
 <!--    <el-col :span="24" class="mb10">
       <disk-usage></disk-usage>
     </el-col>-->
-    <el-col :span="24" class="mb10">
+    <el-col :span="24" class="mb50">
       <network-usage :node-id="nodeId"></network-usage>
     </el-col>
-    <el-col :span="24" class="mb10">
+    <el-col :span="24" class="mb50">
       <connect-usage :node-id="nodeId"></connect-usage>
     </el-col>
   </el-row>

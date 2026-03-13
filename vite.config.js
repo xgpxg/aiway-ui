@@ -27,6 +27,12 @@ export default defineConfig(async ({mode}) => {
         server: {
             port: 9010,
             strictPort: true,
+            host: true,
+            allowedHosts: [
+                'aiway.node-1.bala',
+                'localhost',
+                '127.0.0.1'
+            ],
             proxy: {
                 '/api/': {
                     target: PROXY_SERVER,

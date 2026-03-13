@@ -72,6 +72,12 @@
           </el-icon>
           <span v-if="!isCollapse">模型管理</span>
         </el-menu-item>
+        <el-menu-item index="/mcp" v-if="U.isDev()">
+          <el-icon>
+            <svg-icon icon-class="mcp"></svg-icon>
+          </el-icon>
+          <span v-if="!isCollapse">MCP服务</span>
+        </el-menu-item>
       </el-menu-item-group>
 
       <el-menu-item-group title="系统">
