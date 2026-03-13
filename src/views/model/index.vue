@@ -140,7 +140,7 @@ onMounted(() => {
       </div>
       <div class="providers">
         <div
-            class="bg-card br5 mb10 cursor-pointer"
+            class="card br5 mb10 cursor-pointer"
             :class="{ 'selected': selectedModelId === model.id }"
             v-for="model in filteredModelList"
             :key="model.id"
@@ -178,7 +178,7 @@ onMounted(() => {
     </el-col>
     <el-col :span="18">
       <div v-if="selectedModelId">
-        <div class="card">
+        <div class="pdl10 pdr10">
           <ProviderList
               :modelList="modelList"
               :selectedModelId="selectedModelId"
@@ -227,18 +227,18 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
+.card {
+  padding: 10px;
+  border: 1px solid var(--el-color-primary-light-9);
+}
+
 .providers {
   height: calc(100vh - 122px);
   overflow-y: auto;
 }
 
-.cursor-pointer {
-  cursor: pointer;
-  border: 3px solid transparent;
-}
-
 .selected {
-  border-left: 3px solid #4299fa;
-  background-color: #f0f8ff;
+  background-color: var(--el-color-primary-light-11);
+  border: 1px solid var(--el-color-primary-light-9);
 }
 </style>

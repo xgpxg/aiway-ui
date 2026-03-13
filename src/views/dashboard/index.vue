@@ -12,17 +12,17 @@ import RequestChart from "./components/request-chart.vue";
         <gateway-monitor></gateway-monitor>
       </el-col>
     </el-row>
-    <el-row :gutter="10" class="mt10">
+    <el-row :gutter="20" class="mt20">
+      <el-col :span="24">
+        <node-list></node-list>
+      </el-col>
+    </el-row>
+    <el-row :gutter="10" class="mt20">
       <el-col :span="12">
         <invoke-map></invoke-map>
       </el-col>
       <el-col :span="12">
         <request-chart></request-chart>
-      </el-col>
-    </el-row>
-    <el-row :gutter="20" class="mt10">
-      <el-col :span="24">
-        <node-list></node-list>
       </el-col>
     </el-row>
   </div>

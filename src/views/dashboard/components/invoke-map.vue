@@ -274,9 +274,10 @@ const updateData = (newData: { name: string; value: number }[]) => {
   flex-direction: column;
   background: var(--el-bg-color-overlay);
   border-radius: 8px;
-  padding: 10px;
+  padding: 16px;
   box-sizing: border-box;
-
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   .header {
     display: flex;
     justify-content: space-between;

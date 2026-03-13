@@ -46,17 +46,18 @@
 }
 
 :root {
-  --el-color-primary: #409eff; // 浅蓝色主色
-  --el-color-primary-light-3: #79bbff; // 浅一些的蓝色
-  --el-color-primary-light-5: #a0cfff; // 中等蓝色
-  --el-color-primary-light-7: #c6e2ff; // 更浅的蓝色
-  --el-color-primary-light-8: #d9ecff; // 极浅蓝色
-  --el-color-primary-light-9: #e6f2ff; // 淡蓝色
-  --el-color-primary-light-10: #f0f7ff; // 微淡蓝色
-  --el-color-primary-light-11: #f6fbff; // 极淡蓝色
-  --el-color-primary-light-12: #fcfeff; // 几乎白色
-  --el-color-primary-dark: #337ecc; // 深色主色
-  --el-color-primary-dark-3: #2a62a6; // 更深的蓝色
+  --el-color-primary: #2c2c2c; // 高级黑主色
+  --el-color-primary-light-3: #5a5a5a; // 中黑色
+  --el-color-primary-light-5: #7f7f7f; // 浅中黑色
+  --el-color-primary-light-7: #a6a6a6; // 浅灰色
+  --el-color-primary-light-8: #bfbfbf; // 淡灰色
+  --el-color-primary-light-9: #d9d9d9; // 微淡灰色
+  --el-color-primary-light-10: #e6e6e6; // 极淡灰色
+  --el-color-primary-light-11: #f2f2f2; // 几乎白色
+  --el-color-primary-light-12: #f7f7f7; // 近白色
+  --el-color-primary-dark: #1a1a1a; // 更深黑色
+  --el-color-primary-dark-3: #0d0d0d; // 纯黑色
+
 
 
   --el-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", "Helvetica Neue", Helvetica, Tahoma, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -146,14 +147,10 @@
   }
 
   .el-table {
-    border-top: 0;
-    border-right: 1px solid #ececec;
-    border-bottom: 0;
-    border-left: 1px solid #ececec;
-    border-top: 1px solid #e8e8e8; // 顶部线
+    border: none;
     font-size: 14px;
     width: 100%;
-    border-radius: 5px; // 移除圆角
+    border-radius: 0;
 
     &:before {
       display: none;
@@ -164,28 +161,46 @@
     }
 
     th {
-      background: #fafafa;
       color: #333;
-      border-bottom: 1px solid #e8e8e8; // 表头底部线
+      border-bottom: 1px solid #d0d0d0;
       padding: 12px 0;
-      font-weight: 500;
+      font-weight: 600;
+      //background-color: #fafafa;
     }
 
     td {
-      //border-bottom: none; // 移除数据行底部边框
       padding: 16px 0;
       word-break: break-all;
       color: #1C1C1E;
+      border-bottom: none;
     }
 
     &.el-table--enable-row-hover .el-table__body tr:hover > td {
-      background: transparent; // 移除悬停背景色
+      background: #f5f7fa;
       cursor: default;
     }
 
-    // 移除最后一行的底部边框（如果需要）
-    .el-table__body tr:last-child td {
-      border-bottom: none;
+    // 顶部粗线（三线表的第一条线）
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: #333;
+      z-index: 1;
+    }
+
+    // 底部细线（三线表的第三条线）
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: #999;
     }
   }
 

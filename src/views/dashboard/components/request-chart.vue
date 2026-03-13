@@ -426,8 +426,11 @@ const initChart = () => {
 
 <style scoped lang="scss">
 .chart-container {
-  padding: 10px;
+  padding: 16px;
   background: transparent;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 
   #request-chart {
     height: 400px;

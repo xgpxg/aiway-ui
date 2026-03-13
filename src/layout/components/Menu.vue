@@ -1,7 +1,7 @@
 <template>
   <div class="menu">
     <div class="logo">
-      <div class="flex-center" v-if="!collapse">
+      <div class="" v-if="!collapse">
         <el-image src="/images/logo.png" style="height: 24px;"></el-image>
       </div>
       <div v-else>
@@ -140,8 +140,8 @@ export default {
 <style scoped lang="scss">
 .menu {
   height: calc(100vh);
-  background: var(--el-color-primary-light-12);
-  border-right: 1px solid #e6e8f0;
+  //background: var(--el-color-primary-light-12);
+  // border-right: 1px solid #e6e8f0;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.02);
   overflow-y: auto;
   //transition: all 0.3s ease;
@@ -156,8 +156,13 @@ export default {
     background-color: transparent !important;
     border: unset;
     margin: 4px 0;
-    // border-radius: 8px;
-    //  transition: all 0.3s ease;
+    border-radius: 8px;
+    height: 44px;
+
+    &:hover {
+      color: var(--el-color-primary) !important;
+      background: var(--el-color-primary-light-9) !important;
+    }
   }
 
   :deep(.el-menu-item):hover {
@@ -168,31 +173,11 @@ export default {
   :deep(.el-menu-item) {
     &.is-active {
       color: var(--el-color-primary) !important;
-      background: var(--el-color-primary-light-8) !important;
-      font-weight: 500;
-
-      /*&::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 3px;
-        height: 100%;
-        background: var(--el-color-primary);
-        border-radius: 2px 0 0 2px;
-      }*/
-    }
-  }
-
-  .el-menu-item {
-    height: 44px;
-
-    &:hover {
-      color: var(--el-color-primary) !important;
       background: var(--el-color-primary-light-9) !important;
+      font-weight: 600;
     }
-
   }
+
 
   :deep(.el-badge__content) {
     border: none;

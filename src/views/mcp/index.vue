@@ -129,7 +129,7 @@ const toggleStatus = (mcp, newStatus) => {
       </div>
       <div class="providers">
         <div
-            class="bg-card br5 mb10 cursor-pointer"
+            class="card br5 mb10 cursor-pointer"
             :class="{ 'selected': selectedMcpId === Number(mcp.id) }"
             v-for="mcp in filteredMcpList"
             :key="mcp.id"
@@ -208,13 +208,12 @@ const toggleStatus = (mcp, newStatus) => {
 </template>
 
 <style scoped lang="scss">
-
-.cursor-pointer {
-  cursor: pointer;
-  border: 3px solid transparent;
+.card{
+  padding: 10px;
+  border: 1px solid var(--el-color-primary-light-9);
 }
-
 .selected {
-  background-color: #f0f8ff;
+  background-color: var(--el-color-primary-light-11);
+  border: 1px solid var(--el-color-primary-light-9);
 }
 </style>

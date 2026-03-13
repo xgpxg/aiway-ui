@@ -192,7 +192,7 @@ const toggleStatus = (provider: any, newStatus: string) => {
       <el-button type="primary" class="ml10" icon="plus" @click="openAddProviderDialog">新增提供商</el-button>
     </div>
 
-    <div class="card">
+    <div>
       <div class="mt10">
         <el-table class="mt10" :data="filteredProviderList">
           <el-table-column prop="name" label="提供商" min-width="100" show-overflow-tooltip>
