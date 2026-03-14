@@ -44,14 +44,14 @@ const loadData = () => {
 const openAddMcpDialog = () => {
   mcpForm.value = {name: '', lb_strategy: 'Random'}
   currentMcp.value = null
-  mcpDialogTitle.value = '新增模型'
+  mcpDialogTitle.value = '创建 MCP Server'
   mcpDialogVisible.value = true
 }
 
 const openEditMcpDialog = (row) => {
   mcpForm.value = {...row}
   currentMcp.value = row
-  mcpDialogTitle.value = '编辑模型'
+  mcpDialogTitle.value = '修改 MCP Server'
   mcpDialogVisible.value = true
 }
 
@@ -124,8 +124,8 @@ const toggleStatus = (mcp, newStatus) => {
   <el-row :gutter="20" v-if="mcpList.length">
     <el-col :span="6">
       <div class="flex mb10">
-        <el-input v-model="filterText" placeholder="MCP名称" prefix-icon="search" clearable></el-input>
-        <el-button type="primary" class="ml10" icon="plus" @click="openAddMcpDialog">创建 MCP Server</el-button>
+        <el-input v-model="filterText" placeholder="名称" prefix-icon="search" clearable></el-input>
+        <el-button type="primary" class="ml10" icon="plus" @click="openAddMcpDialog">MCP Server</el-button>
       </div>
       <div class="providers">
         <div
@@ -142,8 +142,11 @@ const toggleStatus = (mcp, newStatus) => {
             </el-switch>
           </div>
           <div class="mt5">
-            <el-text type="info" size="small">
+            <el-text type="info" size="small" v-if="mcp.description">
               {{ mcp.description }}
+            </el-text>
+            <el-text type="info" size="small" v-else>
+              暂无描述
             </el-text>
           </div>
           <div class="mt10 flex-v flex-space-between">
@@ -169,7 +172,7 @@ const toggleStatus = (mcp, newStatus) => {
     </el-col>
     <el-col :span="18">
       <div v-if="selectedMcpId">
-        <div class="card">
+        <div>
           <!--          <tool-list :mcp-server-id="selectedMcpId"/>-->
           <router-view :key="selectedMcpId"></router-view>
         </div>
@@ -190,14 +193,15 @@ const toggleStatus = (mcp, newStatus) => {
   </div>
 
   <!-- MCP新增/编辑弹窗 -->
-  <el-dialog v-model="mcpDialogVisible" :title="modelDialogTitle" width="500px">
-    <el-form ref="mcpFormRef" :model="mcpForm" label-width="100px" :rules="rules">
+  <el-dialog v-model="mcpDialogVisible" :title="mcpDialogTitle" width="500px">
+    <el-form ref="mcpFormRef" :model="mcpForm" label-width="70px" :rules="rules">
       <el-form-item label="服务名" prop="name">
         <el-input v-model="mcpForm.name" placeholder="请输入MCP服务名，该名称需全局唯一" maxlength="100"
                   show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="描述" prop="description">
-        <el-input v-model="mcpForm.description" type="textarea" :rows="3" placeholder="填写描述"></el-input>
+        <el-input v-model="mcpForm.description" type="textarea" :rows="3" placeholder="填写描述" maxlength="200"
+                  show-word-limit></el-input>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -208,10 +212,11 @@ const toggleStatus = (mcp, newStatus) => {
 </template>
 
 <style scoped lang="scss">
-.card{
+.card {
   padding: 10px;
   border: 1px solid var(--el-color-primary-light-9);
 }
+
 .selected {
   background-color: var(--el-color-primary-light-11);
   border: 1px solid var(--el-color-primary-light-9);

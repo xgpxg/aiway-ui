@@ -73,5 +73,14 @@ watch(activeIndex, (newTab) => {
 </template>
 
 <style scoped lang="scss">
+:deep(.el-menu-item) {
+  &.is-active {
+    //background-color: var(--el-color-primary-light-10);
+    font-weight: 600;
+  }
 
+  &:hover {
+    background: unset;
+  }
+}
 </style>

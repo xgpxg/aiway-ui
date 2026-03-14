@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-button icon="plus" link class="mb10" @click="add()" type="success" plain>
-      添加
+      添加参数
     </el-button>
     <el-table class="table draggable" :data="value" row-key="id"
               default-expand-all size="large">

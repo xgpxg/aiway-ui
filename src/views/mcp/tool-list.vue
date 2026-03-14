@@ -4,6 +4,7 @@ import {R} from "../../utils/R";
 import ApiParamTable from "./api-param-table.vue";
 import {ElMessageBox} from "element-plus";
 import {useRoute} from "vue-router";
+import ServiceSelect from "../service/service-select.vue";
 
 const route = useRoute()
 const mcpServerId = computed(() => {
@@ -20,13 +21,15 @@ const page = ref({
   total: 0
 })
 const showToolAddDialog = ref(false)
-const showApiParamDialog = ref(false)
+const showToolRouteDialog = ref(false)
 const paramForm = ref([])
 const paramSchema = ref({})
 const toolForm = ref({
   name: '',
   description: '',
-  service: '',
+  route_type: 'Service',
+  service_name: '',
+  service_path: '',
   url: '',
 })
 const toolFormRef = ref()
@@ -39,6 +42,17 @@ const rules = {
     {required: true, message: '请填写工具描述', trigger: 'blur'},
     {min: 2, max: 100, message: '长度在 2 到 500 个字符', trigger: 'blur'}
   ],
+  route_type: [
+    {required: true, message: '请选择路由类型', trigger: 'change'},
+  ],
+  service_name: [
+    {required: true, message: '请填写目标服务名称', trigger: 'blur'},
+    {min: 2, max: 100, message: '长度在 2 到 100 个字符', trigger: 'blur'}
+  ],
+  url: [
+    {required: true, message: '请填写目标服务地址', trigger: 'blur'},
+    {min: 2, max: 100, message: '长度在 2 到 100 个字符', trigger: 'blur'}
+  ]
 }
 const errMsg = ref('')
 const selectedTool = ref(null)
@@ -70,7 +84,9 @@ const saveTool = () => {
       mcp_server_id: mcpServerId.value,
       name: toolForm.value.name,
       description: toolForm.value.description,
-      service: toolForm.value.service,
+      route_type: toolForm.value.route_type,
+      service_name: toolForm.value.service_name,
+      service_path: toolForm.value.service_path,
       url: toolForm.value.url,
     }).then(() => {
       showToolAddDialog.value = false
@@ -94,11 +110,11 @@ const deleteTool = (row) => {
   })
 }
 
-const openApiParamDialog = (tool) => {
+const openToolRouteDialog = (tool) => {
   selectedTool.value = tool
   paramForm.value = tool.request_param || []
   paramSchema.value = tool.input_schema || {}
-  showApiParamDialog.value = true
+  showToolRouteDialog.value = true
 }
 
 const updateApiParam = () => {
@@ -107,7 +123,7 @@ const updateApiParam = () => {
     request_param: paramForm.value,
     input_schema: paramSchema.value,
   }).then(() => {
-    showApiParamDialog.value = false
+    showToolRouteDialog.value = false
     loadData()
   })
 }
@@ -132,15 +148,15 @@ const toggleStatus = (row, newStatus) => {
     <el-button type="primary" class="ml10" icon="plus" @click="showToolAddDialog=true">新增工具</el-button>
   </div>
 
-  <div class="card">
+  <div>
     <div class="mt10">
       <el-table class="mt10" :data="filteredMcpList">
-        <el-table-column prop="name" label="名称" min-width="100" show-overflow-tooltip>
+        <el-table-column prop="name" label="工具名称" min-width="100" show-overflow-tooltip>
           <template #default="{row}">
             {{ row.name }}
           </template>
         </el-table-column>
-        <el-table-column prop="description" label="描述" min-width="300" show-overflow-tooltip>
+        <el-table-column prop="description" label="工具描述" min-width="300" show-overflow-tooltip>
         </el-table-column>
         <el-table-column label="状态" width="100">
           <template #default="{row}">
@@ -149,9 +165,9 @@ const toggleStatus = (row, newStatus) => {
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="140">
+        <el-table-column label="操作" width="120">
           <template #default="{row}">
-            <el-button link type="primary" @click="openApiParamDialog(row)">接口配置</el-button>
+            <el-button link type="primary" @click="openToolRouteDialog(row)">路由</el-button>
             <el-button link type="danger" @click="deleteTool(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -164,27 +180,49 @@ const toggleStatus = (row, newStatus) => {
         <el-input v-model="toolForm.name" placeholder="请填写工具名称，仅支持英文和数字，以及下划线和中划线"></el-input>
       </el-form-item>
       <el-form-item label="工具描述" prop="description">
-        <el-input v-model="toolForm.description" placeholder="请填写工具描述"></el-input>
+        <el-input v-model="toolForm.description" type="textarea" :rows="3"
+                  placeholder="请准确描述工具的主要功能"></el-input>
       </el-form-item>
-      <el-form-item label="目标服务" prop="service">
-        <el-input v-model="toolForm.service" placeholder="请填写目标服务名称，例如：user-service"></el-input>
-      </el-form-item>
-      <el-form-item label="目标地址" prop="url">
-        <el-input v-model="toolForm.url" placeholder="标服务地址，可选，当填写该项后，将以该地址为准"></el-input>
-      </el-form-item>
-      <el-form-item label="" v-if="errMsg">
-        <el-text type="danger">{{ errMsg }}</el-text>
-      </el-form-item>
+      <!--      <el-form-item label="目标服务" prop="service">
+              <service-select v-model="toolForm.service"></service-select>
+            </el-form-item>
+            <el-form-item label="目标地址" prop="url">
+              <el-input v-model="toolForm.url" placeholder="标服务地址，可选，当填写该项后，将以该地址为准"></el-input>
+            </el-form-item>
+            <el-form-item label="" v-if="errMsg">
+              <el-text type="danger" size="small">{{ errMsg }}</el-text>
+            </el-form-item>-->
     </el-form>
     <template #footer>
       <el-button @click="showToolAddDialog = false">取消</el-button>
       <el-button type="primary" @click="saveTool">添加</el-button>
     </template>
   </el-dialog>
-  <el-dialog v-model="showApiParamDialog" width="70vw" title="接口参数配置">
-    <api-param-table v-model:value="paramForm" v-model:schema="paramSchema"></api-param-table>
+  <el-dialog v-model="showToolRouteDialog" width="50vw" title="工具路由">
+    <el-form :model="toolForm" label-width="80px" :rules="rules">
+      <el-form-item label="目标服务" prop="route_type" required>
+        <el-radio-group v-model="toolForm.route_type">
+          <el-radio-button value="Service">已有服务</el-radio-button>
+          <el-radio-button value="Url">指定URL</el-radio-button>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item v-if="toolForm.route_type==='Service'" label="目标服务" prop="service_name">
+        <div class="flex-v fill-width">
+          <service-select v-model="toolForm.service_name" style="width: 200px"></service-select>
+          <el-input v-model="toolForm.service_path" placeholder="路径" class="ml10"></el-input>
+        </div>
+      </el-form-item>
+      <el-form-item v-if="toolForm.route_type==='Url'" label="目标地址" prop="url">
+        <el-input v-model="toolForm.url" placeholder="指定接口地址，工具将自动请求该地址"></el-input>
+      </el-form-item>
+    </el-form>
+    <api-param-table v-if="['Service', 'Url'].includes(toolForm.route_type)"
+                     label="接口参数"
+                     v-model:value="paramForm"
+                     v-model:schema="paramSchema">
+    </api-param-table>
     <template #footer>
-      <el-button @click="showApiParamDialog = false">取消</el-button>
+      <el-button @click="showToolRouteDialog = false">取消</el-button>
       <el-button type="primary" @click="updateApiParam">保存</el-button>
     </template>
   </el-dialog>

@@ -26,8 +26,6 @@ watch(activeIndex, (newTab) => {
       <el-col :span="3">
         <el-menu
             :default-active="activeIndex"
-            class="el-menu-vertical-demo"
-            style="width: 130px"
             @select="(index) =>{activeIndex = index}"
         >
           <el-menu-item-group title="个性化">
@@ -63,5 +61,14 @@ watch(activeIndex, (newTab) => {
 </template>
 
 <style scoped lang="scss">
+:deep(.el-menu-item) {
+  &.is-active {
+    //background-color: var(--el-color-primary-light-10);
+    font-weight: 600;
+  }
 
+  &:hover {
+    background: unset;
+  }
+}
 </style>
