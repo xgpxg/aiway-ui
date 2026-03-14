@@ -7,7 +7,7 @@ const mcpServer = inject('mcpServer')
 </script>
 
 <template>
-  <template v-if="mcpServer?.server_type==='Api'">
+  <template v-if="mcpServer?.server_type==='Http'">
     <api-server-tool-list></api-server-tool-list>
   </template>
 

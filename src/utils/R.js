@@ -1,6 +1,6 @@
 import axios from 'axios'
 import qs from 'qs';
-import {ElLoading, ElMessage, ElMessageBox} from 'element-plus'
+import {ElLoading, ElMessage, ElMessageBox, ElNotification} from 'element-plus'
 import {U} from "./util";
 import store from "@/store";
 
@@ -201,9 +201,15 @@ export const R = {
                 let data = response.data;
                 let status = response.status;
                 if (status === 500) {
-                    ElMessage.error('服务异常');
+                    ElNotification.error({
+                        message: '服务异常',
+                        position: 'bottom-right'
+                    });
                 } else if (status === 503) {
-                    ElMessage.error('服务升级中，请稍后');
+                    ElNotification.error({
+                        message: '服务升级中，请稍后',
+                        position: 'bottom-right'
+                    });
                 } else if (status > 300) {
                     let errMsg = `${response.status} ${response.statusText} : ${JSON.stringify(data)}`;
                     if (status === 404) {
@@ -214,18 +220,27 @@ export const R = {
                         return
                     }
                     //let errMsg = data.error;
-                    ElMessage.error(errMsg);
+                    ElNotification.error({
+                        message: errMsg,
+                        position: 'bottom-right'
+                    });
                     throw new Error(errMsg);
                 } else {
                     //服务端统一返回码
                     if (data.code === 6) {
-                        ElMessage.error(`${data.msg}`);
+                        ElNotification.error({
+                            message: `${data.msg}`,
+                            position: 'bottom-right'
+                        });
                         throw new Error(data.msg);
                     } else if (data.code === 10003 || data.code === 10004 || data.code === 10005) {
                         reLogin()
                         return
                     } else if (data.code) {
-                        ElMessage.error(`${data.msg}`);
+                        ElNotification.error({
+                            message: `${data.msg}`,
+                            position: 'bottom-right'
+                        });
                         throw new Error(data.msg);
                     }
 

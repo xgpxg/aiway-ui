@@ -14,7 +14,7 @@ const mcpDialogTitle = ref('')
 const mcpForm = ref({
   name: '',
   description: '',
-  server_type: 'Api',
+  server_type: 'Http',
 })
 const mcpFormRef = ref(null)
 const mcpServer = ref(null)
@@ -56,7 +56,7 @@ const loadData = () => {
   })
 }
 const openAddMcpDialog = () => {
-  mcpForm.value = {name: '', lb_strategy: 'Random', server_type: 'Api',}
+  mcpForm.value = {name: '', lb_strategy: 'Random', server_type: 'Http',}
   currMcpServer.value = null
   mcpDialogTitle.value = '创建 MCP Server'
   mcpDialogVisible.value = true
@@ -152,7 +152,7 @@ const toggleStatus = (mcp, newStatus) => {
                 {{ mcp.update_time || mcp.create_time }}
               </el-text>
               <span class="ml20">
-                <el-text type="info" size="small" v-if="mcp.server_type==='Api'">
+                <el-text type="info" size="small" v-if="mcp.server_type==='Http'">
                  接口
                 </el-text>
                 <el-text type="info" size="small" v-if="mcp.server_type==='Proxy'">
@@ -189,7 +189,7 @@ const toggleStatus = (mcp, newStatus) => {
       </template>
       <template #description>
         <el-text class="flex-v">当前暂无MCP服务，请
-          <el-button type="primary" link @click="openAddMcpDialog">创建 MCP Server</el-button>
+          <el-button type="primary" link @click="openAddMcpDialog" class="ml10">创建 MCP Server</el-button>
         </el-text>
       </template>
     </el-empty>
@@ -208,10 +208,10 @@ const toggleStatus = (mcp, newStatus) => {
       </el-form-item>
       <el-form-item label="服务类型" prop="server_type">
         <el-radio-group v-model="mcpForm.server_type" :disabled="!!currMcpServer">
-          <el-radio-button label="Api" value="Api">HTTP接口</el-radio-button>
+          <el-radio-button label="Http" value="Http">HTTP接口</el-radio-button>
           <el-radio-button label="Proxy" value="Proxy">代理</el-radio-button>
         </el-radio-group>
-        <div v-if="mcpForm.server_type === 'Api'" class="fill-width">
+        <div v-if="mcpForm.server_type === 'Http'" class="fill-width">
           <el-text type="info" size="small">
             将MCP请求转发给指定的服务或指定的URL，无需改动现有业务系统。
           </el-text>

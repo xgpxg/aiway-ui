@@ -1,10 +1,11 @@
 <script setup>
 import {computed, onMounted, ref} from 'vue'
 import {R} from '@/utils/R'
-import ApiParamTable from './api-param-table.vue'
+import HttpParamTable from './api-param-table.vue'
 import {ElMessageBox} from 'element-plus'
 import {useRoute} from 'vue-router'
 import ServiceSelect from '../service/service-select.vue'
+import ApiParamTable from "./api-param-table.vue";
 
 const route = useRoute()
 
@@ -53,12 +54,15 @@ const rules = {
     {required: true, message: '请选择路由类型', trigger: 'change'}
   ],
   service_name: [
-    {required: true, message: '请填写目标服务名称', trigger: 'blur'},
+    {required: true, message: '请选择服务', trigger: 'blur'},
     {min: 2, max: 100, message: '长度在 2 到 100 个字符', trigger: 'blur'}
   ],
   url: [
     {required: true, message: '请填写目标服务地址', trigger: 'blur'},
     {min: 2, max: 100, message: '长度在 2 到 100 个字符', trigger: 'blur'}
+  ],
+  method: [
+    {required: true, message: '请选择请求方法', trigger: 'blur'},
   ]
 }
 
@@ -87,7 +91,8 @@ const saveTool = () => {
     R.postJson('/api/mcp/tool/add', {
       mcp_server_id: Number(route.params.mcpServiceId),
       name: toolForm.value.name,
-      description: toolForm.value.description
+      description: toolForm.value.description,
+      route_type: 'Service'
     }).then(() => {
       showToolAddDialog.value = false
       loadTools()
@@ -128,19 +133,21 @@ const openToolRouteDialog = (tool) => {
 /**
  * 更新 API 参数
  */
-const updateApiParam = () => {
-  R.postJson('/api/mcp/tool/update', {
-    id: currTool.value.id,
-    route_type: toolForm.value.route_type,
-    service_name: toolForm.value.service_name,
-    service_path: toolForm.value.service_path,
-    url: toolForm.value.url,
-    method: toolForm.value.method,
-    request_param: paramForm.value,
-    input_schema: paramSchema.value
-  }).then(() => {
-    showToolRouteDialog.value = false
-    loadTools()
+const updateHttpParam = () => {
+  toolFormRef.value.validate().then(() => {
+    R.postJson('/api/mcp/tool/update', {
+      id: currTool.value.id,
+      route_type: toolForm.value.route_type,
+      service_name: toolForm.value.service_name,
+      service_path: toolForm.value.service_path,
+      url: toolForm.value.url,
+      method: toolForm.value.method,
+      request_param: paramForm.value,
+      input_schema: paramSchema.value
+    }).then(() => {
+      showToolRouteDialog.value = false
+      loadTools()
+    })
   })
 }
 
@@ -208,7 +215,7 @@ const toggleStatus = (row, newStatus) => {
     </template>
   </el-dialog>
   <el-dialog v-model="showToolRouteDialog" width="50vw" title="工具路由">
-    <el-form :model="toolForm" label-width="80px" :rules="rules">
+    <el-form ref="toolFormRef" :model="toolForm" label-width="80px" :rules="rules">
       <el-form-item label="目标服务" prop="route_type" required>
         <el-radio-group v-model="toolForm.route_type">
           <el-radio-button value="Service">已有服务</el-radio-button>
@@ -240,7 +247,7 @@ const toggleStatus = (row, newStatus) => {
                      v-model:schema="paramSchema"/>
     <template #footer>
       <el-button @click="showToolRouteDialog = false">取消</el-button>
-      <el-button type="primary" @click="updateApiParam">保存</el-button>
+      <el-button type="primary" @click="updateHttpParam">保存</el-button>
     </template>
   </el-dialog>
 </template>
