@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, provide, ref} from "vue";
 import {R} from "../../utils/R";
 import {useRoute, useRouter} from "vue-router";
 import SvgIcon from "../../components/SvgIcon/index.vue";
@@ -13,11 +13,13 @@ const mcpDialogVisible = ref(false)
 const mcpDialogTitle = ref('')
 const mcpForm = ref({
   name: '',
-  description: ''
+  description: '',
+  server_type: 'Api',
 })
 const mcpFormRef = ref(null)
-const currentMcp = ref(null)
-const selectedMcpId = computed(() => {
+const mcpServer = ref(null)
+const currMcpServer = ref(null)
+const currMcpId = computed(() => {
   return Number(route.params.mcpServiceId)
 })
 const filterText = ref('')
@@ -30,67 +32,66 @@ const rules = {
     {min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur'}
   ],
 }
+
+provide('mcpServer', mcpServer)
+
+
 onMounted(() => {
   loadData()
 })
+
 const loadData = () => {
   R.postJson('/api/mcp/server/list', {}).then((res) => {
     mcpList.value = res.data
-    if (!selectedMcpId.value && mcpList.value.length > 0) {
-      selectMcp(mcpList.value[0].id)
+    if (!currMcpId.value && mcpList.value.length > 0) {
+      selectMcp(mcpList.value[0])
+    } else {
+      let index = mcpList.value.findIndex(item => item.id === currMcpId.value)
+      if (index > -1) {
+        selectMcp(mcpList.value[index])
+      } else {
+        selectMcp(mcpList.value[0])
+      }
     }
   })
 }
 const openAddMcpDialog = () => {
-  mcpForm.value = {name: '', lb_strategy: 'Random'}
-  currentMcp.value = null
+  mcpForm.value = {name: '', lb_strategy: 'Random', server_type: 'Api',}
+  currMcpServer.value = null
   mcpDialogTitle.value = '创建 MCP Server'
   mcpDialogVisible.value = true
 }
 
 const openEditMcpDialog = (row) => {
   mcpForm.value = {...row}
-  currentMcp.value = row
+  currMcpServer.value = row
   mcpDialogTitle.value = '修改 MCP Server'
   mcpDialogVisible.value = true
 }
 
 
 // 当点击模型时，更新当前选中的 MCP ID
-const selectMcp = (mcpId: number) => {
+const selectMcp = (mcp) => {
+  mcpServer.value = mcp
   router.push({
-    path: '/mcp/' + mcpId,
+    path: `/mcp/${mcp.id}`
   })
 }
-
 const save = () => {
-  if (currentMcp.value) {
-    mcpFormRef.value.validate().then(() => {
-      R.postJson('/api/mcp/server/update', {
-        id: mcpForm.value.id,
-        name: mcpForm.value.name,
-        description: mcpForm.value.description,
-      }).then((res) => {
-        if (res.code === 0) {
-          mcpDialogVisible.value = false
-          loadData()
-        }
-      })
-    })
-  } else {
-    mcpFormRef.value.validate().then(() => {
-      R.postJson('/api/mcp/server/add', {
-        name: mcpForm.value.name,
-        description: mcpForm.value.description,
-      }).then((res) => {
-        if (res.code === 0) {
-          mcpDialogVisible.value = false
-          loadData()
-        }
-      })
-    })
-  }
+  mcpFormRef.value?.validate().then(() => {
+    const isEdit = !!currMcpServer.value
+    const api = isEdit ? '/api/mcp/server/update' : '/api/mcp/server/add'
+    const payload = isEdit
+        ? {id: mcpForm.value.id, ...mcpForm.value}
+        : {...mcpForm.value}
 
+    R.postJson(api, payload).then((res) => {
+      if (res.code === 0) {
+        mcpDialogVisible.value = false
+        loadData()
+      }
+    })
+  })
 }
 
 const deleteMcp = (mcpId) => {
@@ -107,13 +108,9 @@ const toggleStatus = (mcp, newStatus) => {
   R.postJson('/api/mcp/server/update_status', {
     id: mcp.id,
     status: newStatus
-  }).then((res: any) => {
+  }).then((res) => {
     if (res.code === 0) {
-      // 更新列表中的状态
-      const target = mcpList.value.find(m => m.id === mcp.id);
-      if (target) {
-        target.status = newStatus;
-      }
+      mcp.status = newStatus
     }
   })
 }
@@ -130,15 +127,15 @@ const toggleStatus = (mcp, newStatus) => {
       <div class="providers">
         <div
             class="card br5 mb10 cursor-pointer"
-            :class="{ 'selected': selectedMcpId === Number(mcp.id) }"
+            :class="{ 'selected': currMcpId === Number(mcp.id) }"
             v-for="mcp in filteredMcpList"
             :key="mcp.id"
-            @click="selectMcp(mcp.id)"
+            @click="selectMcp(mcp)"
         >
           <div class="title flex-space-between">
             {{ mcp.name }}
             <el-switch v-model="mcp.status" active-value="Ok" inactive-value="Disable" size="small"
-                       @change="toggleStatus(mcp, $event)" inactive-text="停用" inline-prompt>
+                       @change="toggleStatus(mcp, $event)" @click.stop inactive-text="停用" inline-prompt>
             </el-switch>
           </div>
           <div class="mt5">
@@ -154,27 +151,33 @@ const toggleStatus = (mcp, newStatus) => {
               <el-text type="info" size="small">
                 {{ mcp.update_time || mcp.create_time }}
               </el-text>
+              <span class="ml20">
+                <el-text type="info" size="small" v-if="mcp.server_type==='Api'">
+                 接口
+                </el-text>
+                <el-text type="info" size="small" v-if="mcp.server_type==='Proxy'">
+                 代理
+                </el-text>
+              </span>
+
             </div>
             <div>
               <el-button type="primary" link @click.stop="openEditMcpDialog(mcp)"
                          icon="edit"></el-button>
               <el-popconfirm title="确定删除吗？" @confirm="deleteMcp(mcp.id)">
                 <template #reference>
-                  <el-button @click.stop type="danger" link icon="delete">
-                  </el-button>
+                  <el-button type="danger" link icon="delete" @click.stop></el-button>
                 </template>
               </el-popconfirm>
-
             </div>
           </div>
         </div>
       </div>
     </el-col>
     <el-col :span="18">
-      <div v-if="selectedMcpId">
+      <div v-if="currMcpId">
         <div>
-          <!--          <tool-list :mcp-server-id="selectedMcpId"/>-->
-          <router-view :key="selectedMcpId"></router-view>
+          <router-view :key="currMcpId"></router-view>
         </div>
       </div>
     </el-col>
@@ -202,6 +205,22 @@ const toggleStatus = (mcp, newStatus) => {
       <el-form-item label="描述" prop="description">
         <el-input v-model="mcpForm.description" type="textarea" :rows="3" placeholder="填写描述" maxlength="200"
                   show-word-limit></el-input>
+      </el-form-item>
+      <el-form-item label="服务类型" prop="server_type">
+        <el-radio-group v-model="mcpForm.server_type" :disabled="!!currMcpServer">
+          <el-radio-button label="Api" value="Api">HTTP接口</el-radio-button>
+          <el-radio-button label="Proxy" value="Proxy">代理</el-radio-button>
+        </el-radio-group>
+        <div v-if="mcpForm.server_type === 'Api'" class="fill-width">
+          <el-text type="info" size="small">
+            将MCP请求转发给指定的服务或指定的URL，无需改动现有业务系统。
+          </el-text>
+        </div>
+        <div v-if="mcpForm.server_type === 'Proxy'" class="fill-width">
+          <el-text type="info" size="small">
+            将MCP请求代理到已有的MCP Server。
+          </el-text>
+        </div>
       </el-form-item>
     </el-form>
     <template #footer>
