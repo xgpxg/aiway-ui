@@ -96,7 +96,7 @@ const reset = () => {
           <el-form-item class="fill-width flex" :rules="{required:true,message:'请填写节点地址'}"
                         :prop="'nodes.'+index" inline-message>
             <el-input v-model="form.nodes[index]"
-                      placeholder="填写服务节点地址，格式：http://IP:PORT，点击右上角 + 按钮添加新节点">
+                      placeholder="格式：http://ip:port，点击右上角 + 按钮添加新节点">
               <template #suffix>
                 <el-button @click="form.nodes.splice(index,1)" link icon="minus" class="ml10"
                            v-if="form.nodes.length>1"></el-button>
@@ -111,9 +111,11 @@ const reset = () => {
           <el-radio label="random_robin">轮询</el-radio>
         </el-radio-group>
         <div class="fill-width mt5">
-          <info-tip size="small">
-            随机：从所有节点中随机选择一个节点调用；
-            轮询：按照顺序依次从所有节点中选择一个节点调用。
+          <info-tip size="small" v-if="form.lb === 'random'">
+            从所有节点中随机选择一个节点调用
+          </info-tip>
+          <info-tip size="small" v-if="form.lb === 'random_robin'">
+            按照顺序依次从所有节点中选择一个节点调用
           </info-tip>
         </div>
       </el-form-item>

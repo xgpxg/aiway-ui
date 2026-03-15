@@ -124,7 +124,7 @@ const toggleStatus = (mcp, newStatus) => {
         <el-input v-model="filterText" placeholder="名称" prefix-icon="search" clearable></el-input>
         <el-button type="primary" class="ml10" icon="plus" @click="openAddMcpDialog">MCP Server</el-button>
       </div>
-      <div class="providers">
+      <div class="list">
         <div
             class="card br5 mb10 cursor-pointer"
             :class="{ 'selected': currMcpId === Number(mcp.id) }"
@@ -231,6 +231,11 @@ const toggleStatus = (mcp, newStatus) => {
 </template>
 
 <style scoped lang="scss">
+.list {
+  height: calc(100vh - 122px);
+  overflow-y: auto;
+}
+
 .card {
   padding: 10px;
   border: 1px solid var(--el-color-primary-light-9);

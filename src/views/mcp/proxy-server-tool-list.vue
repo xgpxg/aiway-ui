@@ -125,7 +125,7 @@ const updateMcpServer = () => {
 const syncServerTools = () => {
   loading.value = true
   R.postJson('/api/mcp/server/sync_proxy_server_tools', {
-    id: route.params.mcpServiceId
+    id: Number(route.params.mcpServiceId)
   }).then((res) => {
     if (res.code === 0) {
       loadTools()
@@ -145,6 +145,15 @@ const syncServerTools = () => {
     </el-button>
   </div>
 
+  <div v-if="!mcpServer?.proxy_config?.url">
+    <el-alert title="请先配置代理服务" type="warning" show-icon>
+      <template #title>
+        <div class="flex-space-between">
+          <div>代理服务信息尚未配置，请先点击 "代理配置" 按钮进行配置，然后点击 "同步 Tools" 按钮同步工具列表。</div>
+        </div>
+      </template>
+    </el-alert>
+  </div>
   <div>
     <div class="mt10">
       <el-table class="mt10" :data="filteredToolList">

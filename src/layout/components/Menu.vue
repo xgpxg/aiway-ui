@@ -65,7 +65,7 @@
         </el-menu-item>
       </el-menu-item-group>
 
-      <el-menu-item-group title="模型">
+      <el-menu-item-group title="AI集成">
         <el-menu-item index="/model">
           <el-icon>
             <svg-icon icon-class="model"></svg-icon>
