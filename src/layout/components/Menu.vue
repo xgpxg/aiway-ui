@@ -72,7 +72,7 @@
           </el-icon>
           <span v-if="!isCollapse">模型管理</span>
         </el-menu-item>
-        <el-menu-item index="/mcp" v-if="U.isDev()">
+        <el-menu-item index="/mcp">
           <el-icon>
             <svg-icon icon-class="mcp"></svg-icon>
           </el-icon>
