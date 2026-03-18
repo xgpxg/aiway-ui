@@ -70,7 +70,7 @@ const reset = () => {
         <el-input v-model="form.principal" placeholder="填写密钥所属主体" maxlength="100" show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="到期时间" prop="exp_time">
-        <el-date-picker v-model="form.exp_time" type="datetime" placeholder="选择到期时间"
+        <el-date-picker v-model="form.exp_time" type="datetime" placeholder="选择到期时间" value-format="YYYY-MM-DDTHH:mm:ss.SSSZ"
                         style="width: 100%"></el-date-picker>
       </el-form-item>
     </el-form>
