@@ -1,101 +1,91 @@
 // 默认
 html.default {
-  --el-color-primary: #10B981;
-  --el-color-primary-light-3: #34D399;
-  --el-color-primary-light-5: #6EE7B7;
-  --el-color-primary-light-7: #A7F3D0;
-  --el-color-primary-light-8: #D1FAE5;
-  --el-color-primary-light-9: #DCFAEA;
-  --el-color-primary-light-10: #E8FCF2;
-  --el-color-primary-light-11: #F0FDF6;
-  --el-color-primary-light-12: #F8FEFB;
-  --el-color-primary-dark: #059669;
-  --el-color-primary-dark-3: #047857;
+  --el-color-primary: #2c2c2c; // 高级黑主色
+  --el-color-primary-light-3: #5a5a5a; // 中黑色
+  --el-color-primary-light-5: #7f7f7f; // 浅中黑色
+  --el-color-primary-light-7: #a6a6a6; // 浅灰色
+  --el-color-primary-light-8: #bfbfbf; // 淡灰色
+  --el-color-primary-light-9: #d9d9d9; // 微淡灰色
+  --el-color-primary-light-10: #e6e6e6; // 极淡灰色
+  --el-color-primary-light-11: #f2f2f2; // 几乎白色
+  --el-color-primary-light-12: #f7f7f7; // 近白色
+  --el-color-primary-dark: #1a1a1a; // 更深黑色
+  --el-color-primary-dark-3: #0d0d0d; // 纯黑色
+
 }
 
 html.dark {
-  //--el-bg-color: #393939;
-  //--el-bg-color-page: #0a140f;
-  //--el-bg-color-overlay: #162a1d;
-  //--el-text-color-primary: #e0f2e9;
-  //--el-text-color-regular: #c2e4d5;
-  //--el-text-color-secondary: #94c9b3;
-  //--el-text-color-placeholder: #6aa88d;
-  //--el-border-color: #2d5a41;
-  //--el-border-color-light: #366a4d;
-  //--el-border-color-extra-light: #3d7a59;
-  //--el-fill-color: #393939;
-  //--el-fill-color-light: #1d3a2a;
-  //--el-fill-color-lighter: #182f22;
-  //--el-fill-color-extra-light: #393939;
-  //--el-fill-color-blank: #757575;
-  //
-  --el-color-primary: #252525;
-  --el-color-primary-light-3: #393939;
-  --el-color-primary-light-5: #505050;
-  --el-color-primary-light-7: #757575;
-  --el-color-primary-light-8: #8e8e8e;
-  --el-color-primary-light-9: #8a8a8a;
-  --el-color-primary-dark: #202020;
-  --el-color-primary-dark-3: #1e1e1e;
+  --el-color-primary: #2c2c2c; // 高级黑主色
+  --el-color-primary-light-3: #5a5a5a; // 中黑色
+  --el-color-primary-light-5: #7f7f7f; // 浅中黑色
+  --el-color-primary-light-7: #a6a6a6; // 浅灰色
+  --el-color-primary-light-8: #bfbfbf; // 淡灰色
+  --el-color-primary-light-9: #d9d9d9; // 微淡灰色
+  --el-color-primary-light-10: #e6e6e6; // 极淡灰色
+  --el-color-primary-light-11: #f2f2f2; // 几乎白色
+  --el-color-primary-light-12: #f7f7f7; // 近白色
+  --el-color-primary-dark: #1a1a1a; // 更深黑色
+  --el-color-primary-dark-3: #0d0d0d; // 纯黑色
+
 
   filter: invert(0.93) hue-rotate(180deg);
 
-  picture,
-  video,
-  img,
-  .el-header,
-  .theme {
-    filter: invert(1) hue-rotate(180deg);
+  .el-form-item__label, .el-menu-item > span, .el-badge__content {
+    filter: invert(0.93) hue-rotate(180deg);
+    color: #ffffff
   }
 
-  .el-header {
-    .el-avatar {
-      filter: invert(1) hue-rotate(180deg);
-    }
+
+  // 卡片、容器等背景
+  .el-card,
+  .el-dialog,
+  .el-drawer,
+  .el-popover,
+  .el-message,
+  .el-notification {
+    background-color: var(--el-bg-color-overlay);
+    border-color: var(--el-border-color);
   }
 
-  .svg-icon {
-    filter: invert(1) hue-rotate(180deg);
 
-    &.control {
-      filter: invert(0) hue-rotate(180deg);
+  // 表格样式
+  .el-table {
+    filter: invert(0.05) hue-rotate(180deg);
+    border-radius: 4px;
+
+    .cell {
+      color: #000000;
     }
   }
 
   .el-button {
     &.el-button--primary {
-      filter: invert(1) hue-rotate(180deg);
+      //filter: invert(1) hue-rotate(180deg);
+      background: #e8e8e8;
+      color: #000000;
     }
 
-    .svg-icon {
+    .el-icon {
       filter: invert(0) hue-rotate(180deg);
+      color: #000000;
     }
 
-
-    &.is-text {
+    &.is-text, &.is-link {
       filter: invert(0) hue-rotate(180deg);
-    }
-
-    &.is-link {
-      filter: invert(0) hue-rotate(180deg);
-    }
-
-    #share-card-result {
-      filter: invert(1) hue-rotate(180deg);
+      background: unset;
     }
   }
 
-  .github-markdown-body {
-    color: #000000 !important;
-    font-weight: 500;
+  .el-text--success, .el-text--danger, .el-text--warning, .el-text--info {
+    filter: invert(0) hue-rotate(180deg);
+
   }
 
-  .actions {
-    .svg-icon {
-      filter: invert(0) hue-rotate(180deg);
-    }
+  // 遮罩层
+  .el-overlay {
+    background: rgba(0, 0, 0, 0.1);
   }
+
 }
 
 // 蓝色

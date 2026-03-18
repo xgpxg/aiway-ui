@@ -3,8 +3,8 @@
     <div class="flex-v fill-width">
       <Hamburger class="hamburger-container"
                  @toggleClick="toggleSideBar" :is-active="collapse"></Hamburger>
-                  <Breadcrumb class="breadcrumb-container"></Breadcrumb>
-<!--      <AppBar></AppBar>-->
+      <Breadcrumb class="breadcrumb-container"></Breadcrumb>
+      <!--      <AppBar></AppBar>-->
     </div>
 
     <div class="right-menu flex-v">
@@ -17,7 +17,7 @@
       </el-popover>
       <el-popover width="500px" trigger="click" @show="this.$refs.messageRef?.loadMessages()" placement="bottom-end">
         <template #reference>
-          <el-badge :value="unreadCount" class="ml20 cursor-pointer" :show-zero="false">
+          <el-badge :value="unreadCount" class="ml20 cursor-pointer mr20" :show-zero="false">
             <el-icon>
               <Bell/>
             </el-icon>
@@ -25,6 +25,20 @@
         </template>
         <Message ref="messageRef"></Message>
       </el-popover>
+
+      <el-button
+          link
+          class="nav-icon-button theme-toggle"
+          @click="toggleTheme"
+          :title="isDarkMode ? '切换到日间模式' : '切换到夜间模式'">
+        <el-icon v-if="isDarkMode">
+          <Sunny/>
+        </el-icon>
+        <el-icon v-else>
+          <Moon/>
+        </el-icon>
+      </el-button>
+
       <el-link
           target="_blank"
           class="nav-icon-button"
@@ -63,9 +77,14 @@ import UpdatePassword from "../../views/login/update-password.vue";
 import AppBar from "./AppBar.vue";
 import Message from "./Message.vue";
 import {U} from "../../utils/util";
+import {Sunny, Moon, Bell, User} from "@element-plus/icons-vue";
 
 export default {
   components: {
+    Sunny,
+    Moon,
+    Bell,
+    User,
     Message,
     AppBar,
     UpdatePassword,
@@ -79,6 +98,7 @@ export default {
     return {
       collapse: false,
       unreadCount: 0,
+      isDarkMode: false,
     }
   },
   computed: {
@@ -93,6 +113,7 @@ export default {
     this.loadUserInfo()
     this.loadUnreadCount()
     setInterval(() => this.loadUnreadCount(), 10 * 1000)
+    this.initTheme()
   },
   methods: {
     loadUserInfo() {
@@ -124,6 +145,30 @@ export default {
       this.R.postJson('/api/message/count/unread').then(res => {
         this.unreadCount = res.data.info + res.data.warn + res.data.error
       })
+    },
+    initTheme() {
+      const savedTheme = localStorage.getItem('theme_mode')
+      if (savedTheme === 'dark') {
+        this.isDarkMode = true
+        document.documentElement.classList.add('dark')
+        document.documentElement.classList.remove('default')
+      } else {
+        this.isDarkMode = false
+        document.documentElement.classList.add('default')
+        document.documentElement.classList.remove('dark')
+      }
+    },
+    toggleTheme() {
+      this.isDarkMode = !this.isDarkMode
+      if (this.isDarkMode) {
+        document.documentElement.classList.add('dark')
+        document.documentElement.classList.remove('default')
+        localStorage.setItem('theme_mode', 'dark')
+      } else {
+        document.documentElement.classList.add('default')
+        document.documentElement.classList.remove('dark')
+        localStorage.setItem('theme_mode', 'default')
+      }
     }
   }
 }
@@ -133,7 +178,7 @@ export default {
 .navbar {
   overflow: hidden;
   position: relative;
-  background: #ffffff;
+  //background: #ffffff;
   z-index: 100;
 
   .left-menu {
@@ -215,6 +260,11 @@ export default {
       &:hover {
         color: #1890ff;
         background: #f0f7ff;
+      }
+
+      &.theme-toggle {
+        width: auto;
+        padding: 0 8px;
       }
 
       .el-icon {
