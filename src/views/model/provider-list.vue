@@ -32,8 +32,7 @@ const providerForm = ref({
   api_key: null,
   target_model_name: null,
   weight: 1,
-  request_converter: null,
-  response_converter: null
+  plugins: null,
 })
 const rules = {
   name: [
@@ -82,8 +81,7 @@ const openAddProviderDialog = () => {
     api_key: '',
     target_model_name: '',
     weight: 1,  // 默认权重为1
-    request_converter: null,
-    response_converter: null
+    plugins: null,
   }
   currentProvider.value = null
   providerDialogTitle.value = '新增提供商'
@@ -112,8 +110,7 @@ const saveProvider = () => {
         api_url: providerForm.value.api_url,
         api_key: providerForm.value.api_key,
         target_model_name: providerForm.value.target_model_name,
-        request_converter: providerForm.value.request_converter,
-        response_converter: providerForm.value.response_converter
+        plugins: providerForm.value.plugins,
       }
 
       // 如果当前模型使用加权随机策略，则包含权重
@@ -273,11 +270,8 @@ const toggleStatus = (provider: any, newStatus: string) => {
           <el-input-number v-model="providerForm.weight" :min="1" :max="100" placeholder="请填写权重"/>
           <el-text type="info" size="small" class="fill-width">权重值越大，被选中的概率越高</el-text>
         </el-form-item>
-        <el-form-item label="请求转换器" prop="request_converter">
-          <plugin-select v-model="providerForm.request_converter" placeholder="选择请求转换插件"></plugin-select>
-        </el-form-item>
-        <el-form-item label="响应转换器" prop="request_converter">
-          <plugin-select v-model="providerForm.response_converter" placeholder="选择响应转换插件"></plugin-select>
+        <el-form-item label="插件" prop="plugins">
+          <plugin-select v-model="providerForm.plugins" placeholder="选择插件"></plugin-select>
         </el-form-item>
       </el-form>
       <template #footer>

@@ -18,8 +18,7 @@ defineExpose({
 
 const formRef = ref()
 const defaultForm = {
-  pre_filters: [],
-  post_filters: [],
+  plugins: [],
 }
 const form = ref(structuredClone(defaultForm))
 const rules = {}
@@ -37,12 +36,7 @@ const load = () => {
       return
     }
     form.value = {
-      pre_filters: form.value.pre_filters?.map((item: any) => ({
-        ...item,
-        // 配置转字符串，以便在编辑器中显示和修改
-        config_text: JSON.stringify(item.config, null, 2)
-      })),
-      post_filters: form.value.post_filters?.map((item: any) => ({
+      plugins: form.value.plugins?.map((item: any) => ({
         ...item,
         // 配置转字符串，以便在编辑器中显示和修改
         config_text: JSON.stringify(item.config, null, 2)
@@ -53,16 +47,7 @@ const load = () => {
 
 const save = () => {
   // 前置处理器插件配置转换
-  form.value.pre_filters?.forEach(item => {
-    try {
-      item.config = JSON.parse(item.config_text)
-    } catch (e) {
-      ElMessage.error('插件配置不正确，请检查')
-      throw e
-    }
-  })
-  // 后置处理器插件配置转换
-  form.value.post_filters?.forEach(item => {
+  form.value.plugins?.forEach(item => {
     try {
       item.config = JSON.parse(item.config_text)
     } catch (e) {
@@ -71,8 +56,7 @@ const save = () => {
     }
   })
   R.postJson('/api/route/global_filter/update', {
-    pre_filters: form.value.pre_filters,
-    post_filters: form.value.post_filters
+    plugins: form.value.plugins,
   }).then(res => {
     if (res.code === 0) {
       isShow.value = false
@@ -81,16 +65,8 @@ const save = () => {
   })
 }
 
-const appendPreFilter = (plugin: any) => {
-  form.value.pre_filters.push({
-    name: plugin.name,
-    config: plugin.default_config,
-    // 配置转字符串，以便在编辑器中显示和修改
-    config_text: JSON.stringify(plugin.default_config, null, 2)
-  })
-}
-const appendPostFilter = (plugin: any) => {
-  form.value.post_filters.push({
+const appendPlugin = (plugin: any) => {
+  form.value.plugins.push({
     name: plugin.name,
     config: plugin.default_config,
     // 配置转字符串，以便在编辑器中显示和修改
@@ -98,8 +74,7 @@ const appendPostFilter = (plugin: any) => {
   })
 }
 
-const activePreFilter = ref(null)
-const activePostFilter = ref(null)
+const activePlugin = ref(null)
 
 
 const editorOptions = {
@@ -113,9 +88,7 @@ const editorOptions = {
 };
 
 const reset = () => {
-  activePreFilter.value = null
-  activePostFilter.value = null
-  // form.value = structuredClone(defaultForm)
+  activePlugin.value = null
 }
 </script>
 
@@ -126,28 +99,28 @@ const reset = () => {
       <el-image src="/images/plugin-chain.png"></el-image>
     </div>
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
-      <el-form-item label="前置过滤器">
+      <el-form-item label="插件">
         <template #label>
           <div class="flex-space-between">
             <div class="fill-width">
-              全局前置过滤器
+              插件
               <help-tip placement="top-start">
                 <p>前置过滤器插件在调用目标服务之前执行，在此可以修改请求路径、请求头、参数等。</p>
               </help-tip>
               <el-text type="info" class="ml10" size="small">拖动可调整顺序</el-text>
             </div>
-            <plugin-dropdown @select="appendPreFilter"></plugin-dropdown>
+            <plugin-dropdown @select="appendPlugin"></plugin-dropdown>
           </div>
         </template>
-        <div v-if="form.pre_filters.length" class="mt10 fill-width">
+        <div v-if="form.plugins.length" class="mt10 fill-width">
           <div style="overflow-x:auto;">
-            <draggable v-model="form.pre_filters" v-bind="{animation: 200}" item-key="name" class="plugin-list">
+            <draggable v-model="form.plugins" v-bind="{animation: 200}" item-key="name" class="plugin-list">
               <template #item="{element, index}">
-                <div class="plugin-item" @click="activePreFilter = element"
-                     :class="{active:activePreFilter?.name === element.name}">
+                <div class="plugin-item" @click="activePlugin = element"
+                     :class="{active:activePlugin?.name === element.name}">
                   {{ element.name }}
 
-                  <el-button @click.stop="form.pre_filters.splice(index, 1)"
+                  <el-button @click.stop="form.plugins.splice(index, 1)"
                              class="remove-btn"
                              link
                              icon="close"
@@ -157,9 +130,9 @@ const reset = () => {
               </template>
             </draggable>
           </div>
-          <div v-if="activePreFilter">
+          <div v-if="activePlugin">
             <CodeEditor
-                v-model:value="activePreFilter.config_text"
+                v-model:value="activePlugin.config_text"
                 language="json"
                 :options="editorOptions"
             />
@@ -169,49 +142,6 @@ const reset = () => {
           <el-text type="info">暂未配置</el-text>
         </div>
 
-      </el-form-item>
-      <el-form-item label="后置过滤器">
-        <template #label>
-          <div class="flex-space-between">
-            <div class="fill-width">
-              全局后置过滤器
-              <help-tip placement="top-start">
-                <p>后置过滤器插件在网关返回响应前执行，在此可以修改响应头、响应数据等。</p>
-              </help-tip>
-              <el-text type="info" class="ml10" size="small">拖动可调整顺序</el-text>
-            </div>
-            <plugin-dropdown @select="appendPostFilter"></plugin-dropdown>
-          </div>
-        </template>
-        <div v-if="form.post_filters.length" class="mt10 fill-width">
-          <div style="overflow-x:auto;">
-            <draggable v-model="form.post_filters" v-bind="{animation: 200}" item-key="name" class="plugin-list">
-              <template #item="{element, index}">
-                <div class="plugin-item" @click="activePostFilter = element"
-                     :class="{active:activePostFilter?.name === element.name}">
-                  {{ element.name }}
-
-                  <el-button @click.stop="form.post_filters.splice(index, 1)"
-                             class="remove-btn"
-                             link
-                             icon="close"
-                             size="small">
-                  </el-button>
-                </div>
-              </template>
-            </draggable>
-          </div>
-          <div v-if="activePostFilter">
-            <CodeEditor
-                v-model:value="activePostFilter.config_text"
-                language="json"
-                :options="editorOptions"
-            />
-          </div>
-        </div>
-        <div v-else class="fill-width bg-card mt10 br5 flex-center">
-          <el-text type="info">暂未配置</el-text>
-        </div>
       </el-form-item>
     </el-form>
     <template #footer>

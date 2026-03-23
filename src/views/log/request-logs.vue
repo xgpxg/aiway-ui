@@ -76,7 +76,10 @@ const toView = (log: any) => {
       </el-table-column>
       <el-table-column label="响应码" prop="status_code" width="80">
         <template #default="{row}">
-          <el-text>{{ row.status_code }}</el-text>
+          <el-text>
+            <el-text v-if="row.status_code >= 400" type="danger">{{ row.status_code }}</el-text>
+            <el-text v-else>{{ row.status_code }}</el-text>
+          </el-text>
         </template>
       </el-table-column>
       <el-table-column label="响应时间" prop="response_time" width="200">
@@ -131,11 +134,12 @@ const toView = (log: any) => {
             currLog.client_country === '0' ? '未知' : currLog.client_country
           }}
         </el-descriptions-item>
-        <el-descriptions-item label="省份">{{
+        <el-descriptions-item label="省份/地区">{{
             currLog.client_province === '0' ? '未知' : currLog.client_province
           }}
+          {{ currLog.client_city }}
         </el-descriptions-item>
-        <el-descriptions-item label="城市">{{ currLog.client_city }}</el-descriptions-item>
+        <el-descriptions-item label="Host">{{ currLog.host }}</el-descriptions-item>
         <el-descriptions-item label="请求方法">{{ currLog.method }}</el-descriptions-item>
         <el-descriptions-item label="请求路径">{{ currLog.path }}</el-descriptions-item>
         <el-descriptions-item label="请求时间">{{
@@ -146,10 +150,17 @@ const toView = (log: any) => {
           {{ U.dateUtil.formatDate(currLog.response_time, 'yyyy-MM-dd hh:mm:ss.S') }}
         </el-descriptions-item>
         <el-descriptions-item label="处理耗时">{{ currLog.elapsed }} ms</el-descriptions-item>
-        <el-descriptions-item label="状态码">{{ currLog.status_code }}</el-descriptions-item>
-        <el-descriptions-item label="响应大小">{{ currLog.response_size }} 字节</el-descriptions-item>
+        <el-descriptions-item label="状态码">
+          <el-text v-if="currLog.status_code >= 400" type="danger">{{ currLog.status_code }}</el-text>
+          <el-text v-else>{{ currLog.status_code }}</el-text>
+        </el-descriptions-item>
+        <el-descriptions-item label="响应大小">
+          {{ currLog.response_size || '-' }}
+          <template v-if="currLog.response_size">字节</template>
+        </el-descriptions-item>
         <el-descriptions-item label="User Agent">{{ currLog.user_agent }}</el-descriptions-item>
         <el-descriptions-item label="Referer">{{ currLog.referer || '无' }}</el-descriptions-item>
+        <el-descriptions-item label="Origin">{{ currLog.origin || '无' }}</el-descriptions-item>
         <el-descriptions-item label="网关节点">{{ currLog.node_address }}</el-descriptions-item>
       </el-descriptions>
     </div>

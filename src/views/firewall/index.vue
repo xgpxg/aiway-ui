@@ -6,6 +6,7 @@ import RefererPolicy from "./referer-policy.vue";
 import {R} from "../../utils/R";
 import Traffic from "./traffic.vue";
 import EncryptKey from "./encrypt-key.vue";
+import Cert from "./cert.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -55,9 +56,12 @@ watch(activeIndex, (newTab) => {
               网关流量
             </el-menu-item>
           </el-menu-item-group>
-          <el-menu-item-group title="密钥设置">
+          <el-menu-item-group title="安全设置">
             <el-menu-item index="encrypt-key">
               加密密钥
+            </el-menu-item>
+            <el-menu-item index="cert">
+              证书管理
             </el-menu-item>
           </el-menu-item-group>
         </el-menu>
@@ -67,6 +71,7 @@ watch(activeIndex, (newTab) => {
         <referer-policy v-model="firewall" v-if="activeIndex === 'referer-policy'"></referer-policy>
         <traffic v-model="firewall" v-if="activeIndex === 'traffic'"></traffic>
         <encrypt-key v-model="firewall" v-if="activeIndex === 'encrypt-key'"></encrypt-key>
+        <cert v-model="firewall" v-if="activeIndex === 'cert'"></cert>
       </el-col>
     </el-row>
   </div>

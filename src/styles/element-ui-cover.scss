@@ -59,7 +59,6 @@
   --el-color-primary-dark-3: #0d0d0d; // 纯黑色
 
 
-
   --el-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", "Helvetica Neue", Helvetica, Tahoma, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   .el-page-header__main {
@@ -284,6 +283,10 @@
 
   .el-input.is-disabled .el-input__inner {
     -webkit-text-fill-color: var(--el-input-text-color);
+  }
+
+  .el-tag.el-tag--primary {
+    background: var(--el-color-primary-light-11);
   }
 }
 
