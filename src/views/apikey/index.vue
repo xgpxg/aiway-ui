@@ -5,6 +5,7 @@ import AddApiKey from "./add-api-key.vue";
 import {onMounted, ref} from "vue";
 import {R} from "../../utils/R";
 import CopyText from "../../components/Copy/copy-text.vue";
+import {U} from "@/utils/util";
 
 const apiKeys = ref([])
 const page = ref({
@@ -27,6 +28,17 @@ const loadApiKeys = () => {
   }).then(res => {
     apiKeys.value = res.data.list
     page.value.total = res.data.total
+    apiKeys.value.forEach(item => {
+      if (item.exp_time) {
+        let remaining = U.getTimeInterval(new Date(), new Date(item.exp_time));
+        if (remaining.days <= 3) {
+          item.text_status = 'warning'
+        }
+        if (remaining.days <= 0) {
+          item.text_status = 'info'
+        }
+      }
+    })
   })
 }
 
@@ -74,10 +86,12 @@ const toEdit = (apiKey: any) => {
             <copy-text :text="row.secret" class="ml5"></copy-text>
           </template>
         </el-table-column>
-        <el-table-column label="到期时间" prop="exp_time" width="200">
+        <el-table-column label="到期时间" prop="exp_time" width="230">
           <template #default="{row}">
-            <template v-if="row.row">
-              {{ row.row }}
+            <template v-if="row.exp_time">
+              <el-text :type="row.text_status">
+                {{ row.exp_time }}
+              </el-text>
             </template>
             <el-text v-else type="info">未设置</el-text>
           </template>
