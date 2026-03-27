@@ -15,7 +15,7 @@
           </el-icon>
         </template>
       </el-popover>
-      <el-popover width="500px" trigger="click" @show="this.$refs.messageRef?.loadMessages()" placement="bottom-end">
+      <el-popover width="520px" trigger="click" @show="this.$refs.messageRef?.loadMessages()" placement="bottom-end">
         <template #reference>
           <el-badge :value="unreadCount" class="ml20 cursor-pointer mr20" :show-zero="false">
             <el-icon>

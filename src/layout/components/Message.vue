@@ -178,9 +178,10 @@ defineExpose({
           :page-size="page.page_size"
           :current-page="page.page_num"
           :total="page.total"
+          pager-count="5"
           hide-on-single-page
           @current-change="(pageNum: number) => {page.page_num = pageNum; loadMessages()}"
-          class="mt10 fr">
+          class="mt10">
       </el-pagination>
     </div>
 
@@ -272,12 +273,12 @@ defineExpose({
           color: var(--el-text-color-regular);
           line-height: 1.5;
           display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          word-break: break-all;
+          //-webkit-line-clamp: 2;
+          //-webkit-box-orient: vertical;
+          //overflow: hidden;
+          //text-overflow: ellipsis;
+          //white-space: nowrap;
+          //word-break: break-all;
         }
       }
     }
