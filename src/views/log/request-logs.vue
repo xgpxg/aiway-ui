@@ -3,6 +3,7 @@ import {onMounted, ref} from "vue";
 import {R} from "../../utils/R";
 import {U} from "../../utils/util";
 import SvgIcon from "../../components/SvgIcon/index.vue";
+import CleanLogDialog from "./clean-log-dialog.vue";
 
 const logs = ref([])
 const page = ref({
@@ -39,7 +40,7 @@ const toView = (log: any) => {
   isShowViewLogDialog.value = true
 }
 
-
+const isShowCleanDialog = ref(false)
 </script>
 
 <template>
@@ -52,7 +53,7 @@ const toView = (log: any) => {
     <el-input v-model="form.filter_text" @input="loadLogs" prefix-icon="search"
               placeholder="请求路径" clearable></el-input>
     <el-button class="ml20" icon="search" @click="loadLogs" type="primary">查询</el-button>
-    <el-button class="ml20">
+    <el-button class="ml20" @click="isShowCleanDialog = true">
       <svg-icon icon-class="clean"></svg-icon>
       清理
     </el-button>
@@ -165,6 +166,8 @@ const toView = (log: any) => {
       </el-descriptions>
     </div>
   </el-dialog>
+  <clean-log-dialog v-model="isShowCleanDialog" index="request-logs" @success="loadLogs"></clean-log-dialog>
+
 </template>
 
 <style scoped lang="scss">
