@@ -34,6 +34,14 @@ const routes = [
                 }
             },
             {
+                path: 'domain',
+                name: 'Domain',
+                component: () => import('@/views/domain/index.vue'),
+                meta: {
+                    title: '域名管理'
+                }
+            },
+            {
                 path: 'service',
                 name: 'Service',
                 component: () => import('@/views/service/index.vue'),
@@ -99,6 +107,7 @@ const routes = [
                     },
                 ]
             },
+
             {
                 path: 'users',
                 name: 'Users',

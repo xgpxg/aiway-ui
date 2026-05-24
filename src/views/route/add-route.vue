@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
 import ServiceSelect from "../service/service-select.vue";
+import DomainSelect from "../domain/domain-select.vue";
 import {R} from "../../utils/R";
 import HelpTip from "../../components/Tip/HelpTip.vue";
 import PluginDropdown from "../plugin/plugin-dropdown.vue";
@@ -232,7 +233,7 @@ const reset = () => {
             <p>当指定域名时，只有Host请求头满足域名条件时，才会匹配该路由。如果需要匹配所有，请填写 “ * ”。</p>
           </help-tip>
         </template>
-        <el-input v-model="form.host" placeholder="请填写域名" maxlength="100" show-word-limit></el-input>
+        <domain-select v-model="form.host" status="Ok" placeholder="请选择域名"></domain-select>
       </el-form-item>
       <el-form-item label="路径匹配" prop="path">
         <template #label>路径匹配
@@ -471,5 +472,4 @@ const reset = () => {
     border-radius: 5px;
   }
 }
-
 </style>

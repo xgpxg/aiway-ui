@@ -36,6 +36,12 @@
           </el-icon>
           <span v-if="!isCollapse">路由配置</span>
         </el-menu-item>
+        <el-menu-item index="/domain">
+          <el-icon>
+            <svg-icon icon-class="domain"></svg-icon>
+          </el-icon>
+          <span v-if="!isCollapse">域名管理</span>
+        </el-menu-item>
         <el-menu-item index="/plugin">
           <el-icon>
             <svg-icon icon-class="plugin"></svg-icon>
@@ -167,13 +173,13 @@ export default {
 
   :deep(.el-menu-item):hover {
     color: var(--el-color-primary) !important;
-    background: var(--el-color-primary-light-9) !important;
+    background: var(--el-color-primary-light-10) !important;
   }
 
   :deep(.el-menu-item) {
     &.is-active {
       color: var(--el-color-primary) !important;
-      background: var(--el-color-primary-light-9) !important;
+      background: var(--el-color-primary-light-10) !important;
       font-weight: 600;
     }
   }

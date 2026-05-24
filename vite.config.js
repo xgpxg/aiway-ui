@@ -29,7 +29,6 @@ export default defineConfig(async ({mode}) => {
             strictPort: true,
             host: true,
             allowedHosts: [
-                'aiway.node-1.bala',
                 'localhost',
                 '127.0.0.1'
             ],
