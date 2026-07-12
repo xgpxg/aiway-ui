@@ -6,6 +6,7 @@ import {ElMessageBox} from 'element-plus'
 import {useRoute} from 'vue-router'
 import ServiceSelect from '../service/service-select.vue'
 import ApiParamTable from "./api-param-table.vue";
+import OpenApiImport from './openapi-import.vue'
 
 const route = useRoute()
 
@@ -25,6 +26,7 @@ const filteredToolList = computed(() => {
 
 // 表单相关
 const showToolAddDialog = ref(false)
+const showOpenApiImportDialog = ref(false)
 const showToolRouteDialog = ref(false)
 const currTool = ref(null)
 const paramForm = ref([])
@@ -173,6 +175,7 @@ const toggleStatus = (row, newStatus) => {
     <el-input v-model="filterText" placeholder="工具名称" prefix-icon="Search" clearable/>
     <el-button class="ml10" icon="Refresh" @click="loadTools"/>
     <el-button type="primary" class="ml10" icon="Plus" @click="showToolAddDialog = true">添加工具</el-button>
+    <el-button type="primary" class="ml10" icon="import" @click="showOpenApiImportDialog = true">从OpenAPI导入</el-button>
   </div>
 
   <div>
@@ -250,6 +253,7 @@ const toggleStatus = (row, newStatus) => {
       <el-button type="primary" @click="updateHttpParam">保存</el-button>
     </template>
   </el-dialog>
+  <open-api-import v-model="showOpenApiImportDialog" :mcp-server-id="Number(route.params.mcpServiceId)" @success="loadTools"/>
 </template>
 
 <style scoped lang="scss">
