@@ -161,7 +161,7 @@ export default {
   :deep(.el-menu-item) {
     background-color: transparent !important;
     border: unset;
-    margin: 4px 0;
+    margin: 4px 12px 4px 0;
     border-radius: 8px;
     height: 44px;
 

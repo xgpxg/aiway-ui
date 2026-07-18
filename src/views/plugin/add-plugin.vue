@@ -132,11 +132,11 @@ const editorOptions = {
                      :on-change="pluginFileChange"
                      :on-exceed="pluginFileExceed"
                      :limit="1"
-                     accept=".so"
+                     accept=".wasm"
           >
             <div class="flex-space-between fill-width">
               <el-button>选择文件</el-button>
-              <el-text type="info" size="small">仅支持.so格式</el-text>
+              <el-text type="info" size="small">仅支持.wasm格式</el-text>
             </div>
           </el-upload>
           <div v-if="form.file || form.url" class="mt10">

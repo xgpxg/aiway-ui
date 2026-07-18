@@ -1,31 +1,31 @@
 // 默认
 html.default {
-  --el-color-primary: #2c2c2c; // 高级黑主色
-  --el-color-primary-light-3: #5a5a5a; // 中黑色
-  --el-color-primary-light-5: #7f7f7f; // 浅中黑色
-  --el-color-primary-light-7: #a6a6a6; // 浅灰色
-  --el-color-primary-light-8: #bfbfbf; // 淡灰色
-  --el-color-primary-light-9: #d9d9d9; // 微淡灰色
-  --el-color-primary-light-10: #e6e6e6; // 极淡灰色
-  --el-color-primary-light-11: #f2f2f2; // 几乎白色
-  --el-color-primary-light-12: #f7f7f7; // 近白色
-  --el-color-primary-dark: #1a1a1a; // 更深黑色
-  --el-color-primary-dark-3: #0d0d0d; // 纯黑色
+  --el-color-primary: #1a365d; // 深蓝主色
+  --el-color-primary-light-3: #42638c; // 中深蓝
+  --el-color-primary-light-5: #6d8db3; // 浅中蓝
+  --el-color-primary-light-7: #9db6d4; // 浅蓝色
+  --el-color-primary-light-8: #b8cce2; // 淡蓝色
+  --el-color-primary-light-9: #d4e1ef; // 微淡蓝色
+  --el-color-primary-light-10: #e4ecf5; // 极淡蓝色
+  --el-color-primary-light-11: #f0f4f9; // 几乎白色
+  --el-color-primary-light-12: #f7f9fc; // 近白色
+  --el-color-primary-dark: #0f2440; // 更深蓝色
+  --el-color-primary-dark-3: #081526; // 纯深蓝
 
 }
 
 html.dark {
-  --el-color-primary: #2c2c2c; // 高级黑主色
-  --el-color-primary-light-3: #5a5a5a; // 中黑色
-  --el-color-primary-light-5: #7f7f7f; // 浅中黑色
-  --el-color-primary-light-7: #a6a6a6; // 浅灰色
-  --el-color-primary-light-8: #bfbfbf; // 淡灰色
-  --el-color-primary-light-9: #d9d9d9; // 微淡灰色
-  --el-color-primary-light-10: #e6e6e6; // 极淡灰色
-  --el-color-primary-light-11: #f2f2f2; // 几乎白色
-  --el-color-primary-light-12: #f7f7f7; // 近白色
-  --el-color-primary-dark: #1a1a1a; // 更深黑色
-  --el-color-primary-dark-3: #0d0d0d; // 纯黑色
+  --el-color-primary: #1a365d; // 深蓝主色
+  --el-color-primary-light-3: #42638c; // 中深蓝
+  --el-color-primary-light-5: #6d8db3; // 浅中蓝
+  --el-color-primary-light-7: #9db6d4; // 浅蓝色
+  --el-color-primary-light-8: #b8cce2; // 淡蓝色
+  --el-color-primary-light-9: #d4e1ef; // 微淡蓝色
+  --el-color-primary-light-10: #e4ecf5; // 极淡蓝色
+  --el-color-primary-light-11: #f0f4f9; // 几乎白色
+  --el-color-primary-light-12: #f7f9fc; // 近白色
+  --el-color-primary-dark: #0f2440; // 更深蓝色
+  --el-color-primary-dark-3: #081526; // 纯深蓝
 
 
   filter: invert(0.93) hue-rotate(180deg);

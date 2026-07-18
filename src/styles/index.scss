@@ -12,6 +12,24 @@
   padding: 0;
 }
 
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(26, 54, 93, 0.15);
+  border-radius: 4px;
+
+  &:hover {
+    background: rgba(26, 54, 93, 0.35);
+  }
+}
+
 html {
   height: 100%;
 }
