@@ -26,6 +26,14 @@ const routes = [
                 }
             },
             {
+                path: 'notify',
+                name: 'Notify',
+                component: () => import('@/views/dashboard/notify-list.vue'),
+                meta: {
+                    title: '通知提醒'
+                }
+            },
+            {
                 path: 'route',
                 name: 'Route',
                 component: () => import('@/views/route/index.vue'),

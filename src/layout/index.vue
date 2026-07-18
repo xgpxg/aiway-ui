@@ -2,11 +2,11 @@
   <div class="common-layout">
     <el-container>
       <el-aside :width="menuWidth+'px'">
-        <Menu :collapse="collapse"></Menu>
+        <Menu :collapse="collapse" :active-module="activeModule"></Menu>
       </el-aside>
       <el-main>
         <el-header>
-          <Navbar @collapse="switchCollapse"></Navbar>
+          <Navbar @collapse="switchCollapse" @module-change="onModuleChange" :active-module="activeModule"></Navbar>
         </el-header>
         <AppMain></AppMain>
       </el-main>
@@ -32,6 +32,7 @@ export default {
       top: 0,
       showLogin: false,
       collapse: false,
+      activeModule: 'dashboard',
     }
   },
   provide() {
@@ -42,7 +43,13 @@ export default {
       isEnterprise: this.isEnterprise,
     }
   },
+  watch: {
+    '$route.path'() {
+      this.activeModule = this.getModuleByRoute()
+    }
+  },
   mounted() {
+    this.activeModule = this.getModuleByRoute()
     PubSub.subscribe('NEED_LOGIN', (msg, data) => {
       this.showLogin = true
     })
@@ -88,6 +95,30 @@ export default {
     },
     getMenuWidth() {
       return this.menuWidth
+    },
+    getModuleByRoute() {
+      const path = this.$route.path.split('/')[1]
+      const map = {
+        'dashboard': 'dashboard', 'notify': 'dashboard',
+        'service': 'gateway', 'route': 'gateway', 'domain': 'gateway', 'plugin': 'gateway', 'log': 'gateway',
+        'apikey': 'security', 'firewall': 'security',
+        'model': 'ai', 'mcp': 'ai',
+        'users': 'system', 'setting': 'system',
+      }
+      return map[path] || 'dashboard'
+    },
+    onModuleChange(module) {
+      this.activeModule = module
+      const defaultRoutes = {
+        'dashboard': '/dashboard',
+        'gateway': '/service',
+        'security': '/apikey',
+        'ai': '/model',
+        'system': '/users',
+      }
+      if (this.$route.path !== defaultRoutes[module]) {
+        this.$router.push(defaultRoutes[module])
+      }
     },
     // isEnterprise() {
     //   const productType = localStorage.getItem('_PRODUCT_TYPE') || ''

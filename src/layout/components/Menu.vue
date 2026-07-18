@@ -12,18 +12,29 @@
       </div>
     </div>
     <el-menu
-        :default-active="'/'+$route.path.split('/')[1]"
+        :default-active="'/' + $route.path.split('/')[1]"
         router
         :collapse="isCollapse"
         :collapse-transition="false"
     >
-      <el-menu-item index="/dashboard">
-        <el-icon>
-          <svg-icon icon-class="dashboard"></svg-icon>
-        </el-icon>
-        <span v-if="!isCollapse">仪表盘</span>
-      </el-menu-item>
-      <el-menu-item-group title="网关">
+      <!-- 仪表盘 -->
+      <template v-if="activeModule === 'dashboard'">
+        <el-menu-item index="/dashboard">
+          <el-icon>
+            <svg-icon icon-class="dashboard"></svg-icon>
+          </el-icon>
+          <span v-if="!isCollapse">仪表盘</span>
+        </el-menu-item>
+        <el-menu-item index="/notify">
+          <el-icon>
+            <svg-icon icon-class="notice"></svg-icon>
+          </el-icon>
+          <span v-if="!isCollapse">通知提醒</span>
+        </el-menu-item>
+      </template>
+    
+      <!-- 网关 -->
+      <template v-if="activeModule === 'gateway'">
         <el-menu-item index="/service">
           <el-icon>
             <svg-icon icon-class="service"></svg-icon>
@@ -54,9 +65,10 @@
           </el-icon>
           <span v-if="!isCollapse">日志</span>
         </el-menu-item>
-      </el-menu-item-group>
-
-      <el-menu-item-group title="安全">
+      </template>
+    
+      <!-- 安全 -->
+      <template v-if="activeModule === 'security'">
         <el-menu-item index="/apikey">
           <el-icon>
             <svg-icon icon-class="key"></svg-icon>
@@ -69,9 +81,10 @@
           </el-icon>
           <span v-if="!isCollapse">防火墙</span>
         </el-menu-item>
-      </el-menu-item-group>
-
-      <el-menu-item-group title="AI集成">
+      </template>
+    
+      <!-- AI集成 -->
+      <template v-if="activeModule === 'ai'">
         <el-menu-item index="/model">
           <el-icon>
             <svg-icon icon-class="model"></svg-icon>
@@ -84,28 +97,23 @@
           </el-icon>
           <span v-if="!isCollapse">MCP服务</span>
         </el-menu-item>
-      </el-menu-item-group>
-
-      <el-menu-item-group title="系统">
+      </template>
+    
+      <!-- 系统 -->
+      <template v-if="activeModule === 'system'">
         <el-menu-item index="/users">
           <el-icon>
             <svg-icon icon-class="user"></svg-icon>
           </el-icon>
           <span v-if="!isCollapse">用户管理</span>
         </el-menu-item>
-        <!--        <el-menu-item index="/operation">
-                  <el-icon>
-                    <svg-icon icon-class="log2"></svg-icon>
-                  </el-icon>
-                  <span>操作日志</span>
-                </el-menu-item>-->
         <el-menu-item index="/setting">
           <el-icon>
             <svg-icon icon-class="setting"></svg-icon>
           </el-icon>
           <span v-if="!isCollapse">系统设置</span>
         </el-menu-item>
-      </el-menu-item-group>
+      </template>
     </el-menu>
   </div>
 </template>
@@ -119,6 +127,10 @@ export default {
   components: {SvgIcon},
   props: {
     collapse: Boolean,
+    activeModule: {
+      type: String,
+      default: 'dashboard'
+    },
   },
   data() {
     return {
@@ -161,7 +173,7 @@ export default {
   :deep(.el-menu-item) {
     background-color: transparent !important;
     border: unset;
-    margin: 4px 12px 4px 0;
+    margin: 4px 0;
     border-radius: 8px;
     height: 44px;
 

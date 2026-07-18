@@ -62,7 +62,7 @@ const toEdit = (apiKey: any) => {
 </script>
 
 <template>
-  <div class="pd20">
+  <div class="">
     <div class="flex-v">
       <el-input v-model="form.filter_text" prefix-icon="search" placeholder="搜索名称/所属主体"
                 @input="loadApiKeys"></el-input>

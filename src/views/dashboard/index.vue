@@ -7,17 +7,26 @@ import RequestChart from "./components/request-chart.vue";
 
 <template>
   <div class="">
-    <el-row :gutter="20">
+    <div class="title-block">
+      网关状态
+    </div>
+    <el-row :gutter="20" class="mb20">
       <el-col :span="24">
         <gateway-monitor></gateway-monitor>
       </el-col>
     </el-row>
-    <el-row :gutter="20" class="mt20">
+    <div class="title-block">
+      网关节点
+    </div>
+    <el-row :gutter="20" class="mt10">
       <el-col :span="24">
         <node-list></node-list>
       </el-col>
     </el-row>
-    <el-row :gutter="10" class="mt20">
+    <div class="title-block">
+      请求概览
+    </div>
+    <el-row :gutter="10" class="mt10">
       <el-col :span="12">
         <invoke-map></invoke-map>
       </el-col>

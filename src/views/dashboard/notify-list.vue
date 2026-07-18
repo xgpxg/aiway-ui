@@ -1,85 +1,170 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import {onMounted, ref} from 'vue'
+import {R} from "@/utils/R";
+import {Search} from "@element-plus/icons-vue";
 
-interface NotifyItem {
+interface Message {
   id: number
   title: string
   content: string
-  time: string
-  type: 'info' | 'warn' | 'error'
+  create_time: string
+  level: 'Info' | 'Warn' | 'Error'
+  read_status: 'Unread' | 'Read'
 }
 
-const notifications = ref<NotifyItem[]>([
-  {
-    id: 1,
-    title: '服务异常告警',
-    content: '用户服务在过去的5分钟内出现30次异常调用，异常率超过阈值，请及时处理。建议检查服务日志，定位问题根源并采取相应措施。',
-    time: '2025-11-14 14:30:25',
-    type: 'error'
-  },
-  {
-    id: 2,
-    title: '性能下降提醒',
-    content: '订单服务响应时间从平均100ms上升到800ms，性能下降明显。可能由于数据库连接池不足或查询语句需要优化。',
-    time: '2025-11-14 14:25:10',
-    type: 'warn'
-  },
-  {
-    id: 3,
-    title: '新服务上线通知',
-    content: '商品推荐服务已成功上线并接入网关，该服务提供个性化商品推荐功能，支持实时推荐和批量推荐两种模式。',
-    time: '2025-11-14 14:15:42',
-    type: 'info'
-  },
-  {
-    id: 4,
-    title: '安全风险提示',
-    content: '检测到多次来自特定IP的异常访问请求，疑似恶意扫描行为。系统已自动将该IP加入观察名单，建议安全团队关注。',
-    time: '2025-11-14 14:10:33',
-    type: 'warn'
-  },
-  {
-    id: 5,
-    title: '系统维护完成',
-    content: '网关系统例行维护已完成，所有节点均已恢复正常运行。本次维护更新了安全补丁并优化了部分核心组件性能。',
-    time: '2025-11-14 13:45:12',
-    type: 'info'
-  }
-])
+const activeTab = ref('all')
+const keyword = ref('')
+const messages = ref<Message[]>([])
+const form = ref({level: null as string | null})
+const page = ref({page_num: 1, page_size: 10, total: 0})
 
+const levelMap: Record<string, { label: string; type: string }> = {
+  Error: {label: '错误', type: 'danger'},
+  Warn: {label: '警告', type: 'warning'},
+  Info: {label: '提醒', type: 'primary'},
+}
+
+onMounted(() => {
+  loadMessages()
+})
+
+const loadMessages = () => {
+  R.postJson('/api/message/list', {
+    page: page.value,
+    level: form.value.level,
+    filter_text: keyword.value || undefined
+  }).then((res: any) => {
+    if (res.code === 0) {
+      messages.value = res.data.list
+      page.value.total = res.data.total
+    }
+  })
+}
+
+const markAsRead = (msg: Message) => {
+  if (msg.read_status === 'Read') return
+  R.postJson('/api/message/read', {id: msg.id}).then(res => {
+    if (res.code === 0) loadMessages()
+  })
+}
+
+const markAllAsRead = () => {
+  R.postJson('/api/message/read', {id: -1}).then(res => {
+    if (res.code === 0) loadMessages()
+  })
+}
+
+const onSearch = () => {
+  page.value.page_num = 1
+  loadMessages()
+}
+
+const onTabChange = (val: string) => {
+  form.value.level = val === 'all' ? null : val
+  page.value.page_num = 1
+  loadMessages()
+}
+
+const handlePageChange = (pageNum: number) => {
+  page.value.page_num = pageNum
+  loadMessages()
+}
 </script>
 
 <template>
-  <div class="notify-container">
-    <div class="card">
-      <div class="title">网关事件</div>
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div v-for="item in notifications.filter(item => item.type === 'info')">
-            <el-text size="large">{{item.title}}</el-text>
-          </div>
-        </el-col>
-      </el-row>
+  <div>
+    <div class="">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <el-radio-group v-model="activeTab" @change="onTabChange">
+            <el-radio-button value="all">全部</el-radio-button>
+            <el-radio-button value="Error">错误</el-radio-button>
+            <el-radio-button value="Warn">警告</el-radio-button>
+            <el-radio-button value="Info">提醒</el-radio-button>
+          </el-radio-group>
+          <el-input
+              v-model="keyword"
+              placeholder="搜索标题或内容"
+              clearable
+              style="width: 220px; margin-left: 16px"
+              @keyup.enter="onSearch"
+              @clear="onSearch"
+          >
+            <template #prefix>
+              <el-icon>
+                <Search/>
+              </el-icon>
+            </template>
+          </el-input>
+          <el-button type="primary" style="margin-left: 8px" @click="onSearch" icon="search">搜索</el-button>
+        </div>
+        <el-button type="primary" link @click="markAllAsRead">全部标记为已读</el-button>
+      </div>
+
+      <el-table :data="messages" stripe empty-text="暂无通知" @row-click="markAsRead">
+        <el-table-column label="级别" width="80" align="center">
+          <template #default="{ row }">
+            <el-tag :type="levelMap[row.level]?.type" disable-transitions>
+              {{ levelMap[row.level]?.label }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="title" label="标题" min-width="200" show-overflow-tooltip/>
+        <el-table-column prop="content" label="内容" min-width="300" show-overflow-tooltip/>
+        <el-table-column prop="create_time" label="时间" width="170" align="center"/>
+        <el-table-column label="状态" width="80" align="center">
+          <template #default="{ row }">
+            <el-text :type="row.read_status === 'Unread' ? 'warning' : 'info'">
+              {{ row.read_status === 'Unread' ? '未读' : '已读' }}
+            </el-text>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <div class="pagination-wrap" v-if="page.total > 0">
+        <el-pagination
+            background
+            layout="prev, pager, next, total"
+            :page-size="page.page_size"
+            :current-page="page.page_num"
+            :total="page.total"
+            pager-count="5"
+            hide-on-single-page
+            @current-change="handlePageChange"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.notify-container {
-  width: 100%;
+.card {
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
 }
 
-.card {
-  border-radius: 6px;
-  background: #ffffff;
-  padding: 20px;
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 
-  .title {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #303133;
+  .toolbar-left {
+    display: flex;
+    align-items: center;
   }
 }
 
+.pagination-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+:deep(.el-table__row) {
+  cursor: pointer;
+}
 </style>

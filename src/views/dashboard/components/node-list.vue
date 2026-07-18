@@ -3,7 +3,6 @@ import {Timer} from '@element-plus/icons-vue'
 import {ref, onMounted, onUnmounted} from 'vue'
 import {R} from "@/utils/R";
 import {U} from "@/utils/util";
-import SvgIcon from "../../../components/SvgIcon/index.vue";
 import NodeMonitor from "./node-monitor.vue";
 
 interface NodeInfo {
@@ -55,6 +54,9 @@ const loadData = () => {
         currNode.value = node
       }
     })
+    nodeList.value.sort((a, b) => {
+      return (a.status < b.status) ? 1 : -1;
+    })
   })
 }
 
@@ -100,9 +102,7 @@ const getStatusType = (status: string) => {
             <div class="node-header">
               <div class="node-title">
                 <div class="flex-v">
-                  <el-icon class="mr5">
-                    <svg-icon icon-class="server"></svg-icon>
-                  </el-icon>
+                  <span class="status-dot" :class="node.status === 'Online' ? 'dot-online' : 'dot-offline'"></span>
                   <h3>{{ node.ip }}:{{ node.port }}</h3>
                 </div>
                 <el-tag
@@ -154,6 +154,7 @@ const getStatusType = (status: string) => {
       </el-row>
     </div>
   </div>
+
   <el-drawer :title="`节点详情（${currNode?.ip}:${currNode?.port}）`" v-model="isShowNodeDetail"
              size="50vw" destroy-on-close>
     <node-monitor :node-id="currNode.node_id" :attr="currNode.attr" :state="currNode.state"></node-monitor>
@@ -193,6 +194,28 @@ const getStatusType = (status: string) => {
           display: flex;
           justify-content: space-between;
           align-items: center;
+
+          .flex-v {
+            align-items: center;
+          }
+
+          .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            flex-shrink: 0;
+          }
+
+          .dot-online {
+            background-color: #67c23a;
+            box-shadow: 0 0 4px rgba(103, 194, 58, 0.5);
+          }
+
+          .dot-offline {
+            background-color: #c0c4cc;
+          }
 
           h3 {
             margin: 0;

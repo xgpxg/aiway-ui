@@ -1,72 +1,82 @@
 <template>
-  <div class="navbar flex-space-between">
-    <div class="flex-v fill-width">
-      <Hamburger class="hamburger-container"
-                 @toggleClick="toggleSideBar" :is-active="collapse"></Hamburger>
-      <Breadcrumb class="breadcrumb-container"></Breadcrumb>
-      <!--      <AppBar></AppBar>-->
-    </div>
-
-    <div class="right-menu flex-v">
-      <el-popover width="500px" trigger="click" @show="" placement="bottom-end" v-if="U.isDev()">
-        <template #reference>
-          <el-icon class="cursor-pointer" style="margin-top: -2px;margin-right: 10px">
-            <svg-icon icon-class="app"></svg-icon>
-          </el-icon>
-        </template>
-      </el-popover>
-      <el-popover width="520px" trigger="click" @show="this.$refs.messageRef?.loadMessages()" placement="bottom-end">
-        <template #reference>
-          <el-badge :value="unreadCount" class="ml20 cursor-pointer mr20" :show-zero="false">
-            <el-icon>
-              <Bell/>
-            </el-icon>
-          </el-badge>
-        </template>
-        <Message ref="messageRef"></Message>
-      </el-popover>
-
-      <el-button
-          link
-          class="nav-icon-button theme-toggle"
-          @click="toggleTheme"
-          :title="isDarkMode ? '切换到日间模式' : '切换到夜间模式'">
-        <el-icon v-if="isDarkMode">
-          <Sunny/>
-        </el-icon>
-        <el-icon v-else>
-          <Moon/>
-        </el-icon>
-      </el-button>
-
-      <el-link
-          target="_blank"
-          class="nav-icon-button"
-          @click="toHome"
-          :underline="false">
-        <el-dropdown trigger="click" placement="bottom-end">
-          <div class="avatar-wrapper">
-            <el-icon class="user-avatar">
-              <User></User>
-            </el-icon>
+  <div class="navbar">
+    <div class="navbar-top">
+      <div class="navbar-left">
+        <Hamburger class="hamburger-container"
+                   @toggleClick="toggleSideBar" :is-active="collapse"></Hamburger>
+        <div class="module-tabs">
+          <div
+              v-for="item in modules"
+              :key="item.key"
+              class="module-tab"
+              :class="{ active: activeModule === item.key }"
+              @click="switchModule(item.key)"
+          >
+            {{ item.label }}
           </div>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="$refs['updatePassword'].show()">
-                修改密码
-              </el-dropdown-item>
-            </el-dropdown-menu>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="logout">
-                登出
-              </el-dropdown-item>
-            </el-dropdown-menu>
+        </div>
+      </div>
+      <div class="right-menu flex-v">
+        <el-popover width="500px" trigger="click" @show="" placement="bottom-end" v-if="U.isDev()">
+          <template #reference>
+            <el-icon class="cursor-pointer" style="margin-top: -2px;margin-right: 10px">
+              <svg-icon icon-class="app"></svg-icon>
+            </el-icon>
           </template>
-        </el-dropdown>
-      </el-link>
+        </el-popover>
+        <el-popover width="520px" trigger="click" @show="this.$refs.messageRef?.loadMessages()" placement="bottom-end">
+          <template #reference>
+            <el-badge :value="unreadCount" class="ml20 cursor-pointer mr20" :show-zero="false">
+              <el-icon>
+                <Bell/>
+              </el-icon>
+            </el-badge>
+          </template>
+          <Message ref="messageRef"></Message>
+        </el-popover>
+
+        <el-button
+            link
+            class="nav-icon-button theme-toggle"
+            @click="toggleTheme"
+            :title="isDarkMode ? '切换到日间模式' : '切换到夜间模式'">
+          <el-icon v-if="isDarkMode">
+            <Sunny/>
+          </el-icon>
+          <el-icon v-else>
+            <Moon/>
+          </el-icon>
+        </el-button>
+
+        <el-link
+            target="_blank"
+            class="nav-icon-button"
+            @click="toHome"
+            :underline="false">
+          <el-dropdown trigger="click" placement="bottom-end">
+            <div class="avatar-wrapper">
+              <el-icon class="user-avatar">
+                <User></User>
+              </el-icon>
+            </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="$refs['updatePassword'].show()">
+                  修改密码
+                </el-dropdown-item>
+              </el-dropdown-menu>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="logout">
+                  登出
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </el-link>
+      </div>
     </div>
+    <update-password ref="updatePassword"></update-password>
   </div>
-  <update-password ref="updatePassword"></update-password>
 </template>
 
 <script>
@@ -92,13 +102,25 @@ export default {
     SvgIcon,
     Breadcrumb
   },
-  props: {},
+  props: {
+    activeModule: {
+      type: String,
+      default: 'dashboard'
+    }
+  },
   inject: ['isEnterprise'],
   data() {
     return {
       collapse: false,
       unreadCount: 0,
       isDarkMode: false,
+      modules: [
+        {key: 'dashboard', label: '仪表盘'},
+        {key: 'gateway', label: '网关'},
+        {key: 'security', label: '安全'},
+        {key: 'ai', label: 'AI集成'},
+        {key: 'system', label: '系统'},
+      ],
     }
   },
   computed: {
@@ -134,6 +156,9 @@ export default {
     toggleSideBar() {
       this.collapse = !this.collapse
       this.$emit('collapse', this.collapse)
+    },
+    switchModule(module) {
+      this.$emit('module-change', module)
     },
     toMessage() {
       this.$router.push({name: 'Alert'})
@@ -178,8 +203,52 @@ export default {
 .navbar {
   overflow: hidden;
   position: relative;
-  //background: #ffffff;
   z-index: 100;
+
+  .navbar-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+    border-bottom: 1px solid var(--el-border-color-lighter, #f0f0f0);
+  }
+
+  .navbar-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .module-tabs {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-left: 8px;
+
+    .module-tab {
+      padding: 0 18px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      color: #595959;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s;
+      white-space: nowrap;
+      font-weight: 500;
+
+      &:hover {
+        color: var(--el-color-primary);
+      }
+
+      &.active {
+        color: var(--el-color-primary);
+        font-weight: 600;
+      }
+    }
+  }
 
   .left-menu {
     height: 100%;
