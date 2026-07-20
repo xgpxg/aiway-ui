@@ -3,6 +3,8 @@ import {ref, watch} from "vue";
 import {R} from "../../utils/R";
 import {CodeEditor} from 'monaco-editor-vue3';
 import {UploadFilled} from '@element-plus/icons-vue';
+import MdPreview from '../../components/Editor/MdPreview.vue';
+import SvgIcon from "../../components/SvgIcon/index.vue";
 
 const value = defineModel('value')
 
@@ -23,6 +25,7 @@ const defaultForm = {
   // JSON字符串形式
   default_config: null,
   document: '',
+  readme: null,
   url: null
 }
 const form = ref(structuredClone(defaultForm))
@@ -123,7 +126,7 @@ const editorOptions = {
 </script>
 
 <template>
-  <el-drawer v-model="isShow" :title="value ? '修改插件' : '添加插件'" size="500" destroy-on-close @closed="reset">
+  <el-drawer v-model="isShow" :title="value ? '修改插件' : '添加插件'" size="600" destroy-on-close @closed="reset" :close-on-click-modal="false">
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
       <el-form-item label="插件文件" :prop="!value?'file':''">
         <div class="fill-width">
@@ -170,10 +173,9 @@ const editorOptions = {
             :options="editorOptions"
         />
       </el-form-item>
-      <!--      <el-form-item label="插件说明" prop="document">
-              <el-input v-model="form.document" type="textarea" placeholder="填写插件说明"
-                        :autosize="{minRows: 3, maxRows: 10}"></el-input>
-            </el-form-item>-->
+      <el-form-item label="插件手册" prop="document">
+        <MdPreview v-if="form.readme" :value="form.readme" />
+      </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="isShow = false">取消</el-button>
