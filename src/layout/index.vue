@@ -102,7 +102,7 @@ export default {
         'dashboard': 'dashboard', 'notify': 'dashboard',
         'service': 'gateway', 'route': 'gateway', 'domain': 'gateway', 'plugin': 'gateway', 'log': 'gateway',
         'apikey': 'security', 'firewall': 'security',
-        'model': 'ai', 'mcp': 'ai',
+        'model': 'ai', 'mcp': 'ai', 'usage': 'ai', 'model-call-logs': 'ai',
         'users': 'system', 'setting': 'system',
       }
       return map[path] || 'dashboard'

@@ -3,6 +3,7 @@
 import {ref} from "vue";
 import AiwayLogs from "./aiway-logs.vue";
 import RequestLogs from "./request-logs.vue";
+import ModelCallLogs from "./model-call-logs.vue";
 
 const active = ref('aiway-logs')
 </script>
@@ -18,6 +19,11 @@ const active = ref('aiway-logs')
       <el-tab-pane label="请求日志" name="request-logs" lazy>
         <div class="mt10">
           <request-logs></request-logs>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane label="模型调用" name="model-call-logs" lazy>
+        <div class="mt10">
+          <model-call-logs></model-call-logs>
         </div>
       </el-tab-pane>
     </el-tabs>

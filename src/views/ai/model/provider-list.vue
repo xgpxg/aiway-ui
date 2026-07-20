@@ -2,8 +2,8 @@
 import {computed, defineProps, defineEmits, ref} from 'vue'
 import {R} from '@/utils/R'
 import {ElMessage, ElMessageBox} from 'element-plus'
-import SvgIcon from "../../components/SvgIcon/index.vue";
-import PluginSelect from "../plugin/plugin-select.vue";
+import SvgIcon from "@/components/SvgIcon/index.vue";
+import PluginSelect from "@/views/plugin/plugin-select.vue";
 
 // 定义props和emits
 const props = defineProps({
@@ -24,6 +24,7 @@ const providerQuery = ref('')
 const currentProvider = ref(null)
 const providerDialogVisible = ref(false)
 const providerDialogTitle = ref('')
+const showTokenConfig = ref(false)
 const providerForm = ref({
   id: null,
   model_id: null,
@@ -33,6 +34,11 @@ const providerForm = ref({
   target_model_name: null,
   weight: 1,
   plugins: null,
+  token_usage_config: {
+    prompt_tokens: 'usage.prompt_tokens',
+    completion_tokens: 'usage.completion_tokens',
+    total_tokens: 'usage.total_tokens'
+  }
 })
 const rules = {
   name: [
@@ -80,9 +86,15 @@ const openAddProviderDialog = () => {
     api_url: '',
     api_key: '',
     target_model_name: '',
-    weight: 1,  // 默认权重为1
+    weight: 1,
     plugins: null,
+    token_usage_config: {
+      prompt_tokens: 'usage.prompt_tokens',
+      completion_tokens: 'usage.completion_tokens',
+      total_tokens: 'usage.total_tokens'
+    }
   }
+  showTokenConfig.value = false
   currentProvider.value = null
   providerDialogTitle.value = '新增提供商'
   providerDialogVisible.value = true
@@ -91,9 +103,13 @@ const openAddProviderDialog = () => {
 const openEditProviderDialog = (row: any) => {
   providerForm.value = {
     ...row,
-    // target_model_name: row.target_model_name || '',
-    // weight: row.weight || 1
+    token_usage_config: row.token_usage_config || {
+      prompt_tokens: 'usage.prompt_tokens',
+      completion_tokens: 'usage.completion_tokens',
+      total_tokens: 'usage.total_tokens'
+    }
   }
+  showTokenConfig.value = !!row.token_usage_config
   currentProvider.value = row
   providerDialogTitle.value = '修改提供商'
   providerDialogVisible.value = true
@@ -111,6 +127,7 @@ const saveProvider = () => {
         api_key: providerForm.value.api_key,
         target_model_name: providerForm.value.target_model_name,
         plugins: providerForm.value.plugins,
+        token_usage_config: providerForm.value.token_usage_config,
       }
 
       // 如果当前模型使用加权随机策略，则包含权重
@@ -273,6 +290,27 @@ const toggleStatus = (provider: any, newStatus: string) => {
         <el-form-item label="插件" prop="plugins">
           <plugin-select v-model="providerForm.plugins" placeholder="选择插件"></plugin-select>
         </el-form-item>
+        <el-form-item label="扩展配置">
+          <div class="fill-width">
+            <el-button type="primary" link @click="showTokenConfig = !showTokenConfig">
+              Token 用量配置
+            </el-button>
+            <el-collapse-transition>
+              <div v-if="showTokenConfig" class="token-config-box">
+                <el-form-item label="prompt_tokens" label-width="140px" prop="token_usage_config.prompt_tokens" style="margin-bottom: 12px">
+                  <el-input v-model="providerForm.token_usage_config.prompt_tokens" placeholder="如 usage.prompt_tokens"></el-input>
+                </el-form-item>
+                <el-form-item label="completion_tokens" label-width="140px" prop="token_usage_config.completion_tokens" style="margin-bottom: 12px">
+                  <el-input v-model="providerForm.token_usage_config.completion_tokens" placeholder="如 usage.completion_tokens"></el-input>
+                </el-form-item>
+                <el-form-item label="total_tokens" label-width="140px" prop="token_usage_config.total_tokens">
+                  <el-input v-model="providerForm.token_usage_config.total_tokens" placeholder="如 usage.total_tokens"></el-input>
+                </el-form-item>
+                <el-text type="info" size="small">配置响应中 token 数量的 JSON 路径，用于从不同格式的响应中提取 token 用量</el-text>
+              </div>
+            </el-collapse-transition>
+          </div>
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="providerDialogVisible = false">取消</el-button>
@@ -284,4 +322,11 @@ const toggleStatus = (provider: any, newStatus: string) => {
 
 
 <style scoped>
+.token-config-box {
+  padding: 12px;
+  border: 1px solid var(--el-border-color);
+  border-radius: 4px;
+  background: var(--el-fill-color-blank);
+  margin-top: 8px;
+}
 </style>

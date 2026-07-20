@@ -3,7 +3,7 @@ import {onMounted, ref, computed, watch} from 'vue'
 import {R} from '@/utils/R'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import ProviderList from './provider-list.vue'
-import SvgIcon from "../../components/SvgIcon/index.vue";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 
 // 模型相关数据
 const modelList = ref([])

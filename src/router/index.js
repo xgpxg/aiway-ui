@@ -92,7 +92,7 @@ const routes = [
             {
                 path: 'model',
                 name: 'Model',
-                component: () => import('@/views/model/index.vue'),
+                component: () => import('@/views/ai/model/index.vue'),
                 meta: {
                     title: '模型管理'
                 }
@@ -100,7 +100,7 @@ const routes = [
             {
                 path: 'mcp',
                 name: 'Mcp',
-                component: () => import('@/views/mcp/index.vue'),
+                component: () => import('@/views/ai/mcp/index.vue'),
                 meta: {
                     title: 'MCP服务'
                 },
@@ -108,7 +108,7 @@ const routes = [
                     {
                         path: ':mcpServiceId',
                         name: 'Tools',
-                        component: () => import('@/views/mcp/tool-list.vue'),
+                        component: () => import('@/views/ai/mcp/tool-list.vue'),
                         meta: {
                             title: '工具列表'
                         }
@@ -116,6 +116,22 @@ const routes = [
                 ]
             },
 
+            {
+                path: 'usage',
+                name: 'Usage',
+                component: () => import('@/views/ai/usage/index.vue'),
+                meta: {
+                    title: '用量分析'
+                }
+            },
+            {
+                path: 'model-call-logs',
+                name: 'ModelCallLogs',
+                component: () => import('@/views/ai/model-call-logs/index.vue'),
+                meta: {
+                    title: '模型日志'
+                }
+            },
             {
                 path: 'users',
                 name: 'Users',

@@ -4,7 +4,7 @@ import {R} from '@/utils/R'
 import HttpParamTable from './api-param-table.vue'
 import {ElMessageBox} from 'element-plus'
 import {useRoute} from 'vue-router'
-import ServiceSelect from '../service/service-select.vue'
+import ServiceSelect from '@/views/service/service-select.vue'
 import ApiParamTable from "./api-param-table.vue";
 import OpenApiImport from './openapi-import.vue'
 

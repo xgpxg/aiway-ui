@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
 import {computed, onMounted, provide, ref} from "vue";
-import {R} from "../../utils/R";
+import {R} from "@/utils/R";
 import {useRoute, useRouter} from "vue-router";
-import SvgIcon from "../../components/SvgIcon/index.vue";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 
 const router = useRouter()
 const route = useRoute()

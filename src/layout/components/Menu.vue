@@ -32,7 +32,7 @@
           <span v-if="!isCollapse">通知提醒</span>
         </el-menu-item>
       </template>
-    
+
       <!-- 网关 -->
       <template v-if="activeModule === 'gateway'">
         <el-menu-item index="/service">
@@ -66,7 +66,7 @@
           <span v-if="!isCollapse">日志</span>
         </el-menu-item>
       </template>
-    
+
       <!-- 安全 -->
       <template v-if="activeModule === 'security'">
         <el-menu-item index="/apikey">
@@ -82,7 +82,7 @@
           <span v-if="!isCollapse">防火墙</span>
         </el-menu-item>
       </template>
-    
+
       <!-- AI集成 -->
       <template v-if="activeModule === 'ai'">
         <el-menu-item index="/model">
@@ -97,8 +97,20 @@
           </el-icon>
           <span v-if="!isCollapse">MCP服务</span>
         </el-menu-item>
+        <el-menu-item index="/usage">
+          <el-icon>
+            <svg-icon icon-class="dashboard"></svg-icon>
+          </el-icon>
+          <span v-if="!isCollapse">用量统计</span>
+        </el-menu-item>
+        <el-menu-item index="/model-call-logs">
+          <el-icon>
+            <svg-icon icon-class="log2"></svg-icon>
+          </el-icon>
+          <span v-if="!isCollapse">模型日志</span>
+        </el-menu-item>
       </template>
-    
+
       <!-- 系统 -->
       <template v-if="activeModule === 'system'">
         <el-menu-item index="/users">
