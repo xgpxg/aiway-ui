@@ -47,7 +47,15 @@
             <Moon/>
           </el-icon>
         </el-button>
-
+        <el-button
+            link
+            class="nav-icon-button theme-toggle"
+            @click="openInGithub"
+            :title="isDarkMode ? '切换到日间模式' : '切换到夜间模式'">
+          <el-icon>
+            <svg-icon icon-class="github"></svg-icon>
+          </el-icon>
+        </el-button>
         <el-link
             target="_blank"
             class="nav-icon-button"
@@ -56,7 +64,7 @@
           <el-dropdown trigger="click" placement="bottom-end">
             <div class="avatar-wrapper">
               <el-icon class="user-avatar">
-                <User></User>
+                <svg-icon icon-class="user2"></svg-icon>
               </el-icon>
             </div>
             <template #dropdown>
@@ -194,6 +202,9 @@ export default {
         document.documentElement.classList.remove('dark')
         localStorage.setItem('theme_mode', 'default')
       }
+    },
+    openInGithub() {
+      window.open('https://github.com/xgpxg/aiway')
     }
   }
 }
