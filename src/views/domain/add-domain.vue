@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
 import {R} from "../../utils/R";
+import CertSelect from "./cert-select.vue";
 
 const value = defineModel('value')
 
@@ -71,6 +72,16 @@ const reset = () => {
   form.value = structuredClone(defaultForm)
   value.value = null
 }
+
+const onCertSelect = (data: { cert_pem: string | null, key_pem: string | null }) => {
+  form.value.cert = data.cert_pem
+  form.value.key = data.key_pem
+}
+
+const onCertClear = () => {
+  form.value.cert = null
+  form.value.key = null
+}
 </script>
 
 <template>
@@ -86,13 +97,16 @@ const reset = () => {
           <el-radio label="HTTPS">HTTPS</el-radio>
         </el-radio-group>
       </el-form-item>
+      <el-form-item label="选择证书" v-if="form.protocol === 'HTTPS'">
+        <CertSelect @select="onCertSelect" @clear="onCertClear" />
+      </el-form-item>
       <el-form-item label="TLS证书" prop="cert" v-if="form.protocol === 'HTTPS'">
         <el-input v-model="form.cert" type="textarea" :rows="6"
-                  placeholder="填写PEM格式的证书内容"></el-input>
+                  placeholder="填写PEM格式的证书内容，或从上方选择证书自动填充"></el-input>
       </el-form-item>
       <el-form-item label="TLS私钥" prop="key" v-if="form.protocol === 'HTTPS'">
         <el-input v-model="form.key" type="textarea" :rows="6"
-                  placeholder="填写PEM格式的私钥内容"></el-input>
+                  placeholder="填写PEM格式的私钥内容，或从上方选择证书自动填充"></el-input>
       </el-form-item>
     </el-form>
     <template #footer>

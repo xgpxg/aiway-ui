@@ -2,6 +2,7 @@
 import {onMounted, ref} from "vue";
 import {R} from "../../utils/R";
 import AddDomain from "./add-domain.vue";
+import CertManager from "./cert-manager.vue";
 
 const domains = ref([])
 const page = ref({
@@ -38,6 +39,7 @@ const deleteDomain = (domain: any) => {
 }
 
 const addDomainRef = ref()
+const certManagerRef = ref()
 
 const currDomain = ref()
 const toEdit = (domain: any) => {
@@ -72,6 +74,7 @@ const updateStatus = (domain: any, status: string) => {
                 @input="loadDomains"></el-input>
       <el-button class="ml20" icon="search" @click="loadDomains">查询</el-button>
       <el-button class="ml20" icon="plus" type="primary" @click="addDomainRef.show()">添加域名</el-button>
+      <el-button class="ml20" icon="Medal" @click="certManagerRef.show()">证书管理</el-button>
     </div>
     <div class="mt20">
       <el-table :data="domains">
@@ -116,6 +119,7 @@ const updateStatus = (domain: any, status: string) => {
     </div>
   </div>
   <add-domain ref="addDomainRef" v-model:value="currDomain" @close="loadDomains"></add-domain>
+  <cert-manager ref="certManagerRef"></cert-manager>
 </template>
 
 <style scoped lang="scss">

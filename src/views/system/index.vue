@@ -5,6 +5,7 @@ import Notify from "./notify.vue";
 import Common from "./common.vue";
 import Storage from "./storage.vue";
 import Info from "./info.vue";
+import Acme from "./acme.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -22,7 +23,7 @@ watch(activeIndex, (newTab) => {
 
 <template>
   <div>
-    <el-row :gutter="10">
+    <el-row :gutter="20">
       <el-col :span="3">
         <el-menu
             :default-active="activeIndex"
@@ -36,13 +37,16 @@ watch(activeIndex, (newTab) => {
               通知和提醒
             </el-menu-item>
           </el-menu-item-group>
-          <el-menu-item index="data-storage">
-            数据存储
-          </el-menu-item>
+          <!--          <el-menu-item index="data-storage">
+                      数据存储
+                    </el-menu-item>-->
           <el-menu-item-group title="系统">
-            <el-menu-item index="backup-migration">
-              备份和迁移
+            <el-menu-item index="acme-config">
+              ACME 配置
             </el-menu-item>
+<!--            <el-menu-item index="backup-migration">
+              备份和迁移
+            </el-menu-item>-->
             <el-menu-item index="system-info">
               系统信息
             </el-menu-item>
@@ -52,8 +56,9 @@ watch(activeIndex, (newTab) => {
       <el-col :span="21">
         <common v-if="activeIndex==='common-setting'"></common>
         <notify v-if="activeIndex==='notification'"></notify>
-        <storage v-if="activeIndex==='data-storage'"></storage>
+<!--        <storage v-if="activeIndex==='data-storage'"></storage>-->
         <info v-if="activeIndex==='system-info'"></info>
+        <acme v-if="activeIndex==='acme-config'"></acme>
       </el-col>
     </el-row>
   </div>
