@@ -3,6 +3,8 @@ import {ref, watch} from "vue";
 import {R} from "../../utils/R";
 import {CodeEditor} from 'monaco-editor-vue3';
 import {UploadFilled} from '@element-plus/icons-vue';
+import {ElMessage} from 'element-plus';
+import {copyText} from 'vue3-clipboard';
 import MdPreview from '../../components/Editor/MdPreview.vue';
 import SvgIcon from "../../components/SvgIcon/index.vue";
 
@@ -21,6 +23,7 @@ const defaultForm = {
   name: null,
   description: null,
   version: null,
+  checksum: null,
   file: null,
   // JSON字符串形式
   default_config: null,
@@ -33,9 +36,6 @@ const formRef = ref()
 const rules = {
   name: [
     {required: true, message: '请输入名称', trigger: 'blur'},
-  ],
-  description: [
-    {required: true, message: '请简要描述插件功能', trigger: 'blur'},
   ],
   version: [
     {required: true, message: '请输入版本号', trigger: 'blur'},
@@ -113,6 +113,15 @@ const pluginFileExceed = (files: any) => {
   form.value.file = files[0]
 }
 
+const copyChecksum = () => {
+  if (!form.value.checksum) {
+    return
+  }
+  copyText(form.value.checksum, undefined, () => {
+    ElMessage.success('已复制到剪贴板')
+  })
+}
+
 const editorOptions = {
   fontSize: 14,
   minimap: {enabled: false},
@@ -126,10 +135,11 @@ const editorOptions = {
 </script>
 
 <template>
-  <el-drawer v-model="isShow" :title="value ? '修改插件' : '添加插件'" size="600" destroy-on-close @closed="reset" :close-on-click-modal="false">
+  <el-drawer v-model="isShow" :title="value ? '修改插件' : '添加插件'" size="600" destroy-on-close @closed="reset"
+             :close-on-click-modal="false">
     <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
       <el-form-item label="插件文件" :prop="!value?'file':''">
-        <div class="fill-width">
+        <div class="fill-width flex-space-between flex-v">
           <el-upload :auto-upload="false"
                      :show-file-list="false"
                      :on-change="pluginFileChange"
@@ -137,29 +147,49 @@ const editorOptions = {
                      :limit="1"
                      accept=".wasm"
           >
-            <div class="flex-space-between fill-width">
-              <el-button>选择文件</el-button>
-              <el-text type="info" size="small">仅支持.wasm格式</el-text>
-            </div>
+            <el-button icon="Plus">选择 WASM 插件</el-button>
           </el-upload>
-          <div v-if="form.file || form.url" class="mt10">
+          <div v-if="form.file || form.url">
             <el-tag size="large" disable-transitions style="font-size: 14px">
               {{ form.file ? form.file.name : form['url'].substring(form['url'].lastIndexOf('/') + 21) }}
             </el-tag>
           </div>
         </div>
       </el-form-item>
-      <el-form-item label="插件名称" prop="name">
-        <el-input v-model="form.name" placeholder="填写插件名称，新增后不可修改" maxlength="100"
-                  show-word-limit :disabled="!!value"></el-input>
-      </el-form-item>
-      <el-form-item label="功能描述" prop="description">
-        <el-input v-model="form.description" placeholder="简要描述插件功能" maxlength="500" show-word-limit></el-input>
-      </el-form-item>
+      <!-- 隐藏表单项保留 name/version 必填校验 -->
+      <el-form-item label="插件信息">
+        <div class="bg-card br5 fill-width" :class="{'is-empty': !form.name}">
+          <template v-if="form.name">
+            <div class="flex-space-between">
+              <el-text size="large" style=" font-weight: 500;">{{ form.name }}</el-text>
+              <div>
+                <el-tag v-if="form.version" type="primary" effect="light" size="small" class="mr10">{{
+                    form.version
+                  }}
+                </el-tag>
+                <el-popover>
+                  <template #reference>
+                    <el-tag size="small">checksum</el-tag>
+                  </template>
+                  <code>{{ form.checksum }}</code>
+                  <el-button link type="primary" size="small" class="checksum-copy" @click="copyChecksum">复制
+                  </el-button>
+                </el-popover>
+              </div>
+            </div>
 
-      <el-form-item label="插件版本" prop="version">
-        <el-input v-model="form.version" placeholder="填写插件版本" maxlength="20" show-word-limit></el-input>
+            <div class="mt10">
+              <el-text v-if="form.description" type="info">{{ form.description }}</el-text>
+            </div>
+          </template>
+          <div v-else class="color-secondary">
+            选择插件后自动解析
+          </div>
+        </div>
       </el-form-item>
+      <!--      <el-form-item label="功能描述" prop="description">
+              <el-input v-model="form.description" placeholder="简要描述插件功能" maxlength="500" show-word-limit></el-input>
+            </el-form-item>-->
       <el-form-item label="默认配置" prop="default_config">
         <template #label>
           <div class="flex-space-between">
@@ -173,8 +203,8 @@ const editorOptions = {
             :options="editorOptions"
         />
       </el-form-item>
-      <el-form-item label="插件手册" prop="document">
-        <MdPreview v-if="form.readme" :value="form.readme" />
+      <el-form-item label="插件手册" prop="document" v-if="form.readme">
+        <MdPreview v-if="form.readme" :value="form.readme"/>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -185,6 +215,7 @@ const editorOptions = {
 </template>
 
 <style scoped lang="scss">
+
 :deep(.el-form-item__label) {
   width: 100%;
   padding-right: 0;
